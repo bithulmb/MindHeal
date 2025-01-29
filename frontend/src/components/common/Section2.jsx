@@ -40,38 +40,27 @@ const Section2 = () => {
                       Meet our team of skilled psychologists and RCI-licensed clinical psychologists for expert and compassionate care. We are dedicated to supporting your mental health and well-being with empathy and professionalism.
                       </p>
                       <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {psychologists.map((psych, index) => (
-          <div key={index} className="flex flex-col items-center">
-            <div className="rounded-full overflow-hidden w-48 h-48 mb-4 border-4 border-blue-200 hover:border-blue-400 transition-colors duration-300">
-              <img 
-                src={psych.image} 
-                alt={psych.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <h3 className="font-semibold text-lg text-center">{psych.name}</h3>
-            <p className="text-sm text-muted-foreground">{psych.experience}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {psychologists.map((psych, index) => (
+                          <div key={index} className="flex flex-col items-center">
+                            <div className="rounded-full overflow-hidden w-48 h-48 mb-4 border-4 border-blue-200 hover:border-blue-400 transition-colors duration-300">
+                              <img 
+                                src={psych.image} 
+                                alt={psych.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <h3 className="font-semibold text-lg text-center">{psych.name}</h3>
+                            <p className="text-sm text-muted-foreground">{psych.experience}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-16">
-      
-                          {
-                              services.map((service, index) => (
-                                  <ServiceCard key={index} {...service}/>
-                              )
-      
-                              )
-                          }
-      
-                      </div> */}
+                    
                       <Button onClick={() => navigate("/psychologists")}>See All Psychologists</Button>
                   </div>
-              </div>
-              
+              </div>             
           </section>
     
   )

@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { Menu,X } from 'lucide-react'
 import { Button } from '../ui/button'
 import { ModeToggle } from '@/utils/ModeToggle'
 import Logo from './Logo'
+import LoginModal from './LoginModal'
+
 
 
 
@@ -14,7 +16,8 @@ const Header = () => {
       const toggleMenu = () => {
           setIsMenuOpen(!isMenuOpen)
       }
-  
+      
+      const navigate = useNavigate();
      
   return (
        
@@ -72,7 +75,8 @@ const Header = () => {
           </nav>
           <div className='hidden md:flex'>
           <div className="hidden md:block">
-            <Button>Login</Button>
+            {/* <Button onClick={() => navigate("/login")}>Login</Button> */}
+            <LoginModal/>
           </div>
           <div className='ms-3'>
             <ModeToggle/>
@@ -115,7 +119,11 @@ const Header = () => {
               Contact Us
             </NavLink>
           </nav>
-          <div className="px-4 py-2">
+
+          <div className="px-4 py-2"  onClick={() => {
+              console.log("hii");
+              navigate("/login");
+            }}>
             <Button>Login</Button>
           </div>
         </div>

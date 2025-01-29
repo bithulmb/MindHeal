@@ -8,6 +8,7 @@ import About from './pages/common/About'
 import Contact from './pages/common/Contact'
 import { ThemeProvider } from './utils/ThemeProvider'
 import Footer from './components/common/Footer'
+import LoginPage from './pages/common/LoginPage'
 
  
 
@@ -26,6 +27,7 @@ function App() {
             <Route path="/psychologists" element={<Psychologists/>}/>
             <Route path="/about" element={<About/>}/>
             <Route path="/contact" element={<Contact/>}/>
+            <Route path="/login"  element={<LoginPage/>}/>
           </Routes>
           <Footer/>
         </BrowserRouter>

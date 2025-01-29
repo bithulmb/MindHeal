@@ -9,6 +9,7 @@ import {
   } from "@/components/ui/card"
 import { Button } from '../ui/button'
 import { useNavigate } from 'react-router-dom'
+import LoginModal from './LoginModal'
 
 const ServiceCard = ({title,imagePath,alt}) => {
 
