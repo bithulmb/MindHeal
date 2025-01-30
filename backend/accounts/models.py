@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,User
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+from datetime import timedelta
 
 # Create your models here.
 
@@ -92,10 +94,24 @@ class PsychologistProfile(models.Model):
     id_card = models.ImageField(upload_to='id_cards/')
     education_certificate = models.ImageField(upload_to='certificates/education/')
     experience_certificate = models.ImageField(upload_to='certificates/experience/')
-    is_verified = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_admin_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} - Psychologist"
+    
+
+class EmailVerificationOTP(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete= models.CASCADE)
+    otp = models.CharField(max_length=8)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    def is_valid(self):
+        return timezone.now() <= self.expires_at 
+
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(minutes=5)
+        super().save(*args, **kwargs)

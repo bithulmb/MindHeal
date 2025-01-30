@@ -6,9 +6,9 @@ from .models import CustomUser
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('email', 'first_name', 'last_name', 'role', 'is_active')
+    list_display = ('id','email', 'first_name', 'last_name', 'role', 'is_active')
     search_fields = ('email', 'first_name', 'last_name')
-    ordering = ('email',)
+    ordering = ('id',)
     
     readonly_fields = ("created_at", "updated_at")
     filter_horizontal = ()
