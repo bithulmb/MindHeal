@@ -9,6 +9,10 @@ import Contact from './pages/common/Contact'
 import { ThemeProvider } from './utils/ThemeProvider'
 import Footer from './components/common/Footer'
 import LoginPage from './pages/common/LoginPage'
+import UserRegisterPage from './pages/common/UserRegisterPage'
+import ResetPasswordPage from './pages/common/ResetPasswordPage'
+import { Provider } from 'react-redux'
+import store from './redux/store'
 
  
 
@@ -17,6 +21,7 @@ function App() {
  
   return (
     <>
+    <Provider store={store}>
       <ThemeProvider  defaultTheme="dark" storageKey="vite-ui-theme">
         <BrowserRouter>
           <Header/>
@@ -27,11 +32,14 @@ function App() {
             <Route path="/psychologists" element={<Psychologists/>}/>
             <Route path="/about" element={<About/>}/>
             <Route path="/contact" element={<Contact/>}/>
-            <Route path="/login"  element={<LoginPage/>}/>
+            <Route path="/user/login"  element={<LoginPage/>}/>
+            <Route path="/user/register"  element={<UserRegisterPage/>}/>
+            <Route path="/user/reset-password"  element={<ResetPasswordPage/>}/>
           </Routes>
           <Footer/>
         </BrowserRouter>
       </ThemeProvider>
+      </Provider>
       
     </>
 

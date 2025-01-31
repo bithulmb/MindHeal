@@ -10,7 +10,7 @@
 // import { Input } from "@/components/ui/input"
 // import { Label } from "@/components/ui/label"
 
-// export function LoginForm({
+// export default function LoginForm({
 //   className,
 //   ...props
 // }) {
@@ -82,31 +82,68 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver} from '@hookform/resolvers/zod'
 
-const LoginForm = ({ switchToRegister, switchToResetPassword} ) => {
+  //defining form schema using zod
+  const schema = z.object({
+    email : z.string().email("Invalid email address"),
+    password : z.string().min(6,"Password must be atleast 6 characters"),
+  })
+
+
+const LoginForm = () => {
+
+  const navigate = useNavigate()
+   
+   //initialising the form using useForm hook from react hook form
+   const { register, control, handleSubmit, formState : {errors},} = useForm({
+    resolver : zodResolver(schema)
+  }) 
+
+  const onSubmit = (data) => {
+    console.log("form data", data)
+  }
+
+  
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
+                {/* <Input
+                 
+                  {...register("email")}
+                /> */}
+                <Controller
+                name="email"
+                control={control}
+                render={({field}) => <Input {...field}/> }
                 />
+                { errors.email && <p className="text-sm text-red-500 ">{errors.email.message}</p>}
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <a
-                    onClick={switchToResetPassword}
+                  <span
+                    onClick={() => navigate("/user/reset-password")}
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline cursor-pointer"
                   >
                     Forgot your password?
-                  </a>
+                  </span>
                 </div>
-                <Input id="password" type="password" required />
+                {/* <Input type="password" {...register("password")} /> */}
+                 <Controller
+                    name="password"
+                    control={control}
+                    render={({ field }) => <Input {...field} type="password"/>}
+                  />
+                {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+              </div>
+              <div>
               </div>
               <Button type="submit" className="w-full">
                 Login
@@ -127,7 +164,7 @@ const LoginForm = ({ switchToRegister, switchToResetPassword} ) => {
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
-              <a onClick={switchToRegister} className="underline underline-offset-4 cursor-pointer">
+              <a onClick={() => navigate('/user/register')} className="underline underline-offset-4 cursor-pointer">
                 Sign up
               </a>
             </div>

@@ -2,8 +2,10 @@ import React from 'react'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
+import { useNavigate } from 'react-router-dom'
 
 const UserRegisterForm = ({switchToLogin}) => {
+  const navigate = useNavigate()
     return (
     <form>
     <div className="flex flex-col gap-6">
@@ -39,9 +41,9 @@ const UserRegisterForm = ({switchToLogin}) => {
       </Button>
       <div className="mt-4 text-center text-sm">
         Already have an account?{" "}
-        <span onClick={switchToLogin} className="underline underline-offset-4 cursor-pointer">
+        <a onClick={() => navigate("/user/login")} className="underline underline-offset-4 cursor-pointer">
           Login
-        </span>
+        </a>
       </div>
     </div>
   </form>

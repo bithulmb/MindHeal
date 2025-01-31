@@ -5,6 +5,7 @@ import { Button } from '../ui/button'
 import { ModeToggle } from '@/utils/ModeToggle'
 import Logo from './Logo'
 import LoginModal from './LoginModal'
+import { BASE_URL } from '@/utils/constants/constants'
 
 
 
@@ -18,7 +19,8 @@ const Header = () => {
       }
       
       const navigate = useNavigate();
-     
+      console.log(BASE_URL);
+      
   return (
        
           <div className="fixed top-0 right-0 left-0 z-50">
@@ -75,8 +77,8 @@ const Header = () => {
           </nav>
           <div className='hidden md:flex'>
           <div className="hidden md:block">
-            {/* <Button onClick={() => navigate("/login")}>Login</Button> */}
-            <LoginModal/>
+            <Button onClick={() => navigate("/user/login")}>Login</Button>
+            {/* <LoginModal/> */}
           </div>
           <div className='ms-3'>
             <ModeToggle/>
