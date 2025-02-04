@@ -4,7 +4,11 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { useNavigate } from 'react-router-dom'
 
-const UserRegisterForm = ({switchToLogin}) => {
+
+
+
+const UserRegisterForm = () => {
+
   const navigate = useNavigate()
     return (
     <form>
@@ -12,21 +16,21 @@ const UserRegisterForm = ({switchToLogin}) => {
        <div className="flex gap-4">
       <div className="w-1/2">
         <Label htmlFor="firstname">First Name</Label>
-        <Input id="firstname" type="text" placeholder="John" required />
+        <Input id="firstname" type="text" required />
       </div>
       <div className="w-1/2">
         <Label htmlFor="lastname">Last Name</Label>
-        <Input id="lastname" type="text" placeholder="Doe" required />
+        <Input id="lastname" type="text"  required />
       </div>
     </div>
 
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" placeholder="m@example.com" required />
+        <Input id="email" type="email"  required />
       </div>
       <div className="grid gap-2">
         <Label htmlFor="email">Mobile Number</Label>
-        <Input id="mobilenum" type="text" placeholder="9037841778" required />
+        <Input id="mobilenum" type="text" required />
       </div>
       <div className="grid gap-2">
         <Label htmlFor="password1">Password</Label>

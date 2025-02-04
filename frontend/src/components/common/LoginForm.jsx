@@ -78,7 +78,7 @@
 // }
 
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -103,6 +103,8 @@ const LoginForm = () => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
+  const [serverError,setServerError] = useState("")
    
    //initialising the form using useForm hook from react hook form
    const { register, control, handleSubmit, formState : {errors},} = useForm({
@@ -111,33 +113,43 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
 
-    console.log("form data", data)
 
     try{
       
       const response = await api.post("/api/auth/login/", data)
 
       if (response.status === 200){
-        console.log(response.data)
-        dispatch(loginSuccess({token : response.data.access, user_id : response.data.user_id, role :response.data.role}))
+       
+        dispatch(loginSuccess({
+          token : response.data.access, 
+          user_id : response.data.user_id, 
+          role :response.data.role
+        }
+      )
+    )
         navigate('/user/dashboard/')
+        console.log("login succesful")
 
       }
 
     }
-
     catch(error){
       console.log("login failed", error)
+      if (error.response){
+        setServerError(error.response.data.detail || "Invalid credentials")
+      }
+      else {
+        setServerError("Something went wrong. Please try again.")
+      }
     }
-
-   
-  }
-
-  
+  }  
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
+                {serverError && (
+              <p className="text-sm text-red-500 text-center">{serverError}</p>
+            )}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 {/* <Input

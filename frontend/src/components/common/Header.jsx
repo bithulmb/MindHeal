@@ -6,6 +6,8 @@ import { ModeToggle } from '@/utils/ModeToggle'
 import Logo from './Logo'
 import LoginModal from './LoginModal'
 import { BASE_URL } from '@/utils/constants/constants'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout } from '@/redux/slices/authSlice'
 
 
 
@@ -18,7 +20,20 @@ const Header = () => {
           setIsMenuOpen(!isMenuOpen)
       }
       
+      const dispatch = useDispatch()
       const navigate = useNavigate();
+
+      const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
+ 
+
+      const handleLogin = () => {
+        navigate("/user/login");
+      };
+
+      const handleLogout = () => {
+        dispatch(logout())
+        navigate("/")
+      }
 
 
   
@@ -79,7 +94,12 @@ const Header = () => {
           </nav>
           <div className='hidden md:flex'>
           <div className="hidden md:block">
-            <Button onClick={() => navigate("/user/login")}>Login</Button>
+            {isAuthenticated ? (
+               <Button variant="destructive" onClick={handleLogout}>Logout</Button>
+            ) : (
+            <Button onClick={handleLogin}>Login</Button>
+            )
+          }
             {/* <LoginModal/> */}
           </div>
           <div className='ms-3'>
@@ -125,7 +145,7 @@ const Header = () => {
           </nav>
 
           <div className="px-4 py-2"  onClick={() => {
-              console.log("hii");
+              
               navigate("/login");
             }}>
             <Button>Login</Button>

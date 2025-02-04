@@ -83,3 +83,33 @@ class VerifyEmailOTPView(APIView):
 #view function for custom token obtain pair view by adding user id and role
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+
+        response = super().post(request, *args, **kwargs)
+        
+        if response.status_code == status.HTTP_200_OK:
+            access_token = response.data['access']
+            refresh_token = response.data['refresh']
+
+            response.set_cookie(
+                key='refresh_token',
+                value=refresh_token,
+                httponly=True,
+                secure= True,
+                samesite='Lax'
+            )
+
+            response.data = {
+                'access': access_token,
+            }
+        return response
+
+#view function for loggin out the user
+class LogoutView(APIView):
+    def post(self, request):
+        response = Response({
+            'message' : 'logged out succesfully',
+        })
+        response.delete_cookie('refresh_token')
+        return response

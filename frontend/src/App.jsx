@@ -14,6 +14,8 @@ import ResetPasswordPage from './pages/common/ResetPasswordPage'
 import { Provider } from 'react-redux'
 import store from './redux/store'
 import UserDashboard from './pages/user/UserDashboard'
+import UserProtectedRoute from './utils/protected routes/UserProtectedRoute'
+import NotFound from './components/common/NotFound'
 
  
 
@@ -25,8 +27,10 @@ function App() {
     <Provider store={store}>
       <ThemeProvider  defaultTheme="dark" storageKey="vite-ui-theme">
         <BrowserRouter>
+        <div className="flex flex-col min-h-screen"> 
           <Header/>
-          
+
+          <main className="flex-grow pt-16"> 
           <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/services" element={<Services/>}/>
@@ -36,9 +40,18 @@ function App() {
             <Route path="/user/login"  element={<LoginPage/>}/>
             <Route path="/user/register"  element={<UserRegisterPage/>}/>
             <Route path="/user/reset-password"  element={<ResetPasswordPage/>}/>
-            <Route path="/user/dashboard"  element={<UserDashboard/>}/>
+            
+            <Route element={<UserProtectedRoute/>}>
+                <Route path="/user/dashboard"  element={<UserDashboard/>}/>
+            </Route>
+
+            <Route path = "*" element={<NotFound/>}/>
+
+            
           </Routes>
+          </main>
           <Footer/>
+          </div>
         </BrowserRouter>
       </ThemeProvider>
       </Provider>

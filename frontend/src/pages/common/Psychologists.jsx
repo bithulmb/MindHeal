@@ -3,7 +3,7 @@ import React from 'react'
 const Psychologists = () => {
   return (
     <div>
-      Psychologist
+      <h1>psychologist</h1>
     </div>
   )
 }

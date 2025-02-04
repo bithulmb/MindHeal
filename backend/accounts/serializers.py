@@ -62,7 +62,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         token['user_id'] = user.id
         token['role'] = user.role
-        print(token)
+       
 
         return token
 
