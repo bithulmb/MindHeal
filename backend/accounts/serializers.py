@@ -1,6 +1,7 @@
 from .models import CustomUser, PatientProfile, PsychologistProfile
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
 
@@ -51,3 +52,18 @@ class PsychologistProfileSerializer(serializers.ModelSerializer):
                  'experience_certificate', 'is_admin_verified', 'is_active',
                  'created_at', 'updated_at')
         read_only_fields = ('is_admin_verified', 'is_active', 'created_at', 'updated_at')
+
+
+#serializer to include user id and role in jwt
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['user_id'] = user.id
+        token['role'] = user.role
+        print(token)
+
+        return token
+
+

@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer
+from .serializers import UserSerializer,MyTokenObtainPairSerializer
 from rest_framework.views import APIView
 from .utils import generate_otp,send_otp_email
 from .models import EmailVerificationOTP
 from django.db  import transaction
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.views import TokenObtainPairView
 # Create your views here.
 
 User = get_user_model()
@@ -46,9 +47,9 @@ class UserRegisterView(APIView):
 
 class VerifyEmailOTPView(APIView):
     def post(self, request):
+
         email = request.data.get('email')
         otp = request.data.get('otp')
-        print("1")
         
         if not email or not otp:
             return Response({
@@ -61,10 +62,10 @@ class VerifyEmailOTPView(APIView):
             user = User.objects.get(email = email)
             otp_instance = EmailVerificationOTP.objects.get(user = user)
             if not otp_instance.is_valid():
-                  print("2")
+                  
                   return Response({"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
             if int(otp_instance.otp) == int(otp):
-                print("3")
+               
                 user.is_email_verified = True
                 user.is_active = True
                 otp_instance.delete()
@@ -72,10 +73,13 @@ class VerifyEmailOTPView(APIView):
 
                 return Response({"message": "Email verified successfully."}, status=status.HTTP_200_OK)
             else:
-                print("4")
+               
                 return Response({"error" : "Invalid OTP. Try again"}, status= status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             print(e)
             return Response({"error" : "OTP verification failed. Try again"}, status= status.HTTP_400_BAD_REQUEST)
 
 
+#view function for custom token obtain pair view by adding user id and role
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
