@@ -13,6 +13,7 @@ import UserRegisterPage from './pages/common/UserRegisterPage'
 import ResetPasswordPage from './pages/common/ResetPasswordPage'
 import { Provider } from 'react-redux'
 import store from './redux/store'
+import UserDashboard from './pages/user/UserDashboard'
 
  
 
@@ -35,6 +36,7 @@ function App() {
             <Route path="/user/login"  element={<LoginPage/>}/>
             <Route path="/user/register"  element={<UserRegisterPage/>}/>
             <Route path="/user/reset-password"  element={<ResetPasswordPage/>}/>
+            <Route path="/user/dashboard"  element={<UserDashboard/>}/>
           </Routes>
           <Footer/>
         </BrowserRouter>

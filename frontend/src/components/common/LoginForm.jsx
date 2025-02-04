@@ -86,6 +86,11 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver} from '@hookform/resolvers/zod'
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import api from "../api/api";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants/constants";
+import { loginSuccess } from "@/redux/slices/authSlice";
 
   //defining form schema using zod
   const schema = z.object({
@@ -97,14 +102,35 @@ import { zodResolver} from '@hookform/resolvers/zod'
 const LoginForm = () => {
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
    
    //initialising the form using useForm hook from react hook form
    const { register, control, handleSubmit, formState : {errors},} = useForm({
     resolver : zodResolver(schema)
   }) 
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+
     console.log("form data", data)
+
+    try{
+      
+      const response = await api.post("/api/auth/login/", data)
+
+      if (response.status === 200){
+        console.log(response.data)
+        dispatch(loginSuccess({token : response.data.access, user_id : response.data.user_id, role :response.data.role}))
+        navigate('/user/dashboard/')
+
+      }
+
+    }
+
+    catch(error){
+      console.log("login failed", error)
+    }
+
+   
   }
 
   

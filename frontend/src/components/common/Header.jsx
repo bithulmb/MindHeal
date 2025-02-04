@@ -19,7 +19,9 @@ const Header = () => {
       }
       
       const navigate = useNavigate();
-      console.log(BASE_URL);
+
+
+  
       
   return (
        

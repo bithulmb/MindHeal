@@ -1,14 +1,17 @@
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants/constants";
 import { createSlice } from "@reduxjs/toolkit";
-import { Satellite } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
+
+
+const token = localStorage.getItem(ACCESS_TOKEN)
 
 const initialState = {
-    user : null,
-    token : null,
-    isAuthenticated : false,
+    user : token ? jwtDecode(token) : null,
+    token : token,
+    isAuthenticated : !!token,
     loading : false,
     error : null
 }
-
 
 export const AuthSlice = createSlice({
     name : "auth",
@@ -20,17 +23,29 @@ export const AuthSlice = createSlice({
 
         },
         loginSuccess : (state, action) => {
-            state.user = action.payload.user
-            state.token = action.payload.token
+            
+            const access = action.payload.token
+            localStorage.setItem(ACCESS_TOKEN, access)
+            
+            const decoded = jwtDecode(access)
+
+            state.token = access
             state.isAuthenticated = true
+            state.user = decoded
             state.loading = false
-        }, 
+
+            
+           
+        },
+
         loginFailure : (state,action) => {
             state.error = action.payload
             state.loading = false
         },
 
         logout : (state) => {
+            
+            localStorage.removeItem(ACCESS_TOKEN)
             state.user = null
             state.token = null
             state.isAuthenticated = false
