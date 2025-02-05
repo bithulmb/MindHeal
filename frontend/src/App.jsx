@@ -16,6 +16,7 @@ import store from './redux/store'
 import UserDashboard from './pages/user/UserDashboard'
 import UserProtectedRoute from './utils/protected routes/UserProtectedRoute'
 import NotFound from './components/common/NotFound'
+import OtpVerficationPage from './pages/common/OtpVerificationPage'
 
  
 
@@ -40,6 +41,7 @@ function App() {
             <Route path="/user/login"  element={<LoginPage/>}/>
             <Route path="/user/register"  element={<UserRegisterPage/>}/>
             <Route path="/user/reset-password"  element={<ResetPasswordPage/>}/>
+            <Route path="/user/verify-otp"  element={<OtpVerficationPage/>}/>
             
             <Route element={<UserProtectedRoute/>}>
                 <Route path="/user/dashboard"  element={<UserDashboard/>}/>

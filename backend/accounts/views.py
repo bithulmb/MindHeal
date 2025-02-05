@@ -8,41 +8,47 @@ from .models import EmailVerificationOTP
 from django.db  import transaction
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
+import logging
 # Create your views here.
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 class UserRegisterView(APIView):
-    def post(self, request, format=None):
-        serializer = UserSerializer(data = request.data, context = {'request' : request})
-      
+        def post(self, request, format=None):
+            serializer = UserSerializer(data = request.data, context = {'request' : request})
+           
 
-        if serializer.is_valid():
-            with transaction.atomic():
-                try:
-                    user = serializer.save()
-                    user.is_active = False
-                    otp = generate_otp()
-                    print(otp)
-                    send_otp_email(user.email,otp)
-                    print("otp sent")
-                
-                    otp_instance = EmailVerificationOTP.objects.create(user = user, otp = otp)
+            if serializer.is_valid():
+                with transaction.atomic():
+                    try:
+                        user = serializer.save()
+                        user.is_active = False
+                        user.save()
+                        otp = generate_otp()
+                        print(otp)
+                        send_otp_email(user.email,otp)
+                        print("otp sent")
                     
-                    return Response({
-                        'message': 'OTP sent successfully. Please verify your email.',
-                        'email': user.email
-                    }, status=status.HTTP_200_OK)
-                
-                except Exception as e:
-                    print(e)
-                    return Response({
-                        'error': 'Failed to send OTP email'
-                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-
+                        otp_instance = EmailVerificationOTP.objects.create(user = user, otp = otp)
+                        
+                        return Response({
+                            'message': 'OTP sent successfully. Please verify your email.',
+                            'email': user.email
+                        }, status=status.HTTP_200_OK)
+                    
+                    except Exception as e:
+                        
+                        print(e)
+                        logger.error(f"User registration failed: {e}", exc_info=True)
+                        user.delete()
+                        return Response({
+                            'error': 'Failed to send OTP email'
+                        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
-            # return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
+
+                
+                
+            return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyEmailOTPView(APIView):
@@ -63,7 +69,8 @@ class VerifyEmailOTPView(APIView):
             otp_instance = EmailVerificationOTP.objects.get(user = user)
             if not otp_instance.is_valid():
                   
-                  return Response({"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
+                  return Response({"error": "OTP expired.  Resend OTP again"}, status=status.HTTP_400_BAD_REQUEST)
+            
             if int(otp_instance.otp) == int(otp):
                
                 user.is_email_verified = True
@@ -78,6 +85,30 @@ class VerifyEmailOTPView(APIView):
         except Exception as e:
             print(e)
             return Response({"error" : "OTP verification failed. Try again"}, status= status.HTTP_400_BAD_REQUEST)
+
+
+#view function to resend otp
+
+class ResendOTPView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+
+        try:
+            user = User.objects.get(email=email)
+
+           
+            otp = generate_otp()
+            logger.info((f"otp is {otp}"))
+            print(otp)
+            send_otp_email(user.email, otp)
+
+            
+            EmailVerificationOTP.objects.filter(user=user).delete()
+            EmailVerificationOTP.objects.create(user=user, otp=otp)
+
+            return Response({"message": "OTP resent successfully."}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 #view function for custom token obtain pair view by adding user id and role

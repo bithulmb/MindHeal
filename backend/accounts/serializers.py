@@ -2,6 +2,7 @@ from .models import CustomUser, PatientProfile, PsychologistProfile
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+import re
 
 User = get_user_model()
 
@@ -19,8 +20,25 @@ class UserSerializer(serializers.ModelSerializer):
             }
         }
     
+    def validate_first_name(self, value):
+        """ Ensure first name contains only alphabets """
+        if not re.match("^[A-Za-z]+(\s[A-Za-z]+)*$", value):
+            raise serializers.ValidationError("First name should only contain alphabets.")
+        return value
+
+    def validate_last_name(self, value):
+        """ Ensure last name contains only alphabets """
+        if not re.match("^[A-Za-z]+(\s[A-Za-z]+)*$", value):
+            raise serializers.ValidationError("Last name should only contain alphabets.")
+        return value
+
+    def validate_mobile_number(self, value):
+        """ Ensure mobile number contains only digits and is exactly 10 digits long """
+        if not re.match("^\d{10}$", value):
+            raise serializers.ValidationError("Mobile number must be 10 digits long.")
+        return value
+    
     def create(self, validated_data):
-        print(self.context)
         request = self.context.get('request')
         if request and request.data.get('isPsychologist'):
             validated_data['role'] = 'Psychologist'
