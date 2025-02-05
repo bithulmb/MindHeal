@@ -9,10 +9,22 @@ from django.db  import transaction
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 import logging
+from social_django.utils import load_strategy
+from social_core.backends.google import GoogleOAuth2
+from social_core.exceptions import AuthException
+from rest_framework_simplejwt.tokens import RefreshToken
+from dotenv import load_dotenv
+import os
+from google.auth.transport import requests
+from google.oauth2 import id_token
 # Create your views here.
 
+
+load_dotenv()
 User = get_user_model()
 logger = logging.getLogger(__name__)
+
+GOOGLE_CLIENT_ID= os.getenv('GOOGLE_CLIENT_ID')
 class UserRegisterView(APIView):
         def post(self, request, format=None):
             serializer = UserSerializer(data = request.data, context = {'request' : request})
@@ -144,3 +156,101 @@ class LogoutView(APIView):
         })
         response.delete_cookie('refresh_token')
         return response
+
+
+# class GoogleLoginView(APIView):
+#     """Authenticate user using Google OAuth and return JWT tokens"""
+
+#     def post(self, request):
+#         try:
+#             google_token = request.data.get("token")
+#             logger.info("google token is",google_token)
+#             print(google_token)
+#             if not google_token:
+#                 return Response({"error": "Google token is required"}, status=400)
+
+#             # Load the Google strategy
+#             strategy = load_strategy(request)
+           
+#             backend = GoogleOAuth2(strategy=strategy)
+           
+
+#             # Authenticate user via Google token
+#             print("before authentication")
+#             user = backend.do_auth(google_token)
+#             print("after authentication")
+
+
+#             if user and user.is_active:
+#                 # Generate JWT tokens using Simple JWT
+#                 refresh = RefreshToken.for_user(user)
+#                 return Response({
+#                     "access_token": str(refresh.access_token),
+#                     "refresh_token": str(refresh),
+#                     "user": {
+#                         "id": user.id,
+#                         "username": user.username,
+#                         "email": user.email,
+#                     }
+#                 })
+#             else:
+#                 return Response({"error": "Authentication failed"}, status=400)
+
+#         except AuthException:
+#             return Response({"error": "Invalid Google token"}, status=400)
+
+
+class GoogleLoginView(APIView):
+    """Authenticate user using Google OAuth and return JWT tokens"""
+
+    def post(self, request):
+        google_token = request.data.get("token")
+        
+
+        if not google_token:
+            return Response({"error": "Google token is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Verify the token with Google
+            id_info = id_token.verify_oauth2_token(google_token, requests.Request(), GOOGLE_CLIENT_ID)
+            
+
+            if "email" not in id_info:
+                return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+
+            print("3")    
+            email = id_info["email"]
+            first_name = id_info["given_name"]
+            last_name = id_info["family_name"]
+            
+
+            # Check if user exists or create a new one
+            user, created = User.objects.get_or_create(email=email, defaults={
+                "first_name" :first_name,
+                "last_name" : last_name,
+            })
+            
+            if not user.is_active:
+                return Response({"error": "User account is disabled"}, status=status.HTTP_403_FORBIDDEN)
+
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "access_token": str(refresh.access_token),
+                "refresh_token": str(refresh),
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                }
+            })
+        except ValueError:
+            return Response({"error": "Invalid Google token"}, status=status.HTTP_400_BAD_REQUEST)
+
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
+   
+
+class GoogleLogin(SocialLoginView): # if you want to use Authorization Code Grant, use this
+    adapter_class = GoogleOAuth2Adapter
+   

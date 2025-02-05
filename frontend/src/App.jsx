@@ -17,6 +17,10 @@ import UserDashboard from './pages/user/UserDashboard'
 import UserProtectedRoute from './utils/protected routes/UserProtectedRoute'
 import NotFound from './components/common/NotFound'
 import OtpVerficationPage from './pages/common/OtpVerificationPage'
+import { GoogleOAuthProvider } from '@react-oauth/google'
+
+
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
  
 
@@ -27,6 +31,7 @@ function App() {
     <>
     <Provider store={store}>
       <ThemeProvider  defaultTheme="dark" storageKey="vite-ui-theme">
+        <GoogleOAuthProvider clientId={clientId}>
         <BrowserRouter>
         <div className="flex flex-col min-h-screen"> 
           <Header/>
@@ -55,6 +60,7 @@ function App() {
           <Footer/>
           </div>
         </BrowserRouter>
+        </GoogleOAuthProvider>
       </ThemeProvider>
       </Provider>
       

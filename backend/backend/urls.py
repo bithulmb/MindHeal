@@ -19,5 +19,11 @@ from django.urls import path,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include('accounts.urls'))
+    path('',include('accounts.urls')),
+    # path('api/auth/', include('dj_rest_auth.urls')),  # Login, Logout, etc.
+    # path('api/auth/registration/', include('dj_rest_auth.registration.urls')),  # Signup
+    # path('api/auth/social/', include('allauth.socialaccount.urls')),  # Social Login
+    path('accounts/', include('dj_rest_auth.urls')),
+    path('accounts/registration/', include('dj_rest_auth.registration.urls')),
+    path('accounts/google/', include('allauth.socialaccount.urls')),
 ]
