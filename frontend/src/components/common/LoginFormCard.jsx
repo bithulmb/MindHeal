@@ -14,7 +14,7 @@ export default function LoginFormCard({
   ...props
 }) {
   return (
-    <div className={cn("flex flex-col gap-6 w-[400px] mx-auto mt-12 ", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 w-[400px] mx-auto ", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>

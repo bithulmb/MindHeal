@@ -18,6 +18,7 @@ import UserProtectedRoute from './utils/protected routes/UserProtectedRoute'
 import NotFound from './components/common/NotFound'
 import OtpVerficationPage from './pages/common/OtpVerificationPage'
 import { GoogleOAuthProvider } from '@react-oauth/google'
+import ResetPasswordConfirmPage from './pages/common/ResetPasswordConfirmPage'
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -33,10 +34,11 @@ function App() {
       <ThemeProvider  defaultTheme="dark" storageKey="vite-ui-theme">
         <GoogleOAuthProvider clientId={clientId}>
         <BrowserRouter>
-        <div className="flex flex-col min-h-screen"> 
-          <Header/>
+       
+         <Header/>
+          
 
-          <main className="flex-grow pt-16"> 
+          
           <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/services" element={<Services/>}/>
@@ -46,6 +48,8 @@ function App() {
             <Route path="/user/login"  element={<LoginPage/>}/>
             <Route path="/user/register"  element={<UserRegisterPage/>}/>
             <Route path="/user/reset-password"  element={<ResetPasswordPage/>}/>
+            <Route path="/user/reset-password-confirm/:uid/:token"  element={<ResetPasswordConfirmPage/>}/>
+
             <Route path="/user/verify-otp"  element={<OtpVerficationPage/>}/>
             
             <Route element={<UserProtectedRoute/>}>
@@ -56,9 +60,9 @@ function App() {
 
             
           </Routes>
-          </main>
+          
           <Footer/>
-          </div>
+         
         </BrowserRouter>
         </GoogleOAuthProvider>
       </ThemeProvider>

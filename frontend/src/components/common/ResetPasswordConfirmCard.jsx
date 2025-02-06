@@ -7,10 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import ResetPasswordForm from './ResetPassword'
+import ResetPasswordConfirmForm from './ResetPasswordConfirmForm'
 
 
-const ResetPasswordCard = ({
+const ResetPasswordConfirmCard = ({
     className,
     ...props
   }) => {
@@ -18,17 +18,17 @@ const ResetPasswordCard = ({
      <div className={cn("flex flex-col gap-6 w-[400px] mx-auto", className)} {...props}>
        <Card>
          <CardHeader>
-           <CardTitle className="text-2xl">Forgot Password?</CardTitle>
+           <CardTitle className="text-2xl">Reset Password?</CardTitle>
            <CardDescription>
-             Enter your email below to reset your password
+            Enter the new password
            </CardDescription>
          </CardHeader>
          <CardContent>
-          <ResetPasswordForm/>
+          <ResetPasswordConfirmForm/>
          </CardContent>
        </Card>
      </div>
    )
 }
 
-export default ResetPasswordCard
+export default ResetPasswordConfirmCard

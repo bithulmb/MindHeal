@@ -3,18 +3,65 @@ import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import api from '../api/api';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useForm } from 'react-hook-form';
 
-const ResetPasswordForm = ({ switchToLogin }) => {
+
+const resetPasswordSchema = z.object({
+  email: z
+  .string()
+  .min(1, "Email is required")
+  .email('Please enter a valid email address')
+});
+
+const ResetPasswordForm = () => {
+  const [serverError,setServerError] = useState("")
+  const [message, setMessage] = useState("");
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm({
+    resolver: zodResolver(resetPasswordSchema)
+  });
+
   const navigate = useNavigate()
+  
+  const onSubmit = async (data) => {
+    setServerError("")
+    try{
+        
+        const response = await api.post("/api/auth/reset-password/",data)
+        setMessage(response.data.message);
+        console.log("email sent")
+        navigate("")
+
+    }
+    catch (error){
+      setMessage("Error sending password reset email.");
+      console.log(error)
+    }
+  }
+
+ 
     return (
-      <form>
+      <form onSubmit={handleSubmit(onSubmit) }>
         <div className="flex flex-col gap-6">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="m@example.com" required />
+            <Input id="email"  {...register("email")}  className={errors.email ? "border-red-500" : ""} disabled={isSubmitting}/>
+            
+          {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+        
           </div>
+          {message && <p>{message}</p>}
           <Button type="submit" className="w-full">
-            Reset Password
+          {isSubmitting ? "Sending Reset Link..." : "Reset Password"}
           </Button>
           <div className="mt-4 text-center text-sm">
             Remembered your password?{" "}

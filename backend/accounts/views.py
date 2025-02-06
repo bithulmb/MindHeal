@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework import status
-from .serializers import UserSerializer,MyTokenObtainPairSerializer
+from rest_framework import status,generics
+from .serializers import UserSerializer,MyTokenObtainPairSerializer,PasswordResetRequestSerializer,PasswordResetConfirmSerializer
 from rest_framework.views import APIView
 from .utils import generate_otp,send_otp_email
 from .models import EmailVerificationOTP
@@ -17,6 +17,9 @@ from dotenv import load_dotenv
 import os
 from google.auth.transport import requests
 from google.oauth2 import id_token
+from rest_framework.permissions import AllowAny
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 # Create your views here.
 
 
@@ -246,11 +249,28 @@ class GoogleLoginView(APIView):
         except ValueError:
             return Response({"error": "Invalid Google token"}, status=status.HTTP_400_BAD_REQUEST)
 
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from dj_rest_auth.registration.views import SocialLoginView
-   
+# API for requesting password reset
+class PasswordResetRequestView(generics.GenericAPIView):
+    serializer_class = PasswordResetRequestSerializer
+    permission_classes = [AllowAny]
 
-class GoogleLogin(SocialLoginView): # if you want to use Authorization Code Grant, use this
-    adapter_class = GoogleOAuth2Adapter
-   
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Password reset email sent."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+        
+#api view for confirming password reset
+class PasswordResetConfirmView(generics.GenericAPIView):
+    serializer_class = PasswordResetConfirmSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, uidb64, token, *args, **kwargs):
+      
+        serializer = self.get_serializer(data=request.data, context={"uidb64": uidb64, "token": token})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Password reset successful."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

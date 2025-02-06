@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
     'social_django',
     "oauth2_provider",
-    "drf_social_oauth2",
+    # "drf_social_oauth2",
 
     #local
     'accounts',
@@ -207,7 +207,7 @@ SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.google.GoogleOAuth2',
-    "drf_social_oauth2.backends.DjangoOAuth2",
+    # "drf_social_oauth2.backends.DjangoOAuth2",
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
@@ -246,3 +246,5 @@ REST_AUTH = {
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': 'jwt-auth',
 }
+
+FRONTEND_URL = os.getenv('FRONTEND_URL')

@@ -3,9 +3,16 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import re
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+import os
+from django.conf import settings
+from .utils import send_reset_password_mail
+
 
 User = get_user_model()
-
+FRONTEND_URL = settings.FRONTEND_URL
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -22,19 +29,19 @@ class UserSerializer(serializers.ModelSerializer):
     
     def validate_first_name(self, value):
         """ Ensure first name contains only alphabets """
-        if not re.match("^[A-Za-z]+(\s[A-Za-z]+)*$", value):
+        if not re.match(r"^[A-Za-z]+(\s[A-Za-z]+)*$", value):
             raise serializers.ValidationError("First name should only contain alphabets.")
         return value
 
     def validate_last_name(self, value):
         """ Ensure last name contains only alphabets """
-        if not re.match("^[A-Za-z]+(\s[A-Za-z]+)*$", value):
+        if not re.match(r"^[A-Za-z]+(\s[A-Za-z]+)*$", value):
             raise serializers.ValidationError("Last name should only contain alphabets.")
         return value
 
     def validate_mobile_number(self, value):
         """ Ensure mobile number contains only digits and is exactly 10 digits long """
-        if not re.match("^\d{10}$", value):
+        if not re.match(r"^\d{10}$", value):
             raise serializers.ValidationError("Mobile number must be 10 digits long.")
         return value
     
@@ -44,6 +51,7 @@ class UserSerializer(serializers.ModelSerializer):
             validated_data['role'] = 'Psychologist'
        
         user = User.objects.create_user(**validated_data)
+        
         print("created user",user)
         return user
 
@@ -85,3 +93,62 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
 
+#serilaizer for requesting password reset mail
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    def validate_email(self,value):
+        try:
+            user = User.objects.get(email=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User with this email does not exist.")
+        return value
+    def save(self):
+        email = self.validated_data['email']
+        user = User.objects.get(email=email)
+
+
+        # Generate Password Reset Token
+        token = PasswordResetTokenGenerator().make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        reset_link = f"{FRONTEND_URL}user/reset-password-confirm/{uid}/{token}"
+
+        send_reset_password_mail(email,reset_link)
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True, min_length=6)
+
+    def validate(self, data):
+        """
+        Validate the UID and token from the URL.
+        """
+        uidb64 = self.context.get("uidb64")
+        token = self.context.get("token")
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+            
+
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                raise serializers.ValidationError("Invalid or expired token.")
+
+            data["user"] = user  # Attach the user object to validated data
+        except (User.DoesNotExist, ValueError, TypeError):
+            raise serializers.ValidationError("Invalid token or user ID.")
+
+        return data
+
+    def save(self):
+        """
+        Update the user's password.
+        """
+      
+        user = self.validated_data["user"]      
+        password = self.validated_data["password"]
+        user.set_password(password)
+        user.save()
+        print("user updated")
+
+
+            
