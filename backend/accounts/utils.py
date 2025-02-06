@@ -1,5 +1,6 @@
 import random
 from django.core.mail import send_mail
+from rest_framework_simplejwt.tokens import RefreshToken
 
 def generate_otp():
     return random.randint(100000,999999)
@@ -17,3 +18,18 @@ def send_reset_password_mail(email,reset_link):
     from_email =  "bithulmb07@gmail.com"
     recipient_list = [email]
     send_mail(subject, message, from_email, recipient_list,fail_silently=False)
+
+
+
+class CustomRefreshToken(RefreshToken):
+    @classmethod
+    def for_user(cls, user):
+        # Call the parent method to get the token
+        token = super().for_user(user)
+
+        # Add custom claims to the token payload
+        token['email'] = user.email
+        token['name'] = user.first_name + " " + user.last_name
+        token['role'] = user.role  
+
+        return token

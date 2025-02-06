@@ -25,8 +25,7 @@ export const AuthSlice = createSlice({
         loginSuccess : (state, action) => {
             
             const access = action.payload.token
-            localStorage.setItem(ACCESS_TOKEN, access)
-            
+                        
             const decoded = jwtDecode(access)
 
             state.token = access
@@ -45,7 +44,7 @@ export const AuthSlice = createSlice({
 
         logout : (state) => {
             
-            localStorage.removeItem(ACCESS_TOKEN)
+            
             state.user = null
             state.token = null
             state.isAuthenticated = false

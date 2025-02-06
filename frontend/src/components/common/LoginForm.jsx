@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver} from '@hookform/resolvers/zod'
@@ -25,6 +25,8 @@ const LoginForm = () => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const url = useLocation()
+  console.log(url)
 
   const [serverError,setServerError] = useState("")
    
@@ -41,7 +43,9 @@ const LoginForm = () => {
       const response = await api.post("/api/auth/login/", data)
 
       if (response.status === 200){
-       
+
+        
+        localStorage.setItem(ACCESS_TOKEN,response.data.access)
         dispatch(loginSuccess({
           token : response.data.access, 
         }
@@ -83,6 +87,7 @@ const LoginForm = () => {
       
 
       if (res.data.access_token) {
+        localStorage.setItem(ACCESS_TOKEN,res.data.access_token)
         dispatch(loginSuccess({
           token : res.data.access_token, 
         }

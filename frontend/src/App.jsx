@@ -45,16 +45,21 @@ function App() {
             <Route path="/psychologists" element={<Psychologists/>}/>
             <Route path="/about" element={<About/>}/>
             <Route path="/contact" element={<Contact/>}/>
+
+            {/* user authentication routes */}
             <Route path="/user/login"  element={<LoginPage/>}/>
             <Route path="/user/register"  element={<UserRegisterPage/>}/>
+            <Route path="/user/verify-otp"  element={<OtpVerficationPage/>}/>
             <Route path="/user/reset-password"  element={<ResetPasswordPage/>}/>
             <Route path="/user/reset-password-confirm/:uid/:token"  element={<ResetPasswordConfirmPage/>}/>
-
-            <Route path="/user/verify-otp"  element={<OtpVerficationPage/>}/>
-            
             <Route element={<UserProtectedRoute/>}>
                 <Route path="/user/dashboard"  element={<UserDashboard/>}/>
             </Route>
+
+            {/* psychologist authentication routes */}
+            <Route path="/psychologist/login"  element={<LoginPage/>}/>
+            
+            
 
             <Route path = "*" element={<NotFound/>}/>
 

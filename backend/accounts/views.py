@@ -3,11 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status,generics
 from .serializers import UserSerializer,MyTokenObtainPairSerializer,PasswordResetRequestSerializer,PasswordResetConfirmSerializer
 from rest_framework.views import APIView
-from .utils import generate_otp,send_otp_email
+from .utils import generate_otp,send_otp_email,CustomRefreshToken
 from .models import EmailVerificationOTP
 from django.db  import transaction
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
 import logging
 from social_django.utils import load_strategy
 from social_core.backends.google import GoogleOAuth2
@@ -127,7 +127,7 @@ class ResendOTPView(APIView):
 
 
 #view function for custom token obtain pair view by adding user id and role
-class MyTokenObtainPairView(TokenObtainPairView):
+class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
@@ -151,6 +151,23 @@ class MyTokenObtainPairView(TokenObtainPairView):
             }
         return response
 
+#custom token referesh view to obtain refresh token from cookies
+class CustomTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+       
+        refresh_token = request.COOKIES.get('refresh_token')
+
+        if not refresh_token:
+            return Response(
+                {'error': 'Refresh token not found in cookie'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+ 
+        request.data['refresh'] = refresh_token
+
+        return super().post(request, *args, **kwargs)
+
+
 #view function for loggin out the user
 class LogoutView(APIView):
     def post(self, request):
@@ -159,48 +176,6 @@ class LogoutView(APIView):
         })
         response.delete_cookie('refresh_token')
         return response
-
-
-# class GoogleLoginView(APIView):
-#     """Authenticate user using Google OAuth and return JWT tokens"""
-
-#     def post(self, request):
-#         try:
-#             google_token = request.data.get("token")
-#             logger.info("google token is",google_token)
-#             print(google_token)
-#             if not google_token:
-#                 return Response({"error": "Google token is required"}, status=400)
-
-#             # Load the Google strategy
-#             strategy = load_strategy(request)
-           
-#             backend = GoogleOAuth2(strategy=strategy)
-           
-
-#             # Authenticate user via Google token
-#             print("before authentication")
-#             user = backend.do_auth(google_token)
-#             print("after authentication")
-
-
-#             if user and user.is_active:
-#                 # Generate JWT tokens using Simple JWT
-#                 refresh = RefreshToken.for_user(user)
-#                 return Response({
-#                     "access_token": str(refresh.access_token),
-#                     "refresh_token": str(refresh),
-#                     "user": {
-#                         "id": user.id,
-#                         "username": user.username,
-#                         "email": user.email,
-#                     }
-#                 })
-#             else:
-#                 return Response({"error": "Authentication failed"}, status=400)
-
-#         except AuthException:
-#             return Response({"error": "Invalid Google token"}, status=400)
 
 
 class GoogleLoginView(APIView):
@@ -220,8 +195,7 @@ class GoogleLoginView(APIView):
 
             if "email" not in id_info:
                 return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
-
-            print("3")    
+  
             email = id_info["email"]
             first_name = id_info["given_name"]
             last_name = id_info["family_name"]
@@ -236,16 +210,30 @@ class GoogleLoginView(APIView):
             if not user.is_active:
                 return Response({"error": "User account is disabled"}, status=status.HTTP_403_FORBIDDEN)
 
-            # Generate JWT tokens
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                "access_token": str(refresh.access_token),
-                "refresh_token": str(refresh),
-                "user": {
-                    "id": user.id,
-                    "email": user.email,
-                }
-            })
+           
+            refresh = CustomRefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            response = Response(
+                {
+                    'access_token': access_token,
+                    'user': {
+                         "id": user.id,
+                        'email': user.email,
+                        'role': user.role,  
+                    }
+                },
+                status=status.HTTP_200_OK
+            )
+            response.set_cookie(
+                key='refresh_token',
+                value=refresh,
+                httponly=True,
+                secure= True,
+                samesite='Lax'
+            )
+
+
+            return response
         except ValueError:
             return Response({"error": "Invalid Google token"}, status=status.HTTP_400_BAD_REQUEST)
 

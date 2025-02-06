@@ -51,8 +51,7 @@ class UserSerializer(serializers.ModelSerializer):
             validated_data['role'] = 'Psychologist'
        
         user = User.objects.create_user(**validated_data)
-        
-        print("created user",user)
+     
         return user
 
 class PatientProfileSerializer(serializers.ModelField):
@@ -80,16 +79,16 @@ class PsychologistProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ('is_admin_verified', 'is_active', 'created_at', 'updated_at')
 
 
-#serializer to include user id and role in jwt
+#serializer to include user email,name and role in jwt
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
 
-        token['user_id'] = user.id
+        token['email'] = user.email
+        token['name'] = user.first_name + " " + user.last_name
         token['role'] = user.role
        
-
         return token
 
 
