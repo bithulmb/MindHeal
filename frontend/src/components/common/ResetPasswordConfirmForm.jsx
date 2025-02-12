@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
@@ -26,6 +26,11 @@ const ResetPasswordConfirmForm = () => {
 
   const { uid, token } = useParams(); 
   const navigate = useNavigate();
+ 
+  const location = useLocation()
+  const isPsychologistLogin = location.pathname.includes("psychologist")
+
+  const userRole = isPsychologistLogin ? 'psychologist' : 'user'
 
   const {
     register,
@@ -43,9 +48,7 @@ const ResetPasswordConfirmForm = () => {
         setMessage(response.data.message);
       alert("password reset succesful")
      
-      setTimeout(() => {
-        navigate("/user/login"); // Redirect to login after success
-      }, 2000);
+     navigate(`/${userRole}/login`)
     } catch (error) {
       setMessage("Error resetting password.");
       console.log(error);

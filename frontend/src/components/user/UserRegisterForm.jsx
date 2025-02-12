@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -50,6 +50,11 @@ const UserRegisterForm = () => {
   const [serverError, setServerError] = useState("")
 
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const isPsychologist = location.pathname.includes("psychologist/")
+
+  const userRole = isPsychologist ? 'psychologist' : 'user'
 
   const { register, handleSubmit, formState : {errors}, reset } = useForm({
     resolver : zodResolver(userRegisterSchema)
@@ -66,6 +71,8 @@ const UserRegisterForm = () => {
       email: data.email,
       mobile_number: data.mobile_number,
       password: data.password,
+      isPsychologist ,
+      
     }
     
     try {
@@ -73,7 +80,7 @@ const UserRegisterForm = () => {
       const response = await api.post("api/auth/register/",registerData)
       console.log("Response:", response.data);
       reset(); 
-      navigate("/user/verify-otp", {state : {
+      navigate(`/${userRole}/verify-otp`, {state : {
         email : data.email
       }})
     
@@ -145,7 +152,7 @@ const UserRegisterForm = () => {
       
         <div className="mt-4 text-center text-sm">
           Already have an account?{" "}
-          <a onClick={() => navigate("/user/login")} className="underline underline-offset-4 cursor-pointer">
+          <a onClick={() => navigate(`/${userRole}/login`)} className="underline underline-offset-4 cursor-pointer">
             Login
           </a>
         </div>
@@ -153,48 +160,6 @@ const UserRegisterForm = () => {
     </form>
   );  
   
-  //   return (
-  //   <form>
-  //   <div className="flex flex-col gap-6">
-  //      <div className="flex gap-4">
-  //     <div className="w-1/2">
-  //       <Label htmlFor="firstname">First Name</Label>
-  //       <Input id="firstname" type="text" required />
-  //     </div>
-  //     <div className="w-1/2">
-  //       <Label htmlFor="lastname">Last Name</Label>
-  //       <Input id="lastname" type="text"  required />
-  //     </div>
-  //   </div>
-
-  //     <div className="grid gap-2">
-  //       <Label htmlFor="email">Email</Label>
-  //       <Input id="email" type="email"  required />
-  //     </div>
-  //     <div className="grid gap-2">
-  //       <Label htmlFor="email">Mobile Number</Label>
-  //       <Input id="mobilenum" type="text" required />
-  //     </div>
-  //     <div className="grid gap-2">
-  //       <Label htmlFor="password1">Password</Label>
-  //       <Input id="password1" type="password" required />
-  //     </div>
-  //     <div className="grid gap-2">
-  //       <Label htmlFor="password2">Confirm Password</Label>
-  //       <Input id="password2" type="password" required />
-  //     </div>
-  //     <Button type="submit" className="w-full">
-  //       Register
-  //     </Button>
-  //     <div className="mt-4 text-center text-sm">
-  //       Already have an account?{" "}
-  //       <a onClick={() => navigate("/user/login")} className="underline underline-offset-4 cursor-pointer">
-  //         Login
-  //       </a>
-  //     </div>
-  //   </div>
-  // </form>
-  //   )
 }
 
 export default UserRegisterForm;

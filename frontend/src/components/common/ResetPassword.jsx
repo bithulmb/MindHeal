@@ -2,7 +2,7 @@
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import api from '../api/api';
 import { z } from 'zod';
@@ -21,6 +21,11 @@ const resetPasswordSchema = z.object({
 const ResetPasswordForm = () => {
   const [serverError,setServerError] = useState("")
   const [message, setMessage] = useState("");
+  
+  const location = useLocation()
+  const isPsychologistLogin = location.pathname.includes("psychologist")
+
+  const userRole = isPsychologistLogin ? 'psychologist' : 'user'
   
   const {
     register,
@@ -65,7 +70,7 @@ const ResetPasswordForm = () => {
           </Button>
           <div className="mt-4 text-center text-sm">
             Remembered your password?{" "}
-            <span onClick={() => navigate("/user/login")} className="underline underline-offset-4 cursor-pointer">
+            <span onClick={() => navigate(`/${userRole}/login`)} className="underline underline-offset-4 cursor-pointer">
               Login
             </span>
           </div>

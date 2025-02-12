@@ -8,6 +8,7 @@ const token = localStorage.getItem(ACCESS_TOKEN)
 const initialState = {
     user : token ? jwtDecode(token) : null,
     token : token,
+    role : token ? jwtDecode(token).role : null,
     isAuthenticated : !!token,
     loading : false,
     error : null
@@ -31,6 +32,7 @@ export const AuthSlice = createSlice({
             state.token = access
             state.isAuthenticated = true
             state.user = decoded
+            state.role = action.payload.role
             state.loading = false
 
             

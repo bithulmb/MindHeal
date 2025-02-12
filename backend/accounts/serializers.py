@@ -90,6 +90,17 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['role'] = user.role
        
         return token
+    
+    
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        user = self.user  # Get the authenticated user
+        
+        # Include role in the response
+        data["role"] = user.role  
+
+        return data
+
 
 
 #serilaizer for requesting password reset mail

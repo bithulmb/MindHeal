@@ -18,6 +18,7 @@ const OtpVerificationForm = () => {
 
     const navigate = useNavigate()
     const location = useLocation()
+    
     const email = location.state?.email || ""
 
     const [loading, setLoading] = useState(false);
@@ -36,6 +37,7 @@ const OtpVerificationForm = () => {
             console.log(response.data.message)
             reset()
             console.log("user otp verified succesfullly")
+            alert("User created succesfuly. Please login")
             navigate("/")
         } catch (error){
             console.error("OTP Verification Error:", error.response?.data);

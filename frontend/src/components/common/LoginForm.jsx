@@ -25,10 +25,14 @@ const LoginForm = () => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const url = useLocation()
-  console.log(url)
+  const location = useLocation()
+  
 
   const [serverError,setServerError] = useState("")
+
+  const isPsychologistLogin = location.pathname.includes("psychologist")
+
+  const userRole = isPsychologistLogin ? 'psychologist' : 'user'
    
    //initialising the form using useForm hook from react hook form
    const { register, control, handleSubmit, formState : {errors},} = useForm({
@@ -43,15 +47,28 @@ const LoginForm = () => {
       const response = await api.post("/api/auth/login/", data)
 
       if (response.status === 200){
-
         
+        const {access,role} = response.data
+        
+        
+        //checking if the user role is correct in url and response
+        if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
+          alert("Not authorised")
+          setServerError("Invalid role for this login page. Please use the correct login portal.");
+          return;
+        }
+
         localStorage.setItem(ACCESS_TOKEN,response.data.access)
         dispatch(loginSuccess({
-          token : response.data.access, 
-        }
-      )
-    )
-        navigate('/user/dashboard/')
+          token : access,
+          role,
+          }))
+
+        
+        
+        let dashboardRoute = response.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
+        
+        navigate(`/${userRole}/dashboard`)
         console.log("login succesful")
 
       }
@@ -74,7 +91,7 @@ const LoginForm = () => {
       console.log("Google Login Success:", response);
 
       try{
-        console.log("Credential received:", response.credential);  // Debugging
+        console.log("Credential received:", response.credential);  
 
         if (!response.credential) {
             console.error("Google token is missing!");
@@ -82,7 +99,7 @@ const LoginForm = () => {
         }
 
         const res = await api.post('/api/auth/google/',{token: response.credential})
-        //const res = await api.post('/dj-rest-auth/google/',{access_token: response.credential})
+        
         console.log("Backend Response:", res.data);
       
 
@@ -90,10 +107,12 @@ const LoginForm = () => {
         localStorage.setItem(ACCESS_TOKEN,res.data.access_token)
         dispatch(loginSuccess({
           token : res.data.access_token, 
+          role : res.data.role
         }
       )
     )
-    navigate('/user/dashboard/')
+    let dashboardRoute = res.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
+    navigate(dashboardRoute)
     console.log("google login succesful")
 
     }
@@ -133,7 +152,7 @@ const LoginForm = () => {
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <span
-                    onClick={() => navigate("/user/reset-password")}
+                    onClick={() => navigate(`/${userRole}/reset-password`)}
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline cursor-pointer"
                   >
                     Forgot your password?
@@ -169,7 +188,7 @@ const LoginForm = () => {
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
-              <a onClick={() => navigate('/user/register')} className="underline underline-offset-4 cursor-pointer">
+              <a onClick={() => navigate(`/${userRole}/register`)} className="underline underline-offset-4 cursor-pointer">
                 Sign up
               </a>
             </div>

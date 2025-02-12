@@ -41,8 +41,7 @@ class UserRegisterView(APIView):
                         user.save()
                         otp = generate_otp()
                         print(otp)
-                        send_otp_email(user.email,otp)
-                        print("otp sent")
+                        # send_otp_email(user.email,otp)
                     
                         otp_instance = EmailVerificationOTP.objects.create(user = user, otp = otp)
                         
@@ -137,6 +136,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         if response.status_code == status.HTTP_200_OK:
             access_token = response.data['access']
             refresh_token = response.data['refresh']
+            role = response.data['role']
 
             response.set_cookie(
                 key='refresh_token',
@@ -148,6 +148,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
             response.data = {
                 'access': access_token,
+                'role' : role, 
             }
         return response
 
