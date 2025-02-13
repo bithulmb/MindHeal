@@ -21,6 +21,13 @@ import ResetPasswordConfirmPage from './pages/common/ResetPasswordConfirmPage';
 import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout';
 import PsychologistDashboard from './pages/psychologist/PsychologistDashboard';
+import AdminLoginForm from './components/admin/AdminLoginForm';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminLayout1 from './layouts/AdminLayout1';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminPsychologists from './pages/admin/AdminPsychologists';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import { SidebarProvider } from './components/ui/sidebar';
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -29,6 +36,7 @@ function App() {
     <Provider store={store}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <GoogleOAuthProvider clientId={clientId}>
+          <SidebarProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<MainLayout/>}>
@@ -63,18 +71,24 @@ function App() {
 
 
               {/* Admin Routes */}
+              <Route path='/admin/login/' element={<AdminLoginPage/>}/>
               <Route path="/admin" element={<AdminLayout/>}>
-                <Route path="login" element={<LoginPage />} /> {/* /admin/login */}
+                
+          
+                <Route path='dashboard/' element={<AdminDashboard/>} />
+                <Route path='users/' element={<AdminUsers/>} />
+                <Route path='psychologists/' element={<AdminPsychologists/>} />
                 
               </Route>
 
               
 
-              {/* Not Found Route */}
+              {/* Not Found Route */}            
               <Route path="*" element={<NotFound />} />
             </Routes>
            
           </BrowserRouter>
+          </SidebarProvider>
         </GoogleOAuthProvider>
       </ThemeProvider>
     </Provider>
