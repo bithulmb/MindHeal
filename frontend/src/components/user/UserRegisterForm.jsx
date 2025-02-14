@@ -24,10 +24,10 @@ const userRegisterSchema = z.object({
   .string()
   .email({message: "Invalid email address" }),
 
-  mobile_number : z
-  .string()
-  .length(10,{message : "Mobile number must be exactly 10 digits"})
-  .regex(/^\d{10}$/,{message : "Mobile number shuld contain only digits"}),
+  // mobile_number : z
+  // .string()
+  // .length(10,{message : "Mobile number must be exactly 10 digits"})
+  // .regex(/^\d{10}$/,{message : "Mobile number shuld contain only digits"}),
 
   password : z
   .string()
@@ -123,12 +123,12 @@ const UserRegisterForm = () => {
           {errors.email && <p className="text-red-500">{errors.email.message}</p>}
         </div>
 
-        
+{/*         
         <div className="grid gap-2">
           <Label htmlFor="mobile_number">Mobile Number</Label>
           <Input id="mobile_number" {...register("mobile_number")} />
           {errors.mobile_number && <p className="text-red-500">{errors.mobile_number.message}</p>}
-        </div>
+        </div> */}
 
         
         <div className="grid gap-2">

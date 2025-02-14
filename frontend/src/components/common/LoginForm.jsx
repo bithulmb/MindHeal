@@ -7,12 +7,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver} from '@hookform/resolvers/zod'
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import api from "../api/api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants/constants";
 import { loginSuccess } from "@/redux/slices/authSlice";
 import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
   //defining form schema using zod
   const schema = z.object({
@@ -58,13 +59,26 @@ const LoginForm = () => {
           return;
         }
 
+        const user = jwtDecode(access)
+       
+
+        if(user.is_blocked){
+          navigate(`/${userRole}/blocked`)
+          console.log("account is blocked")
+          return
+        }
+
         localStorage.setItem(ACCESS_TOKEN,response.data.access)
         dispatch(loginSuccess({
           token : access,
           role,
           }))
 
-        
+        if(!user.is_email_verified){
+            navigate(`/${userRole}/verify-email`)
+            console.log("email not verified")
+            return
+          }
         
         let dashboardRoute = response.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
         
@@ -101,21 +115,29 @@ const LoginForm = () => {
         const res = await api.post('/api/auth/google/',{token: response.credential})
         
         console.log("Backend Response:", res.data);
-      
+        if (res.data){
+          const {access,role} = res.data
+          console.log(access, role)
+          if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
+            alert("Not authorised")
+            setServerError("Invalid role for this login page. Please use the correct login portal.");
+            return;
+          }
 
-      if (res.data.access_token) {
-        localStorage.setItem(ACCESS_TOKEN,res.data.access_token)
-        dispatch(loginSuccess({
-          token : res.data.access_token, 
-          role : res.data.role
-        }
+          localStorage.setItem(ACCESS_TOKEN,access)
+          dispatch(loginSuccess({
+            token : access, 
+            role : role
+          }
+        )
       )
-    )
-    let dashboardRoute = res.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
-    navigate(dashboardRoute)
-    console.log("google login succesful")
 
+      let dashboardRoute = res.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
+      
+      navigate(dashboardRoute)
+      console.log("google login succesful")
     }
+        
     } catch (error) {
       console.error("Error during Google authentication:", error);
       if (error.response) {

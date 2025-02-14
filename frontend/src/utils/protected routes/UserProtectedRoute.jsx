@@ -8,12 +8,18 @@ const UserProtectedRoute = () => {
 
     const role = useSelector((state) => state.auth.role)
 
+    const isEmailVerified = useSelector((state) => state.auth?.user?.is_email_verified)
+
     if (!isAuthenticated){
       return <Navigate to="/user/login" replace/>
     }
 
     if (role !== "Patient"){
       return <Navigate to='/unauthorised' replace/>
+    }
+
+    if (!isEmailVerified){
+      return <Navigate to='/user/verify-email' replace/>
     }
    
     return <Outlet/>

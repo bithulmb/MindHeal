@@ -9,16 +9,11 @@ from django.db  import transaction
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
 import logging
-from social_django.utils import load_strategy
-from social_core.backends.google import GoogleOAuth2
-from social_core.exceptions import AuthException
-from rest_framework_simplejwt.tokens import RefreshToken
 from dotenv import load_dotenv
 import os
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from rest_framework.permissions import AllowAny
-from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework.permissions import IsAdminUser
 
@@ -39,7 +34,7 @@ class UserRegisterView(APIView):
                 with transaction.atomic():
                     try:
                         user = serializer.save()
-                        user.is_active = False
+                        user.is_active = True
                         user.save()
                         otp = generate_otp()
                         print(otp)
@@ -114,9 +109,9 @@ class ResendOTPView(APIView):
 
            
             otp = generate_otp()
-            logger.info((f"otp is {otp}"))
+           
             print(otp)
-            send_otp_email(user.email, otp)
+            # send_otp_email(user.email, otp)
 
             
             EmailVerificationOTP.objects.filter(user=user).delete()
@@ -139,13 +134,13 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             access_token = response.data['access']
             refresh_token = response.data['refresh']
             role = response.data['role']
-
+            print("Response data before setting cookie:", response.data)
             response.set_cookie(
                 key='refresh_token',
                 value=refresh_token,
                 httponly=True,
                 secure= True,
-                samesite='Lax'
+                samesite= None
             )
 
             # if 'Set-Cookie' in response.headers:
@@ -158,7 +153,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 'refresh':refresh_token,
                 'role' : role, 
             }
-            print(response)
+            print(response.headers)
         return response
 
 #custom token referesh view to obtain refresh token from cookies
@@ -226,12 +221,14 @@ class GoogleLoginView(APIView):
             access_token = str(refresh.access_token)
             response = Response(
                 {
-                    'access_token': access_token,
+                    'access': access_token,
+                    'refresh' : str(refresh),
                     'user': {
                          "id": user.id,
                         'email': user.email,
                         'role': user.role,  
-                    }
+                    },
+                    'role' : user.role,
                 },
                 status=status.HTTP_200_OK
             )
@@ -242,6 +239,7 @@ class GoogleLoginView(APIView):
                 secure= True,
                 samesite='Lax'
             )
+            print(response.headers)
 
 
             return response

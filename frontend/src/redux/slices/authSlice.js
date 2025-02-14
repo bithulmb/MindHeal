@@ -34,6 +34,7 @@ export const AuthSlice = createSlice({
             state.user = decoded
             state.role = action.payload.role
             state.loading = false
+            console.log(state)
 
             
            
@@ -49,6 +50,7 @@ export const AuthSlice = createSlice({
             
             state.user = null
             state.token = null
+            state.role = null
             state.isAuthenticated = false
 
         }

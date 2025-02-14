@@ -30,6 +30,8 @@ import NotFound from './pages/common/NotFound';
 import Unauthorised from './pages/common/Unauthorised';
 import PsychologistProtectedRoute from './utils/protected routes/PsychologistProtectedRoute';
 import AdminProtectedRoute from './utils/protected routes/AdminProtectedRoute';
+import BlockedUser from './pages/common/BlockedUserPage';
+import EmailNotVerifiedPage from './pages/common/EmailNotVerifiedPage';
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -55,7 +57,9 @@ function App() {
                 <Route path="/user/verify-otp" element={<OtpVerficationPage />} />
                 <Route path="/user/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/user/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
-                
+                <Route path="/user/blocked" element={<BlockedUser/>} />
+                <Route path="/user/verify-email" element={<EmailNotVerifiedPage/>} />
+
                 <Route element={<UserProtectedRoute />}>
                   <Route path="/user/dashboard" element={<UserDashboard />} />
                 </Route>
@@ -66,6 +70,8 @@ function App() {
                 <Route path="/psychologist/verify-otp" element={<OtpVerficationPage />} />
                 <Route path="/psychologist/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/psychologist/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
+                <Route path="/psychologist/blocked" element={<BlockedUser/>} />
+                <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} />
 
                 <Route element={<PsychologistProtectedRoute/>}>
                   <Route path="/psychologist/dashboard" element={<PsychologistDashboard/>} />

@@ -16,7 +16,7 @@ FRONTEND_URL = settings.FRONTEND_URL
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'mobile_number', 'role',
+        fields = ['id', 'first_name', 'last_name', 'email', 'role',
             'is_email_verified', 'is_blocked', 'is_active', 'is_staff', 'is_superuser','password',
             'created_at', 'updated_at']
         read_only_fields = ['role','is_email_verified', 'is_blocked', 'is_active', 'is_staff', 'is_superuser',
@@ -39,11 +39,11 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Last name should only contain alphabets.")
         return value
 
-    def validate_mobile_number(self, value):
-        """ Ensure mobile number contains only digits and is exactly 10 digits long """
-        if not re.match(r"^\d{10}$", value):
-            raise serializers.ValidationError("Mobile number must be 10 digits long.")
-        return value
+    # def validate_mobile_number(self, value):
+    #     """ Ensure mobile number contains only digits and is exactly 10 digits long """
+    #     if not re.match(r"^\d{10}$", value):
+    #         raise serializers.ValidationError("Mobile number must be 10 digits long.")
+    #     return value
     
     def create(self, validated_data):
         request = self.context.get('request')
@@ -61,7 +61,7 @@ class PatientProfileSerializer(serializers.ModelField):
     class Meta:
         model = PatientProfile        
         fields = ['id', 'user', 'profile_image', 'date_of_birth', 
-                 'gender', 'created_at', 'updated_at']
+                 'gender', 'mobile_number', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
 
@@ -72,7 +72,7 @@ class PsychologistProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = PsychologistProfile
         fields = ('id', 'user', 'profile_image', 'date_of_birth', 'gender',
-                 'about_me', 'qualification', 'experience', 'specialization',
+                 'mobile_number', 'about_me', 'qualification', 'experience', 'specialization',
                  'fees', 'id_card', 'education_certificate', 
                  'experience_certificate', 'is_admin_verified', 'is_active',
                  'created_at', 'updated_at')
@@ -88,6 +88,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['email'] = user.email
         token['name'] = user.first_name + " " + user.last_name
         token['role'] = user.role
+        token['is_email_verified'] = user.is_email_verified
+        token['is_blocked'] = user.is_blocked
        
         return token
     

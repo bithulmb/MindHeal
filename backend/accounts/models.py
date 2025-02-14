@@ -42,7 +42,6 @@ class CustomUser(AbstractBaseUser):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
-    mobile_number = models.CharField(max_length=15)
     password = models.CharField(max_length=128)
     role = models.CharField(max_length=20, choices=UserRole.choices, default=UserRole.PATIENT)
     is_email_verified = models.BooleanField(default=False)
@@ -73,6 +72,7 @@ class PatientProfile(models.Model):
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=20, choices=Gender.choices, default=Gender.UNSPECIFIED)
+    mobile_number = models.CharField(max_length=15,blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -86,9 +86,10 @@ class PsychologistProfile(models.Model):
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=20, choices=Gender.choices, default=Gender.UNSPECIFIED)
+    mobile_number = models.CharField(max_length=15,blank=True, null=True)
     about_me = models.TextField()
     qualification = models.CharField(max_length=255)
-    experience = models.PositiveIntegerField()  # Years of experience
+    experience = models.PositiveIntegerField() 
     specialization = models.CharField(max_length=255, null=True, blank=True)
     fees = models.DecimalField(max_digits=10, decimal_places=2)
     id_card = models.ImageField(upload_to='id_cards/')

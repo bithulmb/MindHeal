@@ -172,7 +172,7 @@ REST_FRAMEWORK = {
     
         'rest_framework_simplejwt.authentication.JWTAuthentication',
          "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-        "drf_social_oauth2.authentication.SocialAuthentication",
+        # "drf_social_oauth2.authentication.SocialAuthentication",
     )
     
 }
@@ -187,6 +187,7 @@ EMAIL_HOST_PASSWORD=os.getenv('EMAIL_HOST_PASSWORD')
 
 #cors setting
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 #simple jwt settings
 SIMPLE_JWT = {
@@ -212,28 +213,28 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_CLIENT_ID')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_CLIENT_ID')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'profile']
-SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'profile']
+# SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
-            'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
-            'key': ''
-        },
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'APP': {
+#             'client_id': os.getenv('GOOGLE_CLIENT_ID'),
+#             'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
+#             'key': ''
+#         },
+#         'SCOPE': [
+#             'profile',
+#             'email',
+#         ],
+#         'AUTH_PARAMS': {
+#             'access_type': 'online',
+#         }
+#     }
+# }
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # Disable username field
