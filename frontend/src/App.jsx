@@ -15,7 +15,6 @@ import UserRegisterPage from './pages/common/UserRegisterPage';
 import ResetPasswordPage from './pages/common/ResetPasswordPage';
 import UserDashboard from './pages/user/UserDashboard';
 import UserProtectedRoute from './utils/protected routes/UserProtectedRoute';
-import NotFound from './components/common/NotFound';
 import OtpVerficationPage from './pages/common/OtpVerificationPage';
 import ResetPasswordConfirmPage from './pages/common/ResetPasswordConfirmPage';
 import MainLayout from './layouts/MainLayout';
@@ -23,11 +22,14 @@ import AdminLayout from './layouts/AdminLayout';
 import PsychologistDashboard from './pages/psychologist/PsychologistDashboard';
 import AdminLoginForm from './components/admin/AdminLoginForm';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminLayout1 from './layouts/AdminLayout1';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminPsychologists from './pages/admin/AdminPsychologists';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import { SidebarProvider } from './components/ui/sidebar';
+import NotFound from './pages/common/NotFound';
+import Unauthorised from './pages/common/Unauthorised';
+import PsychologistProtectedRoute from './utils/protected routes/PsychologistProtectedRoute';
+import AdminProtectedRoute from './utils/protected routes/AdminProtectedRoute';
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -36,7 +38,7 @@ function App() {
     <Provider store={store}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <GoogleOAuthProvider clientId={clientId}>
-          <SidebarProvider>
+         
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<MainLayout/>}>
@@ -65,8 +67,10 @@ function App() {
                 <Route path="/psychologist/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/psychologist/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
 
-
-                <Route path="/psychologist/dashboard" element={<PsychologistDashboard/>} />
+                <Route element={<PsychologistProtectedRoute/>}>
+                  <Route path="/psychologist/dashboard" element={<PsychologistDashboard/>} />
+                </Route>
+                
               </Route>
 
 
@@ -74,21 +78,24 @@ function App() {
               <Route path='/admin/login/' element={<AdminLoginPage/>}/>
               <Route path="/admin" element={<AdminLayout/>}>
                 
-          
-                <Route path='dashboard/' element={<AdminDashboard/>} />
-                <Route path='users/' element={<AdminUsers/>} />
-                <Route path='psychologists/' element={<AdminPsychologists/>} />
-                
+                <Route element={<AdminProtectedRoute/>}>
+                  <Route path='dashboard/' element={<AdminDashboard/>} />
+                  <Route path='users/' element={<AdminUsers/>} />
+                  <Route path='psychologists/' element={<AdminPsychologists/>} />      
+                  
+                </Route>
+             
               </Route>
 
               
 
-              {/* Not Found Route */}            
-              <Route path="*" element={<NotFound />} />
+              {/* Not Found Route */}
+              <Route path="/unauthorised" element={<Unauthorised/>} />        
+              <Route path="*" element={<NotFound/>} />
             </Routes>
            
           </BrowserRouter>
-          </SidebarProvider>
+          
         </GoogleOAuthProvider>
       </ThemeProvider>
     </Provider>

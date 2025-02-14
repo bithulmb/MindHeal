@@ -1,7 +1,29 @@
 import { ACCESS_TOKEN } from "@/utils/constants/constants"
 import api from "./api"
 
+
+export const checkRefreshToken = async () => {
+    try {
+        const response = await api.get('/api/auth/check-refresh-token/');
+        if (response.status === 200) {
+            console.log("Refresh token exists");
+            return true;
+        }
+    } catch (error) {
+        console.error("Refresh token not found or invalid:", error.response?.data || error.message);
+        return false;
+    }
+};
+
+
 export const refreshAccessToken = async () => {
+    // const refreshTokenExists = await checkRefreshToken();
+
+    // if (!refreshTokenExists) {
+    //     console.error("No refresh token found");
+    //     throw new Error("No refresh token found");
+    // }
+
     try {
         const response = await api.post('/api/auth/login/refresh/')
         const { access } = response.data
@@ -17,7 +39,7 @@ export const refreshAccessToken = async () => {
 
 export const userLogout = async () => {
     try{
-        await api.post("/api/auth/logout/")
+        // await api.post("/api/auth/logout/")
         localStorage.removeItem(ACCESS_TOKEN)
         console.log("logged out succesfully")
 

@@ -44,6 +44,7 @@ api.interceptors.response.use(
                 return api(originalRequest)
             }
             catch(refreshError){
+                console.error("refresh token failed", refreshError)
                 userLogout()
                 return Promise.reject(refreshError)
             }

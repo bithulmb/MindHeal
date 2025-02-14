@@ -20,6 +20,8 @@ from google.oauth2 import id_token
 from rest_framework.permissions import AllowAny
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from rest_framework.permissions import IsAdminUser
+
 # Create your views here.
 
 
@@ -146,10 +148,17 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 samesite='Lax'
             )
 
+            # if 'Set-Cookie' in response.headers:
+            #     print("Refresh token cookie is set successfully.")
+            # else:
+            #     print("Failed to set refresh token cookie.")
+           
             response.data = {
                 'access': access_token,
+                'refresh':refresh_token,
                 'role' : role, 
             }
+            print(response)
         return response
 
 #custom token referesh view to obtain refresh token from cookies
@@ -176,6 +185,7 @@ class LogoutView(APIView):
             'message' : 'logged out succesfully',
         })
         response.delete_cookie('refresh_token')
+        print("logged out")
         return response
 
 
@@ -263,3 +273,42 @@ class PasswordResetConfirmView(generics.GenericAPIView):
             serializer.save()
             return Response({"message": "Password reset successful."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#api view for getting the details of the users
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.filter(role="Patient")
+    serializer_class = UserSerializer
+
+#api view for getting the details of the psychologists
+class PsychologistListView(generics.ListAPIView):
+    queryset = User.objects.filter(role="Psychologist")
+    serializer_class = UserSerializer
+
+
+#api view from admin to block or unblock the user
+class UserUpdateBlockStatusView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'id'
+    permission_classes = [IsAdminUser]
+
+    def patch(self,request, *args, **kwargs):
+        user = self.get_object()
+        is_blocked = request.data.get('is_blocked', None)
+
+        if is_blocked is not None:
+            user.is_blocked = is_blocked
+            user.save()
+            return Response({'message' : "User block status updated succesfully"}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error' : "is_blocked field is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class CheckRefreshTokenView(APIView):
+    def get(self, request):
+        if request.COOKIES.get('refresh_token'):  
+            return Response({"message": "Refresh token exists"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Refresh token not found"}, status=status.HTTP_404_NOT_FOUND)
