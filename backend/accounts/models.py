@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,User
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from datetime import timedelta
+from cloudinary.models import CloudinaryField
 
 # Create your models here.
 
@@ -69,7 +70,7 @@ class CustomUser(AbstractBaseUser):
 # Patient Profile Model
 class PatientProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='patient_profile')
-    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    profile_image = CloudinaryField('profile_image', folder="users/profile_images", blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=20, choices=Gender.choices, default=Gender.UNSPECIFIED)
     mobile_number = models.CharField(max_length=15,blank=True, null=True)
@@ -83,8 +84,8 @@ class PatientProfile(models.Model):
 # Psychologist Profile Model
 class PsychologistProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='psychologist_profile')
-    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
-    date_of_birth = models.DateField(blank=True, null=True)
+    profile_image = CloudinaryField('profile_image', folder="psychologists/profile_images", blank=True, null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=20, choices=Gender.choices, default=Gender.UNSPECIFIED)
     mobile_number = models.CharField(max_length=15,blank=True, null=True)
     about_me = models.TextField()
@@ -92,9 +93,9 @@ class PsychologistProfile(models.Model):
     experience = models.PositiveIntegerField() 
     specialization = models.CharField(max_length=255, null=True, blank=True)
     fees = models.DecimalField(max_digits=10, decimal_places=2)
-    id_card = models.ImageField(upload_to='id_cards/')
-    education_certificate = models.ImageField(upload_to='certificates/education/')
-    experience_certificate = models.ImageField(upload_to='certificates/experience/')
+    id_card = CloudinaryField('id_card', folder="psychologists/id_cards")
+    education_certificate = CloudinaryField('education_certificate', folder="psychologists/education_certificates")
+    experience_certificate = CloudinaryField('experience_certificate', folder="psychologists/experience_certificates")
     is_admin_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -116,3 +117,8 @@ class EmailVerificationOTP(models.Model):
         if not self.expires_at:
             self.expires_at = timezone.now() + timedelta(minutes=5)
         super().save(*args, **kwargs)
+
+class UserMedia(models.Model):
+    title = models.CharField(max_length=100)
+    media_file = models.ImageField(upload_to='test/')
+    image_file = CloudinaryField('image', folder='test/images/', blank=True, null =True)

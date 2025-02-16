@@ -7,6 +7,7 @@ import api from '../api/api';
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { toast } from 'sonner';
 
 
 const otpSchema = z.object({
@@ -37,8 +38,9 @@ const OtpVerificationForm = () => {
             console.log(response.data.message)
             reset()
             console.log("user otp verified succesfullly")
-            alert("User created succesfuly. Please login")
+            
             navigate("/")
+            toast.success("User email verified succesfully. Please login")
         } catch (error){
             console.error("OTP Verification Error:", error.response?.data);
             setServerError(error.response?.data?.error || "OTP verification failed!");

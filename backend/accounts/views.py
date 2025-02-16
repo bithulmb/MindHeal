@@ -1,7 +1,13 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status,generics
-from .serializers import UserSerializer,MyTokenObtainPairSerializer,PasswordResetRequestSerializer,PasswordResetConfirmSerializer
+from .serializers import (
+    UserSerializer,
+    MyTokenObtainPairSerializer,
+    PasswordResetRequestSerializer,
+    PasswordResetConfirmSerializer,
+    PsychologistProfileSerializer
+    )
 from rest_framework.views import APIView
 from .utils import generate_otp,send_otp_email,CustomRefreshToken
 from .models import EmailVerificationOTP
@@ -13,9 +19,9 @@ from dotenv import load_dotenv
 import os
 from google.auth.transport import requests
 from google.oauth2 import id_token
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from rest_framework.permissions import IsAdminUser
+from django.conf import settings
 
 # Create your views here.
 
@@ -131,40 +137,39 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         response = super().post(request, *args, **kwargs)
         
         if response.status_code == status.HTTP_200_OK:
+            
             access_token = response.data['access']
             refresh_token = response.data['refresh']
             role = response.data['role']
-            print("Response data before setting cookie:", response.data)
-            response.set_cookie(
-                key='refresh_token',
-                value=refresh_token,
-                httponly=True,
-                secure= True,
-                samesite= None
-            )
-
-            # if 'Set-Cookie' in response.headers:
-            #     print("Refresh token cookie is set successfully.")
-            # else:
-            #     print("Failed to set refresh token cookie.")
            
+            # response.set_cookie(
+            #     key='refresh_token',
+            #     value=refresh_token,
+            #     httponly=True,  
+            #     secure=False, 
+            #     samesite=None,  
+            #     max_age=7 * 24 * 60 * 60
+            # )
+
             response.data = {
                 'access': access_token,
                 'refresh':refresh_token,
                 'role' : role, 
             }
-            print(response.headers)
+           
         return response
+     
 
 #custom token referesh view to obtain refresh token from cookies
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
        
-        refresh_token = request.COOKIES.get('refresh_token')
+        # refresh_token = request.COOKIES.get('refresh_token')
+        refresh_token = request.data.get('refresh')
 
         if not refresh_token:
             return Response(
-                {'error': 'Refresh token not found in cookie'},
+                {'error': 'Refresh token not found '},
                 status=status.HTTP_400_BAD_REQUEST
             )
  
@@ -310,3 +315,24 @@ class CheckRefreshTokenView(APIView):
             return Response({"message": "Refresh token exists"}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "Refresh token not found"}, status=status.HTTP_404_NOT_FOUND)
+
+#view to handle psychologist profile creation
+# class PsychologistProfileView(APIView):
+#     def post(self, request, *args, **kwargs):
+#         print(request)
+#         serializer = PsychologistProfileSerializer(data = request.data, context = {'request':request})
+#         print(serializer)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+class PsychologistProfileView(generics.CreateAPIView):
+    serializer_class = PsychologistProfileSerializer
+    permission_classes = [IsAuthenticated]  
+
+    def perform_create(self, serializer):
+        print(self.request)
+        serializer.save(user=self.request.user)  

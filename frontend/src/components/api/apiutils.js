@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN } from "@/utils/constants/constants"
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants/constants"
 import api from "./api"
 
 
@@ -25,7 +25,8 @@ export const refreshAccessToken = async () => {
     // }
 
     try {
-        const response = await api.post('/api/auth/login/refresh/')
+        const refresh = localStorage.getItem(REFRESH_TOKEN)
+        const response = await api.post('/api/auth/login/refresh/',{refresh})
         const { access } = response.data
 
         localStorage.setItem(ACCESS_TOKEN,access)
@@ -41,6 +42,7 @@ export const userLogout = async () => {
     try{
         // await api.post("/api/auth/logout/")
         localStorage.removeItem(ACCESS_TOKEN)
+        localStorage.removeItem(REFRESH_TOKEN)
         console.log("logged out succesfully")
 
     }  catch (error) {

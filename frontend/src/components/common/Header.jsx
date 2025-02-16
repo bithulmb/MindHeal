@@ -5,7 +5,7 @@ import { Button } from '../ui/button'
 import { ModeToggle } from '@/utils/ModeToggle'
 import Logo from './Logo'
 import LoginModal from './LoginModal'
-import { ACCESS_TOKEN, BASE_URL } from '@/utils/constants/constants'
+import { ACCESS_TOKEN, BASE_URL, REFRESH_TOKEN } from '@/utils/constants/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '@/redux/slices/authSlice'
 
@@ -32,6 +32,7 @@ const Header = () => {
 
       const handleLogout = () => {
         localStorage.removeItem(ACCESS_TOKEN)
+        localStorage.removeItem(REFRESH_TOKEN)
         dispatch(logout())
 
         navigate("/")

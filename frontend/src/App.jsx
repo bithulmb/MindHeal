@@ -20,18 +20,18 @@ import ResetPasswordConfirmPage from './pages/common/ResetPasswordConfirmPage';
 import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout';
 import PsychologistDashboard from './pages/psychologist/PsychologistDashboard';
-import AdminLoginForm from './components/admin/AdminLoginForm';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminPsychologists from './pages/admin/AdminPsychologists';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
-import { SidebarProvider } from './components/ui/sidebar';
 import NotFound from './pages/common/NotFound';
 import Unauthorised from './pages/common/Unauthorised';
 import PsychologistProtectedRoute from './utils/protected routes/PsychologistProtectedRoute';
 import AdminProtectedRoute from './utils/protected routes/AdminProtectedRoute';
 import BlockedUser from './pages/common/BlockedUserPage';
 import EmailNotVerifiedPage from './pages/common/EmailNotVerifiedPage';
+import PsychologistProfileForm from './components/psychologist/PsychologistProfileForm';
+
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -58,9 +58,10 @@ function App() {
                 <Route path="/user/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/user/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
                 <Route path="/user/blocked" element={<BlockedUser/>} />
-                <Route path="/user/verify-email" element={<EmailNotVerifiedPage/>} />
+                
 
                 <Route element={<UserProtectedRoute />}>
+                  <Route path="/user/verify-email" element={<EmailNotVerifiedPage/>} />
                   <Route path="/user/dashboard" element={<UserDashboard />} />
                 </Route>
 
@@ -71,10 +72,12 @@ function App() {
                 <Route path="/psychologist/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/psychologist/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
                 <Route path="/psychologist/blocked" element={<BlockedUser/>} />
-                <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} />
+                
 
                 <Route element={<PsychologistProtectedRoute/>}>
+                  <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} />
                   <Route path="/psychologist/dashboard" element={<PsychologistDashboard/>} />
+                  <Route path="/psychologist/create-profile" element={<PsychologistProfileForm/>} />
                 </Route>
                 
               </Route>

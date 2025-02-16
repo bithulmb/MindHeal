@@ -1,5 +1,6 @@
 import Footer from '@/components/common/Footer'
 import Header from '@/components/common/Header'
+import { Toaster } from '@/components/ui/sonner'
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 
@@ -43,6 +44,7 @@ const MainLayout = () => {
       {/* Main Content (Fills remaining space) */}
       <main className="flex-1 ">
         <Outlet />
+        <Toaster/>
       </main>
 
       {/* Footer (Fixed at the Bottom) */}

@@ -14,6 +14,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants/constants";
 import { loginSuccess } from "@/redux/slices/authSlice";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "sonner";
 
   //defining form schema using zod
   const schema = z.object({
@@ -45,16 +46,19 @@ const LoginForm = () => {
     
     try{
       
-      const response = await api.post("/api/auth/login/", data)
+      const response = await api.post("/api/auth/login/", data,{
+        withCredentials: true, // to enable cookies to be sent in response
+      })
 
-      if (response.status === 200){
+      if (response.status === 200){ 
         
-        const {access,role} = response.data
+        const {access,refresh, role} = response.data
         
         
         //checking if the user role is correct in url and response
         if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
-          alert("Not authorised")
+          toast.warning("You are having inavlid role")
+
           setServerError("Invalid role for this login page. Please use the correct login portal.");
           return;
         }
@@ -64,11 +68,13 @@ const LoginForm = () => {
 
         if(user.is_blocked){
           navigate(`/${userRole}/blocked`)
+          
           console.log("account is blocked")
           return
         }
 
         localStorage.setItem(ACCESS_TOKEN,response.data.access)
+        localStorage.setItem(REFRESH_TOKEN,refresh)
         dispatch(loginSuccess({
           token : access,
           role,
@@ -83,6 +89,7 @@ const LoginForm = () => {
         let dashboardRoute = response.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
         
         navigate(`/${userRole}/dashboard`)
+        toast.success("You have succesfully logged in")
         console.log("login succesful")
 
       }
@@ -90,6 +97,7 @@ const LoginForm = () => {
     }
     catch(error){
       console.log("login failed", error)
+      toast.error("Login failed. Please Try again")
       if (error.response){
         setServerError(error.response.data.detail || "Invalid credentials")
       }
@@ -102,10 +110,10 @@ const LoginForm = () => {
   //for implementing google authentication
   const handleSuccess = async (response) => {
 
-      console.log("Google Login Success:", response);
+      
 
       try{
-        console.log("Credential received:", response.credential);  
+       
 
         if (!response.credential) {
             console.error("Google token is missing!");
@@ -116,15 +124,16 @@ const LoginForm = () => {
         
         console.log("Backend Response:", res.data);
         if (res.data){
-          const {access,role} = res.data
+          const {access, refresh, role} = res.data
           console.log(access, role)
           if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
-            alert("Not authorised")
+            toast.warning("You are having inavlid role")
             setServerError("Invalid role for this login page. Please use the correct login portal.");
             return;
           }
 
           localStorage.setItem(ACCESS_TOKEN,access)
+          localStorage.setItem(REFRESH_TOKEN,refresh)
           dispatch(loginSuccess({
             token : access, 
             role : role
@@ -135,10 +144,12 @@ const LoginForm = () => {
       let dashboardRoute = res.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
       
       navigate(dashboardRoute)
+      toast.success("login succesful")
       console.log("google login succesful")
     }
         
     } catch (error) {
+      toast.error("Login failed. Try again")
       console.error("Error during Google authentication:", error);
       if (error.response) {
         console.error("Server response:", error.response.data);

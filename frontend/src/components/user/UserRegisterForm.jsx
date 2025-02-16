@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import api from '../api/api'
+import { toast } from 'sonner'
 
 const userRegisterSchema = z.object({
 
@@ -77,17 +78,19 @@ const UserRegisterForm = () => {
     
     try {
       
-      const response = await api.post("api/auth/register/",registerData)
-      console.log("Response:", response.data);
+      const response = await api.post("api/auth/register/",registerData)      
       reset(); 
+      
       navigate(`/${userRole}/verify-otp`, {state : {
         email : data.email
       }})
+      toast.success("Otp sent succesfully to your email id")
     
     }
     catch (error) {
       
       console.error("Registration error",error.response?.data)
+      toast.error("Regisration failed. Please try again")
       setServerError(error.response?.data?.error || "Registration failed");
 
     }

@@ -14,8 +14,20 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 from datetime import timedelta
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 load_dotenv()
+
+# Cloudinary configuration
+cloudinary.config(
+    cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key = os.getenv('CLOUDINARY_API_KEY'),
+    api_secret =  os.getenv('CLOUDINARY_API_SECRET'),
+   
+)
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -60,6 +72,10 @@ INSTALLED_APPS = [
     'social_django',
     "oauth2_provider",
     # "drf_social_oauth2",
+    'cloudinary',
+    'cloudinary_storage',
+    
+    
 
     #local
     'accounts',
@@ -188,6 +204,9 @@ EMAIL_HOST_PASSWORD=os.getenv('EMAIL_HOST_PASSWORD')
 #cors setting
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  
+]
 
 #simple jwt settings
 SIMPLE_JWT = {
@@ -243,9 +262,22 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 
 
-REST_AUTH = {
-    'USE_JWT': True,
-    'JWT_AUTH_COOKIE': 'jwt-auth',
-}
+# REST_AUTH = {
+#     'USE_JWT': True,
+#     'JWT_AUTH_COOKIE': 'jwt-auth',
+# }
 
 FRONTEND_URL = os.getenv('FRONTEND_URL')
+
+# Cloudinary settings
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET')
+}
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

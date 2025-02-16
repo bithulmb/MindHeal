@@ -67,16 +67,16 @@ class PatientProfileSerializer(serializers.ModelField):
 
 
 class PsychologistProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault()) 
     
     class Meta:
         model = PsychologistProfile
         fields = ('id', 'user', 'profile_image', 'date_of_birth', 'gender',
                  'mobile_number', 'about_me', 'qualification', 'experience', 'specialization',
                  'fees', 'id_card', 'education_certificate', 
-                 'experience_certificate', 'is_admin_verified', 'is_active',
+                 'experience_certificate', 'is_admin_verified',
                  'created_at', 'updated_at')
-        read_only_fields = ('is_admin_verified', 'is_active', 'created_at', 'updated_at')
+        read_only_fields = ('is_admin_verified', 'created_at', 'updated_at')
 
 
 #serializer to include user email,name and role in jwt
@@ -100,7 +100,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         
         # Include role in the response
         data["role"] = user.role  
-
+        self.refresh_token = data['refresh']
+        
         return data
 
 
@@ -160,7 +161,4 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         password = self.validated_data["password"]
         user.set_password(password)
         user.save()
-        print("user updated")
-
-
-            
+       
