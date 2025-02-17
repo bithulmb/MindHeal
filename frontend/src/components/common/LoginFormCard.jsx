@@ -8,7 +8,9 @@ import {
 } from "@/components/ui/card"
 import LoginForm from "./LoginForm"
 import Logo from "./Logo"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+import { Separator } from "../ui/separator"
+import { Button } from "../ui/button"
 
 export default function LoginFormCard({
   className,
@@ -16,7 +18,15 @@ export default function LoginFormCard({
 }) {
   const location = useLocation()
 
+  const navigate = useNavigate()
+
   const isPsychologistLogin = location.pathname.includes("/psychologist/login")
+
+  const user = !isPsychologistLogin ? 'Psychologist' : 'User'
+
+  const userRole = !isPsychologistLogin ? 'psychologist' : 'user'
+
+
   const isAdminLogin = location.pathname.includes("/admin/login")
   
   return (
@@ -38,6 +48,12 @@ export default function LoginFormCard({
         </CardHeader>
         <CardContent>
          <LoginForm />
+         <Separator className="my-3"/>
+         <div className="text-center ">
+          
+         <Button variant="outline" className="text-lg" onClick={() => navigate(`/${userRole}/login`)}>{`I am a ${user}`}</Button>
+         </div>
+         
         </CardContent>
       </Card>
     </div>

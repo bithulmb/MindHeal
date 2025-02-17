@@ -8,6 +8,7 @@ import LoginModal from './LoginModal'
 import { ACCESS_TOKEN, BASE_URL, REFRESH_TOKEN } from '@/utils/constants/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '@/redux/slices/authSlice'
+import ProfileDropdown from './ProfileDropDown'
 
 
 
@@ -96,17 +97,22 @@ const Header = () => {
             </NavLink>
           </nav>
           <div className='hidden md:flex'>
-          <div className="hidden md:block">
+           
+          {/* <div className="hidden md:block">
             {isAuthenticated ? (
                <Button variant="destructive" onClick={handleLogout}>Logout</Button>
             ) : (
             <Button onClick={handleLogin}>Login</Button>
             )
           }
-            {/* <LoginModal/> */}
+          </div> */}
+          <div className='ms-3'>
+            
+            <ProfileDropdown/>
           </div>
           <div className='ms-3'>
             <ModeToggle/>
+            
           </div>
           </div>
           

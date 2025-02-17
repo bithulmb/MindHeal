@@ -31,6 +31,7 @@ import AdminProtectedRoute from './utils/protected routes/AdminProtectedRoute';
 import BlockedUser from './pages/common/BlockedUserPage';
 import EmailNotVerifiedPage from './pages/common/EmailNotVerifiedPage';
 import PsychologistProfileForm from './components/psychologist/PsychologistProfileForm';
+import PsychologistLayout from './layouts/PsychologistLayout';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -74,10 +75,19 @@ function App() {
                 <Route path="/psychologist/blocked" element={<BlockedUser/>} />
                 
 
-                <Route element={<PsychologistProtectedRoute/>}>
+                {/* <Route element={<PsychologistProtectedRoute/>}>
                   <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} />
                   <Route path="/psychologist/dashboard" element={<PsychologistDashboard/>} />
                   <Route path="/psychologist/create-profile" element={<PsychologistProfileForm/>} />
+                </Route> */}
+
+                <Route element={<PsychologistProtectedRoute/>}>
+               
+                  <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} />
+                  <Route path='/psychologist' element={<PsychologistLayout/>} >
+                    <Route path="dashboard" element={<PsychologistDashboard/>} />
+                    <Route path="create-profile" element={<PsychologistProfileForm/>} />
+                  </Route>
                 </Route>
                 
               </Route>

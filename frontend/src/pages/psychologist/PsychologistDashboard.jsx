@@ -1,97 +1,19 @@
-// import React from 'react'
-
-// const PsychologistDashboard = () => {
-//   return (
-//     <div>
-//       <h1>Psychologist dashboard</h1>
-//     </div>
-//   )
-// }
-
-// export default PsychologistDashboard
-
-'use client'
-
-import * as React from 'react'
-import { Calendar, DollarSign, KeyRound, LineChart, User } from 'lucide-react'
-
+import { AppSidebar } from '@/components/admin/AppSidebar'
+import PsychologistSidebar from '@/components/psychologist/PsychologistSidebar'
+import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar'
+import { Calendar, DollarSign, KeyRound, LineChart, User } from 'lucide-react'
 
-export default function PsychologistDashboard() {
+const PsychologistDashboard = () => {
+  
+
   return (
-    <SidebarProvider>
-      <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
-        <Sidebar>
-          <SidebarHeader>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton size="lg" className="w-full justify-start">
-                  <User className="mr-2 h-5 w-5" />
-                  <span className="font-semibold">Dr. Jane Smith</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a href="#profile">
-                        <User className="mr-2 h-4 w-4" />
-                        My Profile
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a href="#change-password">
-                        <KeyRound className="mr-2 h-4 w-4" />
-                        Change Password
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a href="#consultations">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        My Consultations
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a href="#earnings">
-                        <DollarSign className="mr-2 h-4 w-4" />
-                        My Earnings
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-        </Sidebar>
-        <SidebarInset>
-          <div className="flex flex-col">
+    <div>
+     
+      <div className="flex flex-col">
             <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-muted/40 px-6">
-              <SidebarTrigger />
+
               <h1 className="font-semibold text-lg">Dashboard</h1>
             </header>
             <main className="flex-1 overflow-y-auto">
@@ -153,8 +75,10 @@ export default function PsychologistDashboard() {
               </div>
             </main>
           </div>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+      
+      
+    </div>
   )
 }
+
+export default PsychologistDashboard
