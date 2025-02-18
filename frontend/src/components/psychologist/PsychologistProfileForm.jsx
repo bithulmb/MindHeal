@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import api from "../api/api";
 import { toast } from "sonner";
+import calculateAge from "@/utils/util functions/calculateAge";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -33,6 +34,8 @@ const formSchema = z.object({
     ),
   date_of_birth: z.date({
     required_error: "Date of birth is required",
+  }).refine((dob) => calculateAge(dob) >=18 ,{
+    message : "You must be atleast 18 years old",
   }),
   gender: z.string({
     required_error: "Please select a gender",
@@ -139,31 +142,12 @@ export default function PsychologistProfileForm() {
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle>Psychologist Profile</CardTitle>
-          <CardDescription>Complete your profile to join our platform. All fields are required.</CardDescription>
+          <CardDescription>Submit your details to verify your profile and get approved. All fields are required.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="profile_image"
-                render={({ field: { onChange, value, ...field } }) => (
-                  <FormItem>
-                    <FormLabel>Profile Image</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept={ACCEPTED_IMAGE_TYPES.join(",")}
-                        onChange={(e) => onChange(e.target.files)}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>Upload a professional photo of yourself. Max size: 5MB</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+             
               <FormField
                 control={form.control}
                 name="date_of_birth"
@@ -177,19 +161,26 @@ export default function PsychologistProfileForm() {
                             variant={"outline"}
                             className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
                           >
-                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                            {field.value ? format(field.value, "PPP") : <span>Enter your DOB</span>}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date > new Date() || date < new Date("1950-01-01")}
-                          initialFocus
-                        />
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date > new Date() || date < new Date("1950-01-01")}
+                        initialFocus
+                        captionLayout="dropdown-buttons"
+                        fromYear={1950}
+                        toYear={new Date().getFullYear()}
+                        classNames={{
+                          caption_label: "hidden", 
+                        }}
+                        
+                      />               
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
@@ -312,6 +303,27 @@ export default function PsychologistProfileForm() {
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="profile_image"
+                render={({ field: { onChange, value, ...field } }) => (
+                  <FormItem>
+                    <FormLabel>Profile Image</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        accept={ACCEPTED_IMAGE_TYPES.join(",")}
+                        onChange={(e) => onChange(e.target.files)}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>Upload a professional photo of yourself. Max size: 5MB</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
 
               <FormField
                 control={form.control}

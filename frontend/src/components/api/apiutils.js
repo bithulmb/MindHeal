@@ -1,5 +1,6 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants/constants"
 import api from "./api"
+import { useNavigate } from "react-router-dom";
 
 
 export const checkRefreshToken = async () => {
@@ -29,6 +30,8 @@ export const refreshAccessToken = async () => {
         const response = await api.post('/api/auth/login/refresh/',{refresh})
         const { access } = response.data
 
+      
+
         localStorage.setItem(ACCESS_TOKEN,access)
         console.log("access token refreshed")
     }
@@ -43,7 +46,11 @@ export const userLogout = async () => {
         // await api.post("/api/auth/logout/")
         localStorage.removeItem(ACCESS_TOKEN)
         localStorage.removeItem(REFRESH_TOKEN)
+
+        const navigate = useNavigate()
+        navigate(`/`)
         console.log("logged out succesfully")
+        
 
     }  catch (error) {
         console.error('Logout failed:', error.response?.data);

@@ -10,7 +10,7 @@ from .serializers import (
     )
 from rest_framework.views import APIView
 from .utils import generate_otp,send_otp_email,CustomRefreshToken
-from .models import EmailVerificationOTP
+from .models import EmailVerificationOTP,PsychologistProfile,ApprovalStatusChoices
 from django.db  import transaction
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
@@ -282,11 +282,13 @@ class PasswordResetConfirmView(generics.GenericAPIView):
 class UserListView(generics.ListAPIView):
     queryset = User.objects.filter(role="Patient")
     serializer_class = UserSerializer
+    permission_classes=[IsAdminUser]
 
 #api view for getting the details of the psychologists
 class PsychologistListView(generics.ListAPIView):
     queryset = User.objects.filter(role="Psychologist")
     serializer_class = UserSerializer
+    permission_classes=[IsAdminUser]
 
 
 #api view from admin to block or unblock the user
@@ -317,22 +319,62 @@ class CheckRefreshTokenView(APIView):
             return Response({"message": "Refresh token not found"}, status=status.HTTP_404_NOT_FOUND)
 
 #view to handle psychologist profile creation
-# class PsychologistProfileView(APIView):
-#     def post(self, request, *args, **kwargs):
-#         print(request)
-#         serializer = PsychologistProfileSerializer(data = request.data, context = {'request':request})
-#         print(serializer)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+class PsychologistProfileView(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        try:
+            profile = PsychologistProfile.objects.get(user=request.user)
+            serializer = PsychologistProfileSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except PsychologistProfile.DoesNotExist:
+            return Response({'error': "PsychologistProfileNotFound"},status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, *args, **kwargs):
+       
+        serializer = PsychologistProfileSerializer(data = request.data, context = {'request':request})
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     
 
 
-class PsychologistProfileView(generics.CreateAPIView):
-    serializer_class = PsychologistProfileSerializer
-    permission_classes = [IsAuthenticated]  
+# class PsychologistProfileView(generics.CreateAPIView):
+#     serializer_class = PsychologistProfileSerializer
+#     permission_classes = [IsAuthenticated]  
 
-    def perform_create(self, serializer):
-        print(self.request)
-        serializer.save(user=self.request.user)  
+#     def perform_create(self, serializer):
+#         print(self.request)
+#         serializer.save(user=self.request.user)  
+
+
+#api view for getting the details of the psychologist profiles
+class PsychologistProfileListView(generics.ListAPIView):
+    queryset = PsychologistProfile.objects.filter(approval_status = "Submitted")
+    serializer_class = PsychologistProfileSerializer
+    permission_classes=[IsAdminUser]
+
+
+#api view for getting the psychologist profile and for approving or rejecting the profile
+class PsychologistRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = PsychologistProfile.objects.all()
+    serializer_class = PsychologistProfileSerializer
+    permission_classes=[IsAdminUser]
+
+    def update(self, request, *args, **kwargs):
+        profile = self.get_object()
+        action = request.data.get('action')
+        if action=="approve":
+            profile.approval_status = ApprovalStatusChoices.APPROVED
+            profile.is_admin_verified = True
+            message = "Psychologist Approved Succesfully"
+        elif action == "reject":
+            profile.approval_status = ApprovalStatusChoices.REJECTED
+            profile.is_admin_verified = False
+            message = "Psychologist rejected successfully"
+        else:
+            return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        profile.save()
+        return Response({'message' : message}, status=status.HTTP_200_OK)

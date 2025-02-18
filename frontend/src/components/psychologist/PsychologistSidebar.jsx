@@ -33,8 +33,7 @@ const PsychologistSidebar = () => {
   
         {/* Sidebar for Desktop */}
         <aside
-          className={`hidden md:flex h-screen w-64 flex-col border-r p-4 transition-all ${
-            theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+          className={`hidden md:flex h-screen w-64 flex-col border-r p-4 transition-all bg-background 
           }`}
         >
           <SidebarContent />
@@ -46,11 +45,11 @@ const PsychologistSidebar = () => {
 
 const SidebarContent = () => {
     const menuItems = [
-      { name: "Dashboard", icon: <Home />, path: "/dashboard" },
-      { name: "My Profile", icon: <User />, path: "/profile" },
-      { name: "Change Password", icon: <Lock />, path: "/change-password" },
-      { name: "My Consultation", icon: <CalendarCheck />, path: "/consultation" },
-      { name: "My Earnings", icon: <DollarSign />, path: "/earnings" },
+      { name: "Dashboard", icon: <Home />, path: "dashboard" },
+      { name: "My Profile", icon: <User />, path: "profile" },
+      { name: "Change Password", icon: <Lock />, path: "change-password" },
+      { name: "My Consultation", icon: <CalendarCheck />, path: "consultation" },
+      { name: "My Earnings", icon: <DollarSign />, path: "earnings" },
     ];
   
     return (

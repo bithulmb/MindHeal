@@ -4,6 +4,7 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import { AppSidebar } from '@/components/admin/AppSidebar'
 import { Sidebar, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { Toaster } from 'sonner'
 
 const AdminLayout = () => {
  
@@ -27,10 +28,12 @@ const AdminLayout = () => {
           {/* Page Content */}
           <div className="flex-1 p-6 w-full overflow-auto">
             <Outlet />
+            
           </div>
 
           {/* Footer */}
           <div className="w-full">
+            <Toaster/>
             <AdminFooter />
           </div>
         </div>

@@ -67,16 +67,17 @@ class PatientProfileSerializer(serializers.ModelField):
 
 
 class PsychologistProfileSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault()) 
+    # user = serializers.HiddenField(default=serializers.CurrentUserDefault()) 
     
     class Meta:
         model = PsychologistProfile
         fields = ('id', 'user', 'profile_image', 'date_of_birth', 'gender',
                  'mobile_number', 'about_me', 'qualification', 'experience', 'specialization',
                  'fees', 'id_card', 'education_certificate', 
-                 'experience_certificate', 'is_admin_verified',
+                 'experience_certificate', 'approval_status','is_admin_approved',
                  'created_at', 'updated_at')
         read_only_fields = ('is_admin_verified', 'created_at', 'updated_at')
+        depth = 1
 
 
 #serializer to include user email,name and role in jwt

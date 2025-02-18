@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import api from "../api/api";
-import { ACCESS_TOKEN } from "@/utils/constants/constants";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants/constants";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/slices/authSlice";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 const AdminLoginForm = () => {
   const [email, setEmail] = useState("");
@@ -49,21 +51,39 @@ const AdminLoginForm = () => {
     if (response.status === 200){
         const {access, role} = response.data
         if (role !== "Admin"){
-            alert("You are not admin.")
+          Swal.fire({
+            title: 'Error!',
+            text: 'You are not authorised',
+            icon: 'error',
+            confirmButtonColor: '#dc3545',
+           
+            
+          });
             setServerError("You are not authorised to view this page")
+            toast.error("Invalid role")
             return
         }
         localStorage.setItem(ACCESS_TOKEN,response.data.access)
+        localStorage.setItem(REFRESH_TOKEN,response.data.refresh)
         dispatch(loginSuccess(
             {
             token : access,
             role,
             }))
         navigate('/admin/dashboard')
+        toast.success("Admin Login Succesful")
     }   
 
    }
    catch(error){
+    Swal.fire({
+      title: 'Error!',
+      text: 'Invalid credentials',
+      icon: 'error',
+      iconColor: '#dc35', // Red color
+      confirmButtonColor: '#dc3545'
+    });
+    toast.error("Your credentails does not match")
     console.log("login failed", error)
     if (error.response){
       setServerError(error.response.data.detail || "Invalid credentials")
@@ -87,7 +107,7 @@ const AdminLoginForm = () => {
           {serverError && <p className="text-red-500 text-sm text-center">{serverError}</p>}
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium">Email</label>
+              <label className="block text-sm font-medium my-2">Email</label>
               <Input
                 type="text"
                 value={email}
@@ -97,7 +117,7 @@ const AdminLoginForm = () => {
               {emailError && <p className="text-red-500 text-xs mt-1">{emailError}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium">Password</label>
+              <label className="block text-sm font-medium my-2">Password</label>
               <Input
                 type="password"
                 value={password}

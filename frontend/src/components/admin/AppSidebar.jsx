@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox,Contact, Users, LayoutDashboard, Search, Settings, User2, ChevronUp } from "lucide-react"
+import { Calendar, Home, Inbox,Contact, Users, LayoutDashboard, Search, Settings, User2, ChevronUp, UserRoundCheck } from "lucide-react"
 
 import {
   Sidebar,
@@ -15,7 +15,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import { DropdownMenuItem, DropdownMenuSubContent } from "../ui/dropdown-menu"
 import { useDispatch } from "react-redux"
-import { ACCESS_TOKEN } from "@/utils/constants/constants"
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants/constants"
 import { logout } from "@/redux/slices/authSlice"
 
 // Menu items.
@@ -35,6 +35,11 @@ const items = [
     url: "/admin/psychologists",
     icon: Contact,
   },
+  {
+    title: "Approval Requests",
+    url: "/admin/approvals",
+    icon: UserRoundCheck,
+  },
 
 ]
 
@@ -44,6 +49,7 @@ export function AppSidebar() {
 
   const handleLogout = ()=> {
       localStorage.removeItem(ACCESS_TOKEN)
+      localStorage.removeItem(REFRESH_TOKEN)
       dispatch(logout())
       navigate('/admin/login')
   }

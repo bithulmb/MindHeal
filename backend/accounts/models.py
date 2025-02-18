@@ -38,6 +38,12 @@ class Gender(models.TextChoices):
     NON_BINARY = 'NonBinary', _('Non-Binary')
     UNSPECIFIED = 'Unspecified', _('Unspecified')
 
+class ApprovalStatusChoices(models.TextChoices):
+    PENDING = 'Pending', _('Pending')
+    SUBMITTED = 'Submitted', _('Submitted')
+    APPROVED = 'Approved',_('Approved')
+    REJECTED = 'Rejected', _('Rejected')
+
 # Custom User Model
 class CustomUser(AbstractBaseUser):
     first_name = models.CharField(max_length=255)
@@ -96,7 +102,8 @@ class PsychologistProfile(models.Model):
     id_card = CloudinaryField('id_card', folder="psychologists/id_cards")
     education_certificate = CloudinaryField('education_certificate', folder="psychologists/education_certificates")
     experience_certificate = CloudinaryField('experience_certificate', folder="psychologists/experience_certificates")
-    is_admin_verified = models.BooleanField(default=False)
+    approval_status  =models.CharField(max_length=20,choices=ApprovalStatusChoices.choices, default=ApprovalStatusChoices.PENDING)
+    is_admin_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

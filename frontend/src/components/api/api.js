@@ -8,6 +8,7 @@ const api = axios.create({
     headers : {
         "Content-Type" : 'application/json',
     },
+    withCredentials: true
 })
 
 //modifying requests using axios interceptors by adding access token in headers

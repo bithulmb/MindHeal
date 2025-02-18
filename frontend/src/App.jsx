@@ -32,6 +32,10 @@ import BlockedUser from './pages/common/BlockedUserPage';
 import EmailNotVerifiedPage from './pages/common/EmailNotVerifiedPage';
 import PsychologistProfileForm from './components/psychologist/PsychologistProfileForm';
 import PsychologistLayout from './layouts/PsychologistLayout';
+import PsychologistProfileSubmitted from './components/psychologist/PsychologistProfileSubmitted';
+import { Toaster } from 'sonner';
+import AdminApproveRequestPage from './pages/admin/AdminApproveRequestPage';
+import AdminApproveRejectCard from './components/admin/AdminApproveRejectCard';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -86,7 +90,8 @@ function App() {
                   <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} />
                   <Route path='/psychologist' element={<PsychologistLayout/>} >
                     <Route path="dashboard" element={<PsychologistDashboard/>} />
-                    <Route path="create-profile" element={<PsychologistProfileForm/>} />
+                    <Route path="verify-profile" element={<PsychologistProfileForm/>} />
+                    <Route path="profile-submitted" element={<PsychologistProfileSubmitted/>} />
                   </Route>
                 </Route>
                 
@@ -100,7 +105,10 @@ function App() {
                 <Route element={<AdminProtectedRoute/>}>
                   <Route path='dashboard/' element={<AdminDashboard/>} />
                   <Route path='users/' element={<AdminUsers/>} />
-                  <Route path='psychologists/' element={<AdminPsychologists/>} />      
+                  <Route path='psychologists/' element={<AdminPsychologists/>} />
+                  <Route path='approvals/' element={<AdminApproveRequestPage/>} /> 
+                  <Route path='approvals/:id/' element={<AdminApproveRejectCard/>} />     
+
                   
                 </Route>
              
@@ -114,6 +122,7 @@ function App() {
             </Routes>
            
           </BrowserRouter>
+          <Toaster/>
           
         </GoogleOAuthProvider>
       </ThemeProvider>
