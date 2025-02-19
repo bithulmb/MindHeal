@@ -216,6 +216,7 @@ class GoogleLoginView(APIView):
             user, created = User.objects.get_or_create(email=email, defaults={
                 "first_name" :first_name,
                 "last_name" : last_name,
+                "is_email_verified" : True,
             })
             
             if not user.is_active:
@@ -237,13 +238,13 @@ class GoogleLoginView(APIView):
                 },
                 status=status.HTTP_200_OK
             )
-            response.set_cookie(
-                key='refresh_token',
-                value=refresh,
-                httponly=True,
-                secure= True,
-                samesite='Lax'
-            )
+            # response.set_cookie(
+            #     key='refresh_token',
+            #     value=refresh,
+            #     httponly=True,
+            #     secure= True,
+            #     samesite='Lax'
+            # )
             print(response.headers)
 
 
@@ -334,7 +335,7 @@ class PsychologistProfileView(APIView):
         serializer = PsychologistProfileSerializer(data = request.data, context = {'request':request})
         
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user,approval_status=ApprovalStatusChoices.SUBMITTED)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     

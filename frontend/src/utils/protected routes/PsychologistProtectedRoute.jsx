@@ -1,3 +1,5 @@
+import PsychologistProfileForm from '@/components/psychologist/PsychologistProfileForm'
+import EmailNotVerifiedPage from '@/pages/common/EmailNotVerifiedPage'
 import { fetchPsychologistProfile } from '@/redux/slices/psychologistProfileSlice'
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -13,6 +15,7 @@ const PsychologistProtectedRoute = () => {
       const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)  
       const role = useSelector((state) => state.auth.role)      
       const isEmailVerified = useSelector((state) => state.auth?.user?.is_email_verified)
+      console.log("isEMmailverified",isEmailVerified)
 
       const profile = useSelector((state) => state.psychologistProfile.profile)
 
@@ -35,6 +38,9 @@ const PsychologistProtectedRoute = () => {
           } else if (profile.approval_status == "Approved"){
             navigate('psychologist/dashboard');
             toast.success("You have succesfully logged in")
+          }else if (profile.approval_status == "Rejected"){
+            navigate('psychologist/profile-rejected');
+            toast.warning("Your Profile has been rejected. Please submit your profile again")
           }
         }
       },[profile, navigate])
@@ -49,6 +55,12 @@ const PsychologistProtectedRoute = () => {
       
       if (!isEmailVerified){
         return <Navigate to='/psychologist/verify-email' replace/>
+        // return <EmailNotVerifiedPage/>
+      }
+
+      if (!profile){
+        // return <Navigate to="/psychologist/verify-profile" replace/>
+        return <PsychologistProfileForm/>
       }
          
      

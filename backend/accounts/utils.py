@@ -27,9 +27,11 @@ class CustomRefreshToken(RefreshToken):
         # Call the parent method to get the token
         token = super().for_user(user)
 
-        # Add custom claims to the token payload
+       
         token['email'] = user.email
         token['name'] = user.first_name + " " + user.last_name
         token['role'] = user.role  
+        token['is_email_verified'] = user.is_email_verified
+        token['is_blocked'] = user.is_blocked
 
         return token

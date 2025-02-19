@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,16 @@ const ProfileDropdown = () => {
 
   const dispatch = useDispatch()
   const navigate = useNavigate();
+  const location = useLocation()
+
+  // const isPsychologistLogin = location.pathname.includes("psychologist")
+  // const userRole = isPsychologistLogin ? 'psychologist' : 'user'
 
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
   const user = useSelector((state) => state.auth.user)
-
+  if (user){
+    var userRole = user.role ==="Psychologist" ? "psychologist" : "user"
+  }
 
   const handleLogin = () => {
     navigate("/user/login");
@@ -55,7 +61,7 @@ const ProfileDropdown = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem asChild>
-              <Link to="/profile">My Profile</Link>
+              <Link to={`/${userRole}/dashboard`}>My Profile</Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleLogout} className="text-red-500 cursor-pointer">
               Logout

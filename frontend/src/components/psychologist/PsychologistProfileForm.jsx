@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import api from "../api/api";
 import { toast } from "sonner";
 import calculateAge from "@/utils/util functions/calculateAge";
+import { useNavigate } from "react-router-dom";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -87,6 +88,7 @@ const formSchema = z.object({
 
 export default function PsychologistProfileForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate()
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -119,6 +121,8 @@ export default function PsychologistProfileForm() {
               'Content-Type': 'multipart/form-data'
             }})
             console.log('form submitted and succesful')
+            navigate("/psychologist/profile-submitted")
+            toast.success("Form Submitted succesfully")
             console.log(response.data)
             
     

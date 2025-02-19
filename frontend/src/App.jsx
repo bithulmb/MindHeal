@@ -36,6 +36,7 @@ import PsychologistProfileSubmitted from './components/psychologist/Psychologist
 import { Toaster } from 'sonner';
 import AdminApproveRequestPage from './pages/admin/AdminApproveRequestPage';
 import AdminApproveRejectCard from './components/admin/AdminApproveRejectCard';
+import PsychologistProfileRejected from './components/psychologist/PsychologistProfileRejected';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -64,9 +65,10 @@ function App() {
                 <Route path="/user/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
                 <Route path="/user/blocked" element={<BlockedUser/>} />
                 
+                <Route path="/user/verify-email" element={<EmailNotVerifiedPage/>} />
 
                 <Route element={<UserProtectedRoute />}>
-                  <Route path="/user/verify-email" element={<EmailNotVerifiedPage/>} />
+                  
                   <Route path="/user/dashboard" element={<UserDashboard />} />
                 </Route>
 
@@ -77,21 +79,18 @@ function App() {
                 <Route path="/psychologist/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/psychologist/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
                 <Route path="/psychologist/blocked" element={<BlockedUser/>} />
+                <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} />
                 
-
-                {/* <Route element={<PsychologistProtectedRoute/>}>
-                  <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} />
-                  <Route path="/psychologist/dashboard" element={<PsychologistDashboard/>} />
-                  <Route path="/psychologist/create-profile" element={<PsychologistProfileForm/>} />
-                </Route> */}
-
                 <Route element={<PsychologistProtectedRoute/>}>
-               
-                  <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} />
+
+                    
+                    <Route path="/psychologist/verify-profile" element={<PsychologistProfileForm/>} />
+                    <Route path="/psychologist/profile-submitted" element={<PsychologistProfileSubmitted/>} />
+                    <Route path="/psychologist/profile-rejected" element={<PsychologistProfileRejected/>} />
+                  
                   <Route path='/psychologist' element={<PsychologistLayout/>} >
                     <Route path="dashboard" element={<PsychologistDashboard/>} />
-                    <Route path="verify-profile" element={<PsychologistProfileForm/>} />
-                    <Route path="profile-submitted" element={<PsychologistProfileSubmitted/>} />
+            
                   </Route>
                 </Route>
                 

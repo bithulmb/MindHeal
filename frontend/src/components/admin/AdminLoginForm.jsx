@@ -76,19 +76,21 @@ const AdminLoginForm = () => {
 
    }
    catch(error){
-    Swal.fire({
-      title: 'Error!',
-      text: 'Invalid credentials',
-      icon: 'error',
-      iconColor: '#dc35', // Red color
-      confirmButtonColor: '#dc3545'
-    });
-    toast.error("Your credentails does not match")
-    console.log("login failed", error)
+    
     if (error.response){
+      Swal.fire({
+        title: 'Error!',
+        text: 'Invalid credentials',
+        icon: 'error',
+        iconColor: '#dc35', // Red color
+        confirmButtonColor: '#dc3545',
+      });
+      toast.error("Your credentails does not match")
+      console.log("login failed", error)
       setServerError(error.response.data.detail || "Invalid credentials")
     }
     else {
+      toast.error("Login failed. Please Try again")
       setServerError("Something went wrong. Please try again.")
     }
   }

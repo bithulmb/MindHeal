@@ -15,6 +15,7 @@ import { loginSuccess } from "@/redux/slices/authSlice";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
+import Swal from "sweetalert2";
 
   //defining form schema using zod
   const schema = z.object({
@@ -57,7 +58,16 @@ const LoginForm = () => {
         
         //checking if the user role is correct in url and response
         if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
-          toast.warning("You are having inavlid role")
+          Swal.fire({
+            title: 'Error!',
+            text: 'You are not authorised',
+            icon: 'error',
+            confirmButtonColor: '#dc3545',
+           
+            
+          })
+          
+          toast.warning("You are having invalid role")
 
           setServerError("Invalid role for this login page. Please use the correct login portal.");
           return;
@@ -81,12 +91,21 @@ const LoginForm = () => {
           }))
 
         if(!user.is_email_verified){
+          Swal.fire({
+            title:"Email Not Verified",
+            text :"Verify your email",
+            icon: 'error',
+            iconColor: '#dc35', // Red color
+            confirmButtonColor: '#dc3545'
+
+          })
             navigate(`/${userRole}/verify-email`)
+            toast.error("Email not verified")
             console.log("email not verified")
             return
           }
         
-        let dashboardRoute = response.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
+        // let dashboardRoute = response.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
         
         navigate(`/${userRole}/dashboard`)
         toast.success("You have succesfully logged in")
@@ -97,12 +116,21 @@ const LoginForm = () => {
     }
     catch(error){
       console.log("login failed", error)
-      toast.error("Login failed. Please Try again")
+      
       if (error.response){
+        Swal.fire({
+                title: 'Error!',
+                text: 'Invalid credentials',
+                icon: 'error',
+                iconColor: '#dc35', // Red color
+                confirmButtonColor: '#dc3545'
+              });
+              toast.error("Your credentails does not match")
         setServerError(error.response.data.detail || "Invalid credentials")
       }
       else {
         setServerError("Something went wrong. Please try again.")
+        toast.error("Login failed. Please Try again")
       }
     }
   } 
