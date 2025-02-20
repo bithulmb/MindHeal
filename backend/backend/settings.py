@@ -92,6 +92,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware', #added for enabling cors
     'allauth.account.middleware.AccountMiddleware', #added for all auth
+    'accounts.middlewares.BlockUserMiddleware', #added for checking whether the user is blocked
+    
 ]
 
 ROOT_URLCONF = 'backend.urls'

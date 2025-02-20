@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import calculateAge from "@/utils/util functions/calculateAge";
 import { useNavigate } from "react-router-dom";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 2 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const ACCEPTED_DOC_TYPES = [...ACCEPTED_IMAGE_TYPES, "application/pdf"];
 
@@ -28,7 +28,7 @@ const formSchema = z.object({
   profile_image: z
     .custom()
     .refine((files) => files?.length === 1, "Profile image is required")
-    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, "Max file size is 5MB")
+    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, "Max file size is 2MB")
     .refine(
       (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
       "Only .jpg, .jpeg, .png and .webp formats are supported"
@@ -49,17 +49,17 @@ const formSchema = z.object({
   about_me: z
     .string()
     .min(50, "About me must be at least 50 characters")
-    .max(500, "About me must not exceed 500 characters"),
+    .max(800, "About me must not exceed 800 characters"),
   qualification: z
     .string()
     .min(2, "Qualification is required")
     .max(100, "Qualification must not exceed 100 characters"),
-  experience: z.number().min(0, "Experience cannot be negative").max(50, "Experience seems too high"),
+  experience: z.number().min(0, "Experience cannot be negative").max(30, "Experience seems too high"),
   specialization: z
     .string()
     .min(2, "Specialization is required")
     .max(100, "Specialization must not exceed 100 characters"),
-  fees: z.number().min(0, "Fees cannot be negative").max(100000, "Fees seems too high"),
+  fees: z.number().min(0, "Fees cannot be negative").max(10000, "Fees seems too high"),
   id_card: z
     .custom()
     .refine((files) => files?.length === 1, "ID card is required")
@@ -127,7 +127,7 @@ export default function PsychologistProfileForm() {
             
     
     } catch (error) {
-      // Handle error (e.g., show error message)
+     
       console.error("Registration failed:", error);
       toast("form submission failed")
       if (error.response && error.response.data) {

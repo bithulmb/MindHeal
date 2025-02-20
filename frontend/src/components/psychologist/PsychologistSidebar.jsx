@@ -36,6 +36,9 @@ const PsychologistSidebar = () => {
           className={`hidden md:flex h-screen w-64 flex-col border-r p-4 transition-all bg-background 
           }`}
         >
+        <div className="p-6">
+          <h1 className="text-xl font-bold text-primary">Psychologist Dashboard</h1>
+        </div>
           <SidebarContent />
         </aside>
       </div>

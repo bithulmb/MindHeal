@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN } from "@/utils/constants/constants";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants/constants";
 import axios from "axios";
 import { refreshAccessToken, userLogout } from "./apiutils";
 
@@ -49,6 +49,13 @@ api.interceptors.response.use(
                 userLogout()
                 return Promise.reject(refreshError)
             }
+        }
+
+        if (error.response && error.response.status === 403){
+            console.log("user has been blocked. removing access token")
+            localStorage.removeItem(ACCESS_TOKEN)
+            localStorage.removeItem(REFRESH_TOKEN)
+            window.location.href("/user/blocked")
         }
 
         return Promise.reject(error)

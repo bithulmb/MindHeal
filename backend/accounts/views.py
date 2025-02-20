@@ -22,6 +22,7 @@ from google.oauth2 import id_token
 from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.conf import settings
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 # Create your views here.
 
@@ -33,9 +34,7 @@ logger = logging.getLogger(__name__)
 GOOGLE_CLIENT_ID= os.getenv('GOOGLE_CLIENT_ID')
 class UserRegisterView(APIView):
         def post(self, request, format=None):
-            serializer = UserSerializer(data = request.data, context = {'request' : request})
-           
-
+            serializer = UserSerializer(data = request.data, context = {'request' : request})           
             if serializer.is_valid():
                 with transaction.atomic():
                     try:
@@ -55,15 +54,11 @@ class UserRegisterView(APIView):
                     
                     except Exception as e:
                         
-                        print(e)
-                        logger.error(f"User registration failed: {e}", exc_info=True)
+                        print(e)                        
                         user.delete()
                         return Response({
                             'error': 'Failed to send OTP email'
-                        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-
-                
+                        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)                
                 
             return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
 
@@ -77,9 +72,7 @@ class VerifyEmailOTPView(APIView):
         if not email or not otp:
             return Response({
                 'error': 'Email and OTP are required'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        
-        
+            }, status=status.HTTP_400_BAD_REQUEST)        
 
         try:
             user = User.objects.get(email = email)
@@ -105,20 +98,16 @@ class VerifyEmailOTPView(APIView):
 
 
 #view function to resend otp
-
 class ResendOTPView(APIView):
     def post(self, request):
         email = request.data.get("email")
 
         try:
             user = User.objects.get(email=email)
-
            
-            otp = generate_otp()
-           
+            otp = generate_otp()           
             print(otp)
             # send_otp_email(user.email, otp)
-
             
             EmailVerificationOTP.objects.filter(user=user).delete()
             EmailVerificationOTP.objects.create(user=user, otp=otp)
@@ -167,12 +156,13 @@ class CustomTokenRefreshView(TokenRefreshView):
         # refresh_token = request.COOKIES.get('refresh_token')
         refresh_token = request.data.get('refresh')
 
+        
         if not refresh_token:
             return Response(
                 {'error': 'Refresh token not found '},
                 status=status.HTTP_400_BAD_REQUEST
             )
- 
+        
         request.data['refresh'] = refresh_token
 
         return super().post(request, *args, **kwargs)
@@ -245,8 +235,7 @@ class GoogleLoginView(APIView):
             #     secure= True,
             #     samesite='Lax'
             # )
-            print(response.headers)
-
+            
 
             return response
         except ValueError:
