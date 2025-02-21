@@ -40,7 +40,7 @@ class Gender(models.TextChoices):
 
 class ApprovalStatusChoices(models.TextChoices):
     PENDING = 'Pending', _('Pending')
-    SUBMITTED = 'Submitted', _('Submitted')
+    # SUBMITTED = 'Submitted', _('Submitted')
     APPROVED = 'Approved',_('Approved')
     REJECTED = 'Rejected', _('Rejected')
 

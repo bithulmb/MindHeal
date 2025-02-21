@@ -44,7 +44,6 @@ const MainLayout = () => {
       {/* Main Content (Fills remaining space) */}
       <main className="flex-1 ">
         <Outlet />
-        <Toaster/>
       </main>
 
       {/* Footer (Fixed at the Bottom) */}

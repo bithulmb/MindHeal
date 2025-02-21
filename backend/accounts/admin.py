@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser,PsychologistProfile
+from .models import CustomUser,PsychologistProfile,EmailVerificationOTP
 
 # Register your models here.
 
@@ -24,3 +24,4 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(PsychologistProfile)
+admin.site.register(EmailVerificationOTP)

@@ -76,7 +76,7 @@ const UserRegisterForm = () => {
       const response = await api.post("api/auth/register/",registerData)      
       reset(); 
       
-      navigate(`user/verify-otp`, {state : {
+      navigate(`/user/verify-otp`, {state : {
         email : data.email
       }})
       toast.success("Otp sent succesfully to your email id")

@@ -324,7 +324,7 @@ class PsychologistProfileView(APIView):
         serializer = PsychologistProfileSerializer(data = request.data, context = {'request':request})
         
         if serializer.is_valid():
-            serializer.save(user=request.user,approval_status=ApprovalStatusChoices.SUBMITTED)
+            serializer.save(user=request.user,approval_status=ApprovalStatusChoices.PENDING)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     
@@ -341,7 +341,7 @@ class PsychologistProfileView(APIView):
 
 #api view for getting the details of the psychologist profiles
 class PsychologistProfileListView(generics.ListAPIView):
-    queryset = PsychologistProfile.objects.filter(approval_status = "Submitted")
+    queryset = PsychologistProfile.objects.filter(approval_status = "Pending")
     serializer_class = PsychologistProfileSerializer
     permission_classes=[IsAdminUser]
 

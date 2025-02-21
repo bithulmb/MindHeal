@@ -29,20 +29,17 @@ const LoginForm = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-
-
-  // const location = useLocation()
   
   const [loading, setLoading] = useState(false)
   const [serverError,setServerError] = useState("")
 
-  // const isPsychologistLogin = location.pathname.includes("psychologist")
-
-  // const userRole = isPsychologistLogin ? 'psychologist' : 'user'
-   
    //initialising the form using useForm hook from react hook form
    const { register, control, handleSubmit, formState : {errors},} = useForm({
-    resolver : zodResolver(schema)
+    resolver : zodResolver(schema),
+    defaultValues : {
+      email : "",
+      password : "",
+    }
   }) 
 
   const onSubmit = async (data) => {
@@ -58,33 +55,6 @@ const LoginForm = () => {
         
         const {access,refresh, role} = response.data
         
-        
-        //checking if the user role is correct in url and response
-        // if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
-        //   Swal.fire({
-        //     title: 'Error!',
-        //     text: 'You are not authorised',
-        //     icon: 'error',
-        //     confirmButtonColor: '#dc3545',
-           
-            
-        //   })
-          
-        //   toast.warning("You are having invalid role")
-
-        //   setServerError("Invalid role for this login page. Please use the correct login portal.");
-        //   return;
-        // }
-
-       
-       
-
-        // if(user.is_blocked){
-        //   navigate(`/${userRole}/blocked`)
-          
-        //   console.log("account is blocked")
-        //   return
-        // }
         const user = jwtDecode(access)
 
         localStorage.setItem(ACCESS_TOKEN,response.data.access)
@@ -159,12 +129,9 @@ const LoginForm = () => {
         
         if (res.data){
           const {access, refresh, role} = res.data
+
           console.log(access, role)
-          // if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
-          //   toast.warning("You are having inavlid role")
-          //   setServerError("Invalid role for this login page. Please use the correct login portal.");
-          //   return;
-          // }
+    
 
           localStorage.setItem(ACCESS_TOKEN,access)
           localStorage.setItem(REFRESH_TOKEN,refresh)

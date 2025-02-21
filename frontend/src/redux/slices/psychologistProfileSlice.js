@@ -25,7 +25,13 @@ const psychologistProfileSlice = createSlice({
         loading : false,
         error : null
     },
-    reducers : {},
+    reducers : {
+        resetProfile: (state) => {
+            state.profile = null;
+            state.loading = false;
+            state.error = null;
+        }
+      },
     extraReducers : (builder) => {
         builder
             .addCase(fetchPsychologistProfile.pending, (state) => {
@@ -46,3 +52,4 @@ const psychologistProfileSlice = createSlice({
 })
 
 export default psychologistProfileSlice.reducer
+export const { resetProfile} = psychologistProfileSlice.actions

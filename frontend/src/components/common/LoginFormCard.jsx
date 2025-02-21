@@ -19,32 +19,16 @@ export default function LoginFormCard({
 }) {
 
 
-  
-  
-  const location = useLocation()
 
   const navigate = useNavigate()
 
-  const isPsychologistLogin = location.pathname.includes("/psychologist/login")
-
-  const user = !isPsychologistLogin ? 'Psychologist' : 'User'
-
-  const userRole = !isPsychologistLogin ? 'psychologist' : 'user'
-
-
-  const isAdminLogin = location.pathname.includes("/admin/login")
   
   return (
     <div className={cn("flex flex-col gap-6 w-[400px] mx-auto ", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
-          {isPsychologistLogin 
-            ? "Login as Psychologist"
-            : isAdminLogin
-            ? "Admin Login"
-            : "Login as User"
-          }
+              Login
                     
             </CardTitle>
           <CardDescription>

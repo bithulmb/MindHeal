@@ -7,6 +7,7 @@ import { useTheme } from "next-themes";
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '@/redux/slices/authSlice'
 import { ACCESS_TOKEN, BASE_URL, REFRESH_TOKEN } from '@/utils/constants/constants'
+import { resetProfile } from "@/redux/slices/psychologistProfileSlice";
 
 const ProfileDropdown = () => {
   const { theme } = useTheme();
@@ -32,6 +33,7 @@ const ProfileDropdown = () => {
     localStorage.removeItem(ACCESS_TOKEN)
     localStorage.removeItem(REFRESH_TOKEN)
     dispatch(logout())
+    dispatch(resetProfile())
 
     navigate("/")
   }

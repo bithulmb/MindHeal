@@ -37,6 +37,7 @@ import { Toaster } from 'sonner';
 import AdminApproveRequestPage from './pages/admin/AdminApproveRequestPage';
 import AdminApproveRejectCard from './components/admin/AdminApproveRejectCard';
 import PsychologistProfileRejected from './components/psychologist/PsychologistProfileRejected';
+import PsychologistProfileProtectedRoute from './utils/protected routes/PsychologistProfileProtectedRoute';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -66,34 +67,28 @@ function App() {
                 <Route path="/user/verify-otp" element={<OtpVerficationPage />} />
                 <Route path="/user/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/user/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
-                <Route path="/user/blocked" element={<BlockedUser/>} />
-                
+                <Route path="/user/blocked" element={<BlockedUser/>} />                
                 <Route path="/user/verify-email" element={<EmailNotVerifiedPage/>} />
 
                 <Route element={<UserProtectedRoute />}>
                   
                   <Route path="/user/dashboard" element={<UserDashboard />} />
                 </Route>
+                    
+                  
 
-                {/* Psychologist Routes */}
-                {/* <Route path="/psychologist/login" element={<LoginPage />} />
-                <Route path="/user/psychologist-register" element={<UserRegisterPage />} />
-                <Route path="/psychologist/verify-otp" element={<OtpVerficationPage />} />
-                <Route path="/psychologist/reset-password" element={<ResetPasswordPage />} />
-                <Route path="/psychologist/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
-                <Route path="/psychologist/blocked" element={<BlockedUser/>} />
-                <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} /> */}
-                
+                {/* Psychologist Routes */}                
                 <Route element={<PsychologistProtectedRoute/>}>
 
+                  <Route path="/psychologist/verify-profile" element={<PsychologistProfileForm/>} />
+                  <Route path="/psychologist/profile-submitted" element={<PsychologistProfileSubmitted/>} />
+                  <Route path="/psychologist/profile-rejected" element={<PsychologistProfileRejected/>} />
                     
-                    <Route path="/psychologist/verify-profile" element={<PsychologistProfileForm/>} />
-                    <Route path="/psychologist/profile-submitted" element={<PsychologistProfileSubmitted/>} />
-                    <Route path="/psychologist/profile-rejected" element={<PsychologistProfileRejected/>} />
-                  
-                  <Route path='/psychologist' element={<PsychologistLayout/>} >
-                    <Route path="dashboard" element={<PsychologistDashboard/>} />
-            
+           
+                  <Route element={<PsychologistProfileProtectedRoute/>} >
+                      <Route path='/psychologist' element={<PsychologistLayout/>} >
+                        <Route path="dashboard" element={<PsychologistDashboard/>} />            
+                      </Route>
                   </Route>
                 </Route>
                 
@@ -101,15 +96,15 @@ function App() {
 
 
               {/* Admin Routes */}
-              <Route path='/admin/login/' element={<AdminLoginPage/>}/>
+              <Route path='/admin/login' element={<AdminLoginPage/>}/>
               <Route path="/admin" element={<AdminLayout/>}>
                 
                 <Route element={<AdminProtectedRoute/>}>
-                  <Route path='dashboard/' element={<AdminDashboard/>} />
-                  <Route path='users/' element={<AdminUsers/>} />
-                  <Route path='psychologists/' element={<AdminPsychologists/>} />
-                  <Route path='approvals/' element={<AdminApproveRequestPage/>} /> 
-                  <Route path='approvals/:id/' element={<AdminApproveRejectCard/>} />     
+                  <Route path='dashboard' element={<AdminDashboard/>} />
+                  <Route path='users' element={<AdminUsers/>} />
+                  <Route path='psychologists' element={<AdminPsychologists/>} />
+                  <Route path='approvals' element={<AdminApproveRequestPage/>} /> 
+                  <Route path='approvals/:id' element={<AdminApproveRejectCard/>} />     
 
                   
                 </Route>
