@@ -7,7 +7,7 @@ const PsychologistProfileSubmitted = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-center bg-background">
+    <div className="flex items-center justify-center bg-background my-8">
       <Card className="w-full max-w-md shadow-lg border rounded-2xl">
         <CardHeader className="text-center">
           <Hourglass className="w-16 h-16 text-primary mx-auto" />

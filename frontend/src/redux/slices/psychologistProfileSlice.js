@@ -30,6 +30,10 @@ const psychologistProfileSlice = createSlice({
             state.profile = null;
             state.loading = false;
             state.error = null;
+        },
+
+        setProfile : (state, action) => {
+            state.profile = action.payload
         }
       },
     extraReducers : (builder) => {
