@@ -9,6 +9,7 @@ from django.utils.encoding import force_bytes, force_str
 import os
 from django.conf import settings
 from .utils import send_reset_password_mail
+from rest_framework.exceptions import PermissionDenied
 
 
 User = get_user_model()
@@ -98,6 +99,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         user = self.user  # Get the authenticated user
+
+        if user.is_blocked:
+            raise PermissionDenied('Your account is blocked. Access is forbidden.')
         
         # Include role in the response
         data["role"] = user.role  

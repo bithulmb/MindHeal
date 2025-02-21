@@ -22,10 +22,10 @@ const ResetPasswordForm = () => {
   const [serverError,setServerError] = useState("")
   const [message, setMessage] = useState("");
   
-  const location = useLocation()
-  const isPsychologistLogin = location.pathname.includes("psychologist")
+  // const location = useLocation()
+  // const isPsychologistLogin = location.pathname.includes("psychologist")
 
-  const userRole = isPsychologistLogin ? 'psychologist' : 'user'
+  // const userRole = isPsychologistLogin ? 'psychologist' : 'user'
   
   const {
     register,
@@ -70,7 +70,7 @@ const ResetPasswordForm = () => {
           </Button>
           <div className="mt-4 text-center text-sm">
             Remembered your password?{" "}
-            <span onClick={() => navigate(`/${userRole}/login`)} className="underline underline-offset-4 cursor-pointer">
+            <span onClick={() => navigate(`/user/login`)} className="underline underline-offset-4 cursor-pointer">
               Login
             </span>
           </div>

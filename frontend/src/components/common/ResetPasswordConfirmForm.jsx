@@ -8,6 +8,7 @@ import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import api from "../api/api";
+import { toast } from "sonner";
 
 // Define schema using Zod
 const resetPasswordConfirmSchema = z
@@ -27,10 +28,10 @@ const ResetPasswordConfirmForm = () => {
   const { uid, token } = useParams(); 
   const navigate = useNavigate();
  
-  const location = useLocation()
-  const isPsychologistLogin = location.pathname.includes("psychologist")
+  // const location = useLocation()
+  // const isPsychologistLogin = location.pathname.includes("psychologist")
 
-  const userRole = isPsychologistLogin ? 'psychologist' : 'user'
+  // const userRole = isPsychologistLogin ? 'psychologist' : 'user'
 
   const {
     register,
@@ -47,10 +48,13 @@ const ResetPasswordConfirmForm = () => {
         const response = await api.post(`api/auth/reset-password-confirm/${uid}/${token}/`,{password : data.password})
         setMessage(response.data.message);
       alert("password reset succesful")
+      toast.success("Password reset succesful> Login with your new password")
+
      
-     navigate(`/${userRole}/login`)
+     navigate(`/user/login`)
     } catch (error) {
       setMessage("Error resetting password.");
+      toast.error("Password reset failed")
       console.log(error);
     }
   };

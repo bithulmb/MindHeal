@@ -17,7 +17,7 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
 
-  //defining form schema using zod
+  //zod form schema
   const schema = z.object({
     email : z.string().email("Invalid email address"),
     password : z.string().min(6,"Password must be atleast 6 characters"),
@@ -28,14 +28,17 @@ const LoginForm = () => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const location = useLocation()
-  
 
+
+
+  // const location = useLocation()
+  
+  const [loading, setLoading] = useState(false)
   const [serverError,setServerError] = useState("")
 
-  const isPsychologistLogin = location.pathname.includes("psychologist")
+  // const isPsychologistLogin = location.pathname.includes("psychologist")
 
-  const userRole = isPsychologistLogin ? 'psychologist' : 'user'
+  // const userRole = isPsychologistLogin ? 'psychologist' : 'user'
    
    //initialising the form using useForm hook from react hook form
    const { register, control, handleSubmit, formState : {errors},} = useForm({
@@ -44,12 +47,12 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
 
+    setLoading(true)
+    setServerError(" ")
     
     try{
       
-      const response = await api.post("/api/auth/login/", data,{
-        withCredentials: true, // to enable cookies to be sent in response
-      })
+      const response = await api.post("/api/auth/login/", data)
 
       if (response.status === 200){ 
         
@@ -57,31 +60,32 @@ const LoginForm = () => {
         
         
         //checking if the user role is correct in url and response
-        if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
-          Swal.fire({
-            title: 'Error!',
-            text: 'You are not authorised',
-            icon: 'error',
-            confirmButtonColor: '#dc3545',
+        // if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
+        //   Swal.fire({
+        //     title: 'Error!',
+        //     text: 'You are not authorised',
+        //     icon: 'error',
+        //     confirmButtonColor: '#dc3545',
            
             
-          })
+        //   })
           
-          toast.warning("You are having invalid role")
+        //   toast.warning("You are having invalid role")
 
-          setServerError("Invalid role for this login page. Please use the correct login portal.");
-          return;
-        }
+        //   setServerError("Invalid role for this login page. Please use the correct login portal.");
+        //   return;
+        // }
 
-        const user = jwtDecode(access)
+       
        
 
-        if(user.is_blocked){
-          navigate(`/${userRole}/blocked`)
+        // if(user.is_blocked){
+        //   navigate(`/${userRole}/blocked`)
           
-          console.log("account is blocked")
-          return
-        }
+        //   console.log("account is blocked")
+        //   return
+        // }
+        const user = jwtDecode(access)
 
         localStorage.setItem(ACCESS_TOKEN,response.data.access)
         localStorage.setItem(REFRESH_TOKEN,refresh)
@@ -99,13 +103,13 @@ const LoginForm = () => {
             confirmButtonColor: '#dc3545'
 
           })
-            navigate(`/${userRole}/verify-email`)
+            navigate(`/verify-email`)
             toast.error("Email not verified")
             console.log("email not verified")
             return
           }
         
-        // let dashboardRoute = response.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
+        const userRole = role==="Psychologist" ? "psychologist" : "user"
         
         navigate(`/${userRole}/dashboard`)
         toast.success("You have succesfully logged in")
@@ -132,7 +136,10 @@ const LoginForm = () => {
         setServerError("Something went wrong. Please try again.")
         toast.error("Login failed. Please Try again")
       }
+    }  finally {
+      setLoading(false)
     }
+    
   } 
   
   //for implementing google authentication
@@ -150,15 +157,14 @@ const LoginForm = () => {
 
         const res = await api.post('/api/auth/google/',{token: response.credential})
         
-        console.log("Backend Response:", res.data);
         if (res.data){
           const {access, refresh, role} = res.data
           console.log(access, role)
-          if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
-            toast.warning("You are having inavlid role")
-            setServerError("Invalid role for this login page. Please use the correct login portal.");
-            return;
-          }
+          // if ((isPsychologistLogin && role !== "Psychologist") || (!isPsychologistLogin && role !== "Patient")) {
+          //   toast.warning("You are having inavlid role")
+          //   setServerError("Invalid role for this login page. Please use the correct login portal.");
+          //   return;
+          // }
 
           localStorage.setItem(ACCESS_TOKEN,access)
           localStorage.setItem(REFRESH_TOKEN,refresh)
@@ -213,7 +219,7 @@ const LoginForm = () => {
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <span
-                    onClick={() => navigate(`/${userRole}/reset-password`)}
+                    onClick={() => navigate(`/user/reset-password`)}
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline cursor-pointer"
                   >
                     Forgot your password?
@@ -230,26 +236,18 @@ const LoginForm = () => {
               <div>
               </div>
               <Button type="submit" className="w-full">
-                Login
+              {loading ? "Logging in" : "Login"}
               </Button>
               <div className="text-center">
               <span className="relative z-10 bg-background px-2 text-muted-foreground">
                   Or Continue
                 </span>
               </div>
-              {/* <Button variant="outline" className="w-full">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                      fill="currentColor"
-                    />
-                  </svg>Login with Google
-              </Button> */}
               <GoogleLogin logo_alignment="center"  onSuccess={handleSuccess} onError={handleFailure} />
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
-              <a onClick={() => navigate(`/${userRole}/register`)} className="underline underline-offset-4 cursor-pointer">
+              <a onClick={() => navigate(`/user/register`)} className="underline underline-offset-4 cursor-pointer">
                 Sign up
               </a>
             </div>

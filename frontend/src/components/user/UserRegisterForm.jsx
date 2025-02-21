@@ -25,11 +25,6 @@ const userRegisterSchema = z.object({
   .string()
   .email({message: "Invalid email address" }),
 
-  // mobile_number : z
-  // .string()
-  // .length(10,{message : "Mobile number must be exactly 10 digits"})
-  // .regex(/^\d{10}$/,{message : "Mobile number shuld contain only digits"}),
-
   password : z
   .string()
   .min(5, {message : "Password must be atleast 6 characters"}),
@@ -53,7 +48,7 @@ const UserRegisterForm = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const isPsychologist = location.pathname.includes("psychologist/")
+  const isPsychologist = location.pathname.includes("/psychologist-register")
 
   const userRole = isPsychologist ? 'psychologist' : 'user'
 
@@ -81,7 +76,7 @@ const UserRegisterForm = () => {
       const response = await api.post("api/auth/register/",registerData)      
       reset(); 
       
-      navigate(`/${userRole}/verify-otp`, {state : {
+      navigate(`user/verify-otp`, {state : {
         email : data.email
       }})
       toast.success("Otp sent succesfully to your email id")
@@ -125,21 +120,12 @@ const UserRegisterForm = () => {
           <Input id="email" {...register("email")} />
           {errors.email && <p className="text-red-500">{errors.email.message}</p>}
         </div>
-
-{/*         
-        <div className="grid gap-2">
-          <Label htmlFor="mobile_number">Mobile Number</Label>
-          <Input id="mobile_number" {...register("mobile_number")} />
-          {errors.mobile_number && <p className="text-red-500">{errors.mobile_number.message}</p>}
-        </div> */}
-
         
         <div className="grid gap-2">
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" {...register("password")} />
           {errors.password && <p className="text-red-500">{errors.password.message}</p>}
         </div>
-
        
         <div className="grid gap-2">
           <Label htmlFor="confirm_password">Confirm Password</Label>
@@ -155,7 +141,7 @@ const UserRegisterForm = () => {
       
         <div className="mt-4 text-center text-sm">
           Already have an account?{" "}
-          <a onClick={() => navigate(`/${userRole}/login`)} className="underline underline-offset-4 cursor-pointer">
+          <a onClick={() => navigate(`/user/login`)} className="underline underline-offset-4 cursor-pointer">
             Login
           </a>
         </div>

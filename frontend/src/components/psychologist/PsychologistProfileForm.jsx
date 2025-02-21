@@ -44,8 +44,8 @@ const formSchema = z.object({
   mobile_number: z
     .string()
     .min(10, "Phone number must be at least 10 digits")
-    .max(15, "Phone number must not exceed 15 digits")
-    .regex(/^\+?[1-9]\d{9,14}$/, "Please enter a valid phone number"),
+    .max(12, "Phone number must not exceed 12 digits")
+    .regex(/^\+?[1-9]\d{9,11}$/, "Please enter a valid phone number"),
   about_me: z
     .string()
     .min(50, "About me must be at least 50 characters")

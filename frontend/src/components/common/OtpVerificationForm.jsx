@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import api from '../api/api'
 
 import { Button } from "@/components/ui/button"
@@ -36,6 +36,16 @@ const OtpVerificationForm = () => {
   const [loading, setLoading] = useState(false)
   const [serverError, setServerError] = useState("")
   const [resendLoading, setResendLoading] = useState(false)
+  const [timer, setTimer] = useState(60)
+
+  useEffect(() => {
+    if (timer > 0){
+      const interval = setInterval(() => {
+        setTimer((prev) => prev -1)
+      },1000)
+      return (() => clearInterval(interval))
+    }
+  }, [timer])
 
   const form = useForm({
     resolver: zodResolver(otpSchema),
@@ -57,7 +67,7 @@ const OtpVerificationForm = () => {
       console.log("user otp verified successfully")
       navigate("/")
       
-      toast.success("Email verified succesfully")
+      toast.success("Email verified succesfully. Please login with your credentials")
     } catch (error) {
       console.error("OTP Verification Error:", error.response?.data)
       setServerError(error.response?.data?.error || "OTP verification failed!")
@@ -82,7 +92,7 @@ const OtpVerificationForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6 mx-auto">
         <FormField
           control={form.control}
           name="otp"
@@ -95,7 +105,7 @@ const OtpVerificationForm = () => {
                   value={field.value}
                   onChange={field.onChange}
                 >
-                  <InputOTPGroup>
+                  <InputOTPGroup className="">
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />
                     <InputOTPSlot index={2} />
@@ -122,11 +132,15 @@ const OtpVerificationForm = () => {
         <Button
           type="button"
           variant="ghost"
-          className="underline underline-offset-4 text-sm text-blue-600"
+          className="underline underline-offset-4 text-sm "
           onClick={handleResendOtp}
-          disabled={resendLoading}
+          disabled={resendLoading || timer > 0  }
         >
-          {resendLoading ? "Resending OTP..." : "Resend OTP"}
+         {resendLoading 
+            ? "Resending OTP..." 
+            : timer > 0 
+              ? `Resend OTP in ${timer}s` 
+              : "Resend OTP"}
         </Button>
       </form>
     </Form>

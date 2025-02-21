@@ -57,9 +57,12 @@ function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
 
+
+                 
                 {/* User Routes */}
                 <Route path="/user/login" element={<LoginPage />} />
                 <Route path="/user/register" element={<UserRegisterPage />} />
+                <Route path="/user/psychologist-register" element={<UserRegisterPage />} />
                 <Route path="/user/verify-otp" element={<OtpVerficationPage />} />
                 <Route path="/user/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/user/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
@@ -73,13 +76,13 @@ function App() {
                 </Route>
 
                 {/* Psychologist Routes */}
-                <Route path="/psychologist/login" element={<LoginPage />} />
-                <Route path="/psychologist/register" element={<UserRegisterPage />} />
+                {/* <Route path="/psychologist/login" element={<LoginPage />} />
+                <Route path="/user/psychologist-register" element={<UserRegisterPage />} />
                 <Route path="/psychologist/verify-otp" element={<OtpVerficationPage />} />
                 <Route path="/psychologist/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/psychologist/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
                 <Route path="/psychologist/blocked" element={<BlockedUser/>} />
-                <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} />
+                <Route path="/psychologist/verify-email" element={<EmailNotVerifiedPage/>} /> */}
                 
                 <Route element={<PsychologistProtectedRoute/>}>
 

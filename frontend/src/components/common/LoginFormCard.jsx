@@ -11,11 +11,16 @@ import Logo from "./Logo"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Separator } from "../ui/separator"
 import { Button } from "../ui/button"
+import { useState } from "react"
 
 export default function LoginFormCard({
   className,
   ...props
 }) {
+
+
+  
+  
   const location = useLocation()
 
   const navigate = useNavigate()
@@ -51,7 +56,7 @@ export default function LoginFormCard({
          <Separator className="my-3"/>
          <div className="text-center ">
           
-         <Button variant="outline" className="text-lg" onClick={() => navigate(`/${userRole}/login`)}>{`I am a ${user}`}</Button>
+         <Button variant="ghost" className="text-md" onClick={() => navigate(`/user/psychologist-register`)}>Are you a Psychologist, <span className="underline underline-offset-4">Join Us</span></Button>
          </div>
          
         </CardContent>
