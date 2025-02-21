@@ -19,6 +19,8 @@ import api from "../api/api";
 import { toast } from "sonner";
 import calculateAge from "@/utils/util functions/calculateAge";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setProfile } from "@/redux/slices/psychologistProfileSlice";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -89,6 +91,7 @@ const formSchema = z.object({
 export default function PsychologistProfileForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -97,6 +100,8 @@ export default function PsychologistProfileForm() {
   async function onSubmit(values) {
     setIsSubmitting(true);
     const formData = new FormData();
+
+  
 
     // Append all form values to FormData
     Object.entries(values).forEach(([key, value]) => {
@@ -121,6 +126,7 @@ export default function PsychologistProfileForm() {
               'Content-Type': 'multipart/form-data'
             }})
             console.log('form submitted and succesful')
+            dispatch(setProfile(response.data))
             navigate("/psychologist/profile-submitted")
             toast.success("Form Submitted succesfully")
             console.log(response.data)

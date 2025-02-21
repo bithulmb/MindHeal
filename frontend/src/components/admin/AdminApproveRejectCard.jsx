@@ -41,7 +41,7 @@ export default function AdminApproveRejectCard() {
 
     if (!profile) return <div className="text-center p-6">Psychologist not found.</div>;
 
-    if (profile?.approval_status !== "Submitted")return <div className="text-center p-6">This profile has already been {profile.approval_status}</div>;
+    if (profile?.approval_status !== "Pending")return <div className="text-center p-6">This profile has already been {profile.approval_status}</div>;
     
   
   

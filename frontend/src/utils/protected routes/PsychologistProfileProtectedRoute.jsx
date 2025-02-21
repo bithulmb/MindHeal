@@ -15,46 +15,48 @@ const PsychologistProfileProtectedRoute = () => {
   
 
 
-    const { profile, loading } = useSelector((state) => state.psychologistProfile)
-   
+    const { profile, loading,error } = useSelector((state) => state.psychologistProfile)
 
-    //creating thunk to send api request to fetch psychologist profile data
+ 
+    const [initialLoadDone, setInitialLoadDone] = useState(false);
+  
+    // Fetch profile once on mount
     useEffect(() => {
-        dispatch(fetchPsychologistProfile())
-    },[dispatch,])
-
+      dispatch(fetchPsychologistProfile())
+        .then(() => setInitialLoadDone(true));
+    }, [dispatch]);
+  
+    // Handle navigation after profile is loaded
     useEffect(() => {
-        if (profile && !loading) {
-            switch (profile?.approval_status) {
-                case 'Pending':
-                    navigate('/psychologist/profile-submitted', { replace: true });
-                    break;
-                case 'Rejected':
-                    navigate('/psychologist/profile-rejected', { replace: true });
-                    break;
-                case 'Approved':
-                   
-                    break;
-                default:
-                    
-                    navigate('/psychologist/verify-profile', { replace: true });
-            }
+      if (profile && !loading && initialLoadDone) {
+        switch (profile.approval_status) {
+          case 'Pending':
+            navigate('/psychologist/profile-submitted', { replace: true });
+            break;
+          case 'Rejected':
+            navigate('/psychologist/profile-rejected', { replace: true });
+            break;
+          case 'Approved':
+            // Stay on current route
+            break;
+          default:
+            navigate('/psychologist/verify-profile', { replace: true });
         }
-    }, [profile, loading, navigate]);
-
-    if (loading) {
-        return <LoadingPage/>; 
       }
-    
-    
-    if (!profile) {
-        return <Navigate to="/psychologist/verify-profile" replace />;
+    }, [profile, loading, navigate, initialLoadDone]);
+  
+    // Show loading state during initial load
+    if (loading || !initialLoadDone) {
+      return <LoadingPage />;
     }
-
-
-
-   
-    return profile.approval_status === 'Approved' ? <Outlet /> : <LoadingPage/>;
+  
+    // After initial load, handle no profile case
+    if (!profile) {
+      return <Navigate to="/psychologist/verify-profile" replace />;
+    }
+  
+    // Render outlet for approved profiles
+    return profile.approval_status === 'Approved' ? <Outlet /> : <LoadingPage />;
 }
 
 export default PsychologistProfileProtectedRoute

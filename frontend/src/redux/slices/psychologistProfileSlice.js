@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 
 export const fetchPsychologistProfile = createAsyncThunk(
-    'psychologistProfile/fetchPsychologistProfile',
+    'psychologistProfileSlice/fetchPsychologistProfile',
     async (_, {rejectWithValue} ) => {
         
         try {
@@ -56,4 +56,4 @@ const psychologistProfileSlice = createSlice({
 })
 
 export default psychologistProfileSlice.reducer
-export const { resetProfile} = psychologistProfileSlice.actions
+export const { resetProfile, setProfile} = psychologistProfileSlice.actions

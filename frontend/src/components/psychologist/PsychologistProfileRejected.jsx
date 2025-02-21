@@ -6,7 +6,7 @@ const PsychologistProfileRejected = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-center bg-background min-h-screen">
+    <div className="flex items-center justify-center bg-background my-16">
       <Card className="w-full max-w-md shadow-lg border rounded-2xl">
         <CardHeader className="text-center">
           <XCircle className="w-16 h-16 text-red-500 mx-auto" />
