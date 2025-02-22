@@ -39,12 +39,6 @@ class UserSerializer(serializers.ModelSerializer):
         if not re.match(r"^[A-Za-z]+(\s[A-Za-z]+)*$", value):
             raise serializers.ValidationError("Last name should only contain alphabets.")
         return value
-
-    # def validate_mobile_number(self, value):
-    #     """ Ensure mobile number contains only digits and is exactly 10 digits long """
-    #     if not re.match(r"^\d{10}$", value):
-    #         raise serializers.ValidationError("Mobile number must be 10 digits long.")
-    #     return value
     
     def create(self, validated_data):
         request = self.context.get('request')
@@ -55,21 +49,18 @@ class UserSerializer(serializers.ModelSerializer):
      
         return user
 
-class PatientProfileSerializer(serializers.ModelField):
+class PatientProfileSerializer(serializers.ModelSerializer):
     
-    user = UserSerializer(read_only=True)
-
     class Meta:
         model = PatientProfile        
-        fields = ['id', 'user', 'profile_image', 'date_of_birth', 
-                 'gender', 'mobile_number', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'date_of_birth', 
+                 'gender','occupation', 'mobile_number', 'medical_history', 'profile_image','created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
+        depth = 1
 
 
 
-class PsychologistProfileSerializer(serializers.ModelSerializer):
-    # user = serializers.HiddenField(default=serializers.CurrentUserDefault()) 
-    
+class PsychologistProfileSerializer(serializers.ModelSerializer):    
     class Meta:
         model = PsychologistProfile
         fields = ('id', 'user', 'profile_image', 'date_of_birth', 'gender',

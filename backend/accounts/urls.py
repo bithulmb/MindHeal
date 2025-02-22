@@ -18,9 +18,10 @@ from .views import (
     UserUpdateBlockStatusView,
     CheckRefreshTokenView,
     PsychologistProfileView,
-    PsychologistProfileListView,
+    PsychologistProfilePendingListView,
     PsychologistRetrieveUpdateView,
     PasswordChangeView,
+    UserProfileRetrieveCreateUpdateView
     
 )
 
@@ -42,10 +43,12 @@ urlpatterns = [
     path("api/admin/users/", UserListView.as_view(), name = "admin-user-list"),
     path("api/admin/psychologists/", PsychologistListView.as_view(), name = "admin-psychologist-list"),
     path("api/admin/users/<int:id>", UserUpdateBlockStatusView.as_view(), name = "admin-user-block"),
-    path("api/admin/psychologist-profiles/", PsychologistProfileListView.as_view(), name = "admin-psychologist-profile"),
+    path("api/admin/psychologist-profiles/", PsychologistProfilePendingListView.as_view(), name = "admin-psychologist-profile"),
     path("api/admin/psychologist-profiles/<int:pk>/", PsychologistRetrieveUpdateView.as_view(), name = "admin-psychologist-profile-retrieve-update"),
 
     path("api/psychologist/profile/",PsychologistProfileView.as_view(),name='psychologist-profile'),
+
+    path("api/user/profile/",UserProfileRetrieveCreateUpdateView.as_view(),name = "user-profile-get-update"),
    
 
     

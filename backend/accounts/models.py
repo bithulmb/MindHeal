@@ -76,10 +76,13 @@ class CustomUser(AbstractBaseUser):
 # Patient Profile Model
 class PatientProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='patient_profile')
-    profile_image = CloudinaryField('profile_image', folder="users/profile_images", blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=20, choices=Gender.choices, default=Gender.UNSPECIFIED)
+    occupation = models.CharField(max_length=25, blank=True, null=True)
     mobile_number = models.CharField(max_length=15,blank=True, null=True)
+    medical_history = models.TextField(blank=True, null=True)
+    profile_image = CloudinaryField('profile_image', folder="users/profile_images", blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

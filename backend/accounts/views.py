@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status,generics
 from .serializers import (
@@ -7,11 +7,12 @@ from .serializers import (
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
     PsychologistProfileSerializer,
-    PasswordChangeSerializer
+    PasswordChangeSerializer,
+    PatientProfileSerializer,
     )
 from rest_framework.views import APIView
 from .utils import generate_otp,send_otp_email,CustomRefreshToken
-from .models import EmailVerificationOTP,PsychologistProfile,ApprovalStatusChoices
+from .models import EmailVerificationOTP,PsychologistProfile,ApprovalStatusChoices,PatientProfile
 from django.db  import transaction
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
@@ -24,6 +25,7 @@ from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from .permissions import IsPatient,IsPsychologist
 
 # Create your views here.
 
@@ -341,7 +343,7 @@ class PsychologistProfileView(APIView):
 
 
 #api view for getting the details of the psychologist profiles
-class PsychologistProfileListView(generics.ListAPIView):
+class PsychologistProfilePendingListView(generics.ListAPIView):
     queryset = PsychologistProfile.objects.filter(approval_status = "Pending")
     serializer_class = PsychologistProfileSerializer
     permission_classes=[IsAdminUser]
@@ -386,3 +388,34 @@ class PasswordChangeView(generics.UpdateAPIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+# class UserProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+#     serializer_class = PatientProfileSerializer
+#     permission_classes = [IsPatient]
+    
+    
+#     def get_object(self):
+#         return get_object_or_404(PatientProfile, user=self.request.user)
+
+class UserProfileRetrieveCreateUpdateView(APIView):
+    permission_classes=[IsPatient]
+    
+    def get(self,request):
+        try:
+            profile = PatientProfile.objects.get(user=request.user)
+            serializer = PatientProfileSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except PatientProfile.DoesNotExist:
+            return Response({'error': "Patient Profile Not Found"},status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, *args, **kwargs):
+       
+        serializer = PatientProfileSerializer(data = request.data, context = {'request':request})
+        
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
+        
