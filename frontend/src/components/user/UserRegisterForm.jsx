@@ -15,7 +15,7 @@ const userRegisterSchema = z.object({
   .string()
   .min(2,{message : "First name should contain minimum 2 characters"})
   .regex(/^[A-Za-z]+(\s[A-Za-z]+)*$/, {message : "First name should contain only alphabets" }), 
-  
+ 
   last_name: z
   .string()
   .min(2, { message: "Last name should contain minimum 2 characters" })

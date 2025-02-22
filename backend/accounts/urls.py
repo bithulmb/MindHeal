@@ -19,7 +19,8 @@ from .views import (
     CheckRefreshTokenView,
     PsychologistProfileView,
     PsychologistProfileListView,
-    PsychologistRetrieveUpdateView
+    PsychologistRetrieveUpdateView,
+    PasswordChangeView,
     
 )
 
@@ -35,6 +36,8 @@ urlpatterns = [
     path("api/auth/google/", GoogleLoginView.as_view(), name="google-login"),
     path("api/auth/reset-password/", PasswordResetRequestView.as_view(), name="password-reset-request"),
     path("api/auth/reset-password-confirm/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="password-reset-confirm"),
+
+    path("api/auth/change-password/",PasswordChangeView.as_view(),name='password-change'),
     
     path("api/admin/users/", UserListView.as_view(), name = "admin-user-list"),
     path("api/admin/psychologists/", PsychologistListView.as_view(), name = "admin-psychologist-list"),

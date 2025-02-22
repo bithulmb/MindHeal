@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
-import { Home, User, Lock, CalendarCheck, DollarSign, Menu, X } from "lucide-react";
+import { Home, User, Lock, CalendarCheck, DollarSign, Menu, X, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const PsychologistSidebar = () => {
-    const { theme } = useTheme();
+    
     const [isOpen, setIsOpen] = useState(false);
   
     const menuItems = [
-      { name: "Dashboard", icon: <Home />, path: "/dashboard" },
+      { name: "Dashboard", icon: <LayoutDashboard />, path: "/dashboard" },
       { name: "My Profile", icon: <User />, path: "/profile" },
       { name: "Change Password", icon: <Lock />, path: "/change-password" },
-      { name: "My Consultation", icon: <CalendarCheck />, path: "/consultation" },
+      { name: "My Consultations", icon: <CalendarCheck />, path: "/consultation" },
       { name: "My Earnings", icon: <DollarSign />, path: "/earnings" },
     ];
   
@@ -27,7 +27,7 @@ const PsychologistSidebar = () => {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64">
-            <SidebarContent />
+            <SidebarContent menuItems={menuItems}/>
           </SheetContent>
         </Sheet>
   
@@ -39,22 +39,15 @@ const PsychologistSidebar = () => {
         <div className="p-6">
           <h1 className="text-xl font-bold text-primary">Psychologist Dashboard</h1>
         </div>
-          <SidebarContent />
+          <SidebarContent menuItems={menuItems} />
         </aside>
       </div>
     );
 };
 
 
-const SidebarContent = () => {
-    const menuItems = [
-      { name: "Dashboard", icon: <Home />, path: "dashboard" },
-      { name: "My Profile", icon: <User />, path: "profile" },
-      { name: "Change Password", icon: <Lock />, path: "change-password" },
-      { name: "My Consultation", icon: <CalendarCheck />, path: "consultation" },
-      { name: "My Earnings", icon: <DollarSign />, path: "earnings" },
-    ];
-  
+const SidebarContent = ({menuItems}) => {
+
     return (
       <nav className="space-y-2">
         {menuItems.map((item) => (

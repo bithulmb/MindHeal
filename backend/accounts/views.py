@@ -6,7 +6,8 @@ from .serializers import (
     MyTokenObtainPairSerializer,
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
-    PsychologistProfileSerializer
+    PsychologistProfileSerializer,
+    PasswordChangeSerializer
     )
 from rest_framework.views import APIView
 from .utils import generate_otp,send_otp_email,CustomRefreshToken
@@ -368,3 +369,20 @@ class PsychologistRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         
         profile.save()
         return Response({'message' : message}, status=status.HTTP_200_OK)
+
+#view for changing password of user
+class PasswordChangeView(generics.UpdateAPIView):
+    serializer_class = PasswordChangeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        
+        serializer = self.get_serializer(data = request.data, context = {'request' : request})
+        if serializer.is_valid():
+            user = request.user
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({'detail': 'Password updated succesfully'}, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

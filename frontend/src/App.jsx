@@ -13,7 +13,6 @@ import Contact from './pages/common/Contact';
 import LoginPage from './pages/common/LoginPage';
 import UserRegisterPage from './pages/common/UserRegisterPage';
 import ResetPasswordPage from './pages/common/ResetPasswordPage';
-import UserDashboard from './pages/user/UserDashboard';
 import UserProtectedRoute from './utils/protected routes/UserProtectedRoute';
 import OtpVerficationPage from './pages/common/OtpVerificationPage';
 import ResetPasswordConfirmPage from './pages/common/ResetPasswordConfirmPage';
@@ -38,6 +37,13 @@ import AdminApproveRequestPage from './pages/admin/AdminApproveRequestPage';
 import AdminApproveRejectCard from './components/admin/AdminApproveRejectCard';
 import PsychologistProfileRejected from './components/psychologist/PsychologistProfileRejected';
 import PsychologistProfileProtectedRoute from './utils/protected routes/PsychologistProfileProtectedRoute';
+import UserLayout from './layouts/UserLayout';
+import UserDashboard from './components/user/UserDashboard';
+import UserProfile from './components/user/UserProfile';
+import ChangePassword from './components/common/ChangePassword';
+import UserConsultations from './components/user/UserConsultations';
+import UserChats from './components/user/UserChats';
+import UserWallet from './components/user/UserWallet';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -72,7 +78,15 @@ function App() {
 
                 <Route element={<UserProtectedRoute />}>
                   
-                  <Route path="/user/dashboard" element={<UserDashboard />} />
+                  {/* <Route path="/user/dashboard" element={<UserDashboard />} /> */}
+                  <Route path='/user' element={<UserLayout/>} >
+                        <Route path="dashboard" element={<UserDashboard/>} />
+                        <Route path="profile" element={<UserProfile/>} />             
+                        <Route path="change-password" element={<ChangePassword/>} /> 
+                        <Route path="consultations" element={<UserConsultations/>} />  
+                        <Route path="chats" element={<UserChats/>} />  
+                        <Route path="wallet" element={<UserWallet/>} />   
+                  </Route>
                 </Route>
                     
                   
