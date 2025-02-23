@@ -46,6 +46,7 @@ import UserChats from './components/user/UserChats';
 import UserWallet from './components/user/UserWallet';
 import UserProfileForm from './components/user/UserProfileForm';
 import UserProfileCreationForm from './components/user/UserProfileCreationForm';
+import UserProfileUpdateForm from './components/user/UserProfileUpdateForm';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -89,7 +90,7 @@ function App() {
                         <Route path="chats" element={<UserChats/>} />  
                         <Route path="wallet" element={<UserWallet/>} />
                         <Route path="profile/create" element={<UserProfileCreationForm/>} />
-                        <Route path="profile/edit" element={<UserProfileForm/>} />    
+                        <Route path="profile/update" element={<UserProfileUpdateForm/>} />    
                   </Route>
                 </Route>
                     

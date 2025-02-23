@@ -416,6 +416,17 @@ class UserProfileRetrieveCreateUpdateView(APIView):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, *args, **kwargs):
+        try:
+            profile = PatientProfile.objects.get(user=request.user)
+            serializer = PatientProfileSerializer(profile, data=request.data, partial=True, context={'request': request})
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except PatientProfile.DoesNotExist:
+            return Response({'error': "Patient Profile Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
 
         

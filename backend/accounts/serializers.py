@@ -51,13 +51,26 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PatientProfileSerializer(serializers.ModelSerializer):
     
+    first_name = serializers.CharField(source = 'user.first_name', required = False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
+    
     class Meta:
         model = PatientProfile        
         fields = ['id', 'user', 'date_of_birth', 
-                 'gender','occupation', 'mobile_number', 'medical_history', 'profile_image','created_at', 'updated_at']
+                 'gender','occupation', 'mobile_number', 'medical_history', 'profile_image','created_at', 'updated_at','first_name','last_name']
         read_only_fields = ['created_at', 'updated_at']
         depth = 1
-
+    
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user',{})
+        if user_data:
+            user = instance.user
+            if 'first_name' in user_data:
+                user.first_name = user_data['first_name']
+            if 'last_name' in user_data:
+                user.last_name = user_data['last_name']
+            user.save()
+        return super().update(instance, validated_data)
 
 
 class PsychologistProfileSerializer(serializers.ModelSerializer):    

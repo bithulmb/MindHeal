@@ -17,6 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useNavigate } from 'react-router-dom';
 
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
@@ -57,6 +58,8 @@ const profileSchema = z.object({
 
 const UserProfileCreationForm = () => {
 
+  const navigate = useNavigate()
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm({
@@ -95,9 +98,9 @@ const UserProfileCreationForm = () => {
         }
      })
      console.log(response.data)
-    const formDataObject = Object.fromEntries(formData.entries());
-    console.log("Form Data:", formDataObject);
+     navigate("/user/profile")
       toast.success("Patient profile created successfully");
+      
     
     } catch (error) {
       toast.error(error.response?.data?.detail || "Failed to create profile");

@@ -21,39 +21,18 @@ import {
 } from 'lucide-react';
 import api from '../api/api';
 import UserProfileNotCreated from './UserProfileNotCreated';
-import { ACCEPTED_IMAGE_TYPES, CLOUDINARY_BASE_URL, MAX_FILE_SIZE } from '@/utils/constants/constants';
+import { CLOUDINARY_BASE_URL } from '@/utils/constants/constants';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import useImageCropper from '@/hooks/UseImageCropper';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import ReactCrop from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
 
 
 
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   const navigate = useNavigate()
-
-  const {
-    selectedImage,
-    crop,
-    setCrop,
-    croppedImage,
-    isCropModalOpen,
-    setIsCropModalOpen,
-    imageRef,
-    setImageRef,
-    uploading,
-    setUploading,
-    handleImageSelect,
-    onCropComplete,
-    resetCropper,
-  } = useImageCropper();
-
-  
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -74,28 +53,23 @@ const UserProfile = () => {
   }, []);
 
   // Handle profile picture upload
-  // const handleProfilePicChange = async (event) => {
-  //   const file = event.target.files[0];
-  //   if (!file) return;
+  const handleProfilePicChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-
-  //   if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-  //     toast.error("Only .jpg, .jpeg, .png, and .webp formats are supported");
-  //     return;
-  //   }
-  //   if (file.size > MAX_FILE_SIZE) {
-  //     toast.error("Max file size is 2MB");
-  //     return;
-  //   }
-
-  const handleProfilePicUpload = async () => {
-    if (!croppedImage) {
-      toast.error("Please crop the image first");
+    const acceptedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const maxSize = 2 * 1024 * 1024; 
+    if (!acceptedTypes.includes(file.type)) {
+      toast.error("Only .jpg, .jpeg, .png, and .webp formats are supported");
+      return;
+    }
+    if (file.size > maxSize) {
+      toast.error("Max file size is 2MB");
       return;
     }
 
     const formData = new FormData();
-    formData.append('profile_image', croppedImage, 'profile_image.jpg');
+    formData.append('profile_image', file);
 
     try {
       setUploading(true);
@@ -104,7 +78,6 @@ const UserProfile = () => {
       });
       setUserData(response.data); // Update UI with new profile data
       toast.success("Profile picture updated successfully");
-      resetCropper();
     } catch (error) {
       console.error('Error uploading profile picture:', error.response?.data);
       toast.error("Failed to update profile picture");
@@ -177,7 +150,7 @@ const UserProfile = () => {
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 className="hidden"
-                onChange={handleImageSelect}
+                onChange={handleProfilePicChange}
               />
             </div>
             <div className="text-center sm:text-left my-auto">
@@ -286,48 +259,6 @@ const UserProfile = () => {
           </div>
         </CardContent>
       </Card>
-      <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Crop Your Profile Picture</DialogTitle>
-          </DialogHeader>
-          {selectedImage && (
-            <ReactCrop
-              crop={crop}
-              onChange={(_, percentCrop) => setCrop(percentCrop)}
-              onComplete={onCropComplete}
-              aspect={1 / 1}
-             
-            >
-              <img
-                src={selectedImage}
-                onLoad={(e) => setImageRef(e.currentTarget)}
-                alt="Crop preview"
-              />
-            </ReactCrop>
-          )}
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsCropModalOpen(false)}
-              disabled={uploading}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleProfilePicUpload} disabled={uploading}>
-              {uploading ? (
-                <>
-                  <div className="animate-spin h-5 w-5 border-t-2 border-b-2 border-white rounded-full mr-2" />
-                  Uploading...
-                </>
-              ) : (
-                "Save"
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
     </div>
   );
 };
