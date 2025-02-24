@@ -47,6 +47,7 @@ import UserWallet from './components/user/UserWallet';
 import UserProfileForm from './components/user/UserProfileForm';
 import UserProfileCreationForm from './components/user/UserProfileCreationForm';
 import UserProfileUpdateForm from './components/user/UserProfileUpdateForm';
+import PublicRoute from './utils/protected routes/PublicRoute';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;

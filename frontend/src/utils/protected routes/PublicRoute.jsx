@@ -1,15 +1,17 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { Navigate, Outlet } from 'react-router-dom'
 
-const PublicRoute = () => {
+const PublicRoute = ({children}) => {
+
  
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
 
-    if (!isAuthenticated){
+    if (isAuthenticated){
         return <Navigate to='/' />
     }
 
-    return <Outlet/>
+    return children
 
   
 }

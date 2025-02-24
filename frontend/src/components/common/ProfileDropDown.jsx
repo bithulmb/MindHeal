@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '@/redux/slices/authSlice'
-import { ACCESS_TOKEN, BASE_URL, REFRESH_TOKEN } from '@/utils/constants/constants'
-import { resetProfile } from "@/redux/slices/psychologistProfileSlice";
+import { ACCESS_TOKEN, BASE_URL, CLOUDINARY_BASE_URL, REFRESH_TOKEN } from '@/utils/constants/constants'
+import { resetPsychologistProfile } from "@/redux/slices/psychologistProfileSlice";
+import { resetPatientProfile } from "@/redux/slices/patientProfileSlice";
 
 const ProfileDropdown = () => {
   const { theme } = useTheme();
@@ -15,6 +16,7 @@ const ProfileDropdown = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate();
   const location = useLocation()
+  
 
   // const isPsychologistLogin = location.pathname.includes("psychologist")
   // const userRole = isPsychologistLogin ? 'psychologist' : 'user'
@@ -25,6 +27,9 @@ const ProfileDropdown = () => {
     var userRole = user.role ==="Psychologist" ? "psychologist" : "user"
   }
 
+  const profilePic = userRole==="psychologist" ? useSelector((state) => state?.psychologistProfile?.profile?.profile_image) : useSelector((state) => state?.patientProfile?.profile?.profile_image)
+  console.log(profilePic)
+
   const handleLogin = () => {
     navigate("/user/login");
   };
@@ -32,21 +37,13 @@ const ProfileDropdown = () => {
   const handleLogout = () => {
     localStorage.removeItem(ACCESS_TOKEN)
     localStorage.removeItem(REFRESH_TOKEN)
+    localStorage.clear()
     dispatch(logout())
-    dispatch(resetProfile())
+    dispatch(resetPsychologistProfile())
+    dispatch(resetPatientProfile())
 
     navigate("/")
   }
-
-
-
-//   const [user, setUser] = useState({
-//     isLoggedIn: false, // Change this to false for logged-out state
-//     name: "John Doe",
-//     profilePic: "https://randomuser.me/api/portraits/men/32.jpg",
-//   });
-
-
 
   return (
     <div className="flex items-center space-x-4">
@@ -55,7 +52,7 @@ const ProfileDropdown = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
               <Avatar className="w-10 h-10">
-                <AvatarImage src={user.profilePic} alt="Profile Picture" />
+                <AvatarImage src={`${CLOUDINARY_BASE_URL}${profilePic}`} alt="Profile Picture" />
                 <AvatarFallback className="bg-gray-500 text-white">{user.name[0]}</AvatarFallback>
               </Avatar>
               <span className="hidden md:block text-sm font-medium">{user.name}</span>
@@ -63,7 +60,7 @@ const ProfileDropdown = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem asChild>
-              <Link to={`/${userRole}/dashboard`}>My Profile</Link>
+              <Link to={`/${userRole}/dashboard`}>Dashboard</Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleLogout} className="text-red-500 cursor-pointer">
               Logout

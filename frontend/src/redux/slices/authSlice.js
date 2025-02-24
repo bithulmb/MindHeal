@@ -18,11 +18,7 @@ export const AuthSlice = createSlice({
     name : "auth",
     initialState,
     reducers : {
-        // loginStart : (state) => {
-        //     state.loading = true
-        //     state.error = null
-
-        // },
+  
         loginSuccess : (state, action) => {
             
             const access = action.payload.token
@@ -38,10 +34,7 @@ export const AuthSlice = createSlice({
            
         },
 
-        // loginFailure : (state,action) => {
-        //     state.error = action.payload
-        //     state.loading = false
-        // },
+    
 
         logout : (state) => {
             

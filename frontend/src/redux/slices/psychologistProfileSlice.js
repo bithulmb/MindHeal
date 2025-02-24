@@ -9,6 +9,8 @@ export const fetchPsychologistProfile = createAsyncThunk(
         try {
             
             const response = await api.get('/api/psychologist/profile/')
+
+            localStorage.setItem('psychologistProfile', JSON.stringify(response.data));
             return response.data
         } catch (error) {
             console.log("error while fetching psychologist profile",error)
@@ -18,21 +20,23 @@ export const fetchPsychologistProfile = createAsyncThunk(
 )
 
 
+const storedProfile = localStorage.getItem('psychologistProfile');
+
 const psychologistProfileSlice = createSlice({
     name : 'psychologistProfileSlice',
     initialState : {
-        profile : null,
+        profile : storedProfile ? JSON.parse(storedProfile) : null,
         loading : false,
         error : null
     },
     reducers : {
-        resetProfile: (state) => {
+        resetPsychologistProfile: (state) => {
             state.profile = null;
             state.loading = false;
             state.error = null;
         },
 
-        setProfile : (state, action) => {
+        setPsychologistProfile : (state, action) => {
             state.profile = action.payload
         }
       },
@@ -56,4 +60,4 @@ const psychologistProfileSlice = createSlice({
 })
 
 export default psychologistProfileSlice.reducer
-export const { resetProfile, setProfile} = psychologistProfileSlice.actions
+export const { resetPsychologistProfile, setPsychologistProfile} = psychologistProfileSlice.actions

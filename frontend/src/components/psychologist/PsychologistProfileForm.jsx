@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import calculateAge from "@/utils/util functions/calculateAge";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setProfile } from "@/redux/slices/psychologistProfileSlice";
+import { setPsychologistProfile } from "@/redux/slices/psychologistProfileSlice";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -126,7 +126,7 @@ export default function PsychologistProfileForm() {
               'Content-Type': 'multipart/form-data'
             }})
             console.log('form submitted and succesful')
-            dispatch(setProfile(response.data))
+            dispatch(setPsychologistProfile(response.data))
             navigate("/psychologist/profile-submitted")
             toast.success("Form Submitted succesfully")
             console.log(response.data)

@@ -16,6 +16,8 @@ import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
+import { fetchPatientProfile } from "@/redux/slices/patientProfileSlice";
+import { fetchPsychologistProfile } from "@/redux/slices/psychologistProfileSlice";
 
   //zod form schema
   const schema = z.object({
@@ -78,9 +80,16 @@ const LoginForm = () => {
             console.log("email not verified")
             return
           }
+
+          if (role==="Patient"){
+            await dispatch(fetchPatientProfile()) 
+          } else if (role==="Psychologist") {
+            await dispatch(fetchPsychologistProfile())
+          }
+
         
         const userRole = role==="Psychologist" ? "psychologist" : "user"
-        
+       
         navigate(`/${userRole}/dashboard`)
         toast.success("You have succesfully logged in")
         console.log("login succesful")
@@ -142,6 +151,12 @@ const LoginForm = () => {
         )
       )
 
+      if (role==="Patient"){
+        await dispatch(fetchPatientProfile()) 
+      } else if (role==="Psychologist") {
+        await dispatch(fetchPsychologistProfile())
+      }
+      
       let dashboardRoute = res.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
       
       navigate(dashboardRoute)
