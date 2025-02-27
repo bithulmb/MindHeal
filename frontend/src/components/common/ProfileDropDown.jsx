@@ -28,7 +28,7 @@ const ProfileDropdown = () => {
   }
 
   const profilePic = userRole==="psychologist" ? useSelector((state) => state?.psychologistProfile?.profile?.profile_image) : useSelector((state) => state?.patientProfile?.profile?.profile_image)
-  console.log(profilePic)
+
 
   const handleLogin = () => {
     navigate("/user/login");

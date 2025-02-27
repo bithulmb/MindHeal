@@ -37,6 +37,7 @@ const patientProfileSlice = createSlice({
         },
 
         setPatientProfile : (state, action) => {
+            localStorage.setItem('userProfile', JSON.stringify(action.payload))
             state.profile = action.payload
         }
       },

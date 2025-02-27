@@ -25,17 +25,22 @@ import { ACCEPTED_IMAGE_TYPES, CLOUDINARY_BASE_URL, MAX_FILE_SIZE } from '@/util
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import useImageCropper from '@/hooks/UseImageCropper';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPatientProfile } from '@/redux/slices/patientProfileSlice';
 
 
 
 const UserProfile = () => {
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [userData, setUserData] = useState(null);
+  // const [loading, setLoading] = useState(true);
+
+  const userData = useSelector((state) => state.patientProfile?.profile)
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const {
     selectedImage,
@@ -55,23 +60,23 @@ const UserProfile = () => {
 
   
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
         
-        const response = await api.get("/api/user/profile/")
+  //       const response = await api.get("/api/user/profile/")
         
-        setUserData(response.data)
-        console.log("user profile fetched")
-      } catch (error) {
-        console.error('Error fetching user data:', error.response?.data);  
-      } finally {
-        setLoading(false)
-      }
-    };
+  //       setUserData(response.data)
+  //       console.log("user profile fetched")
+  //     } catch (error) {
+  //       console.error('Error fetching user data:', error.response?.data);  
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   };
 
-    fetchUserData();
-  }, []);
+  //   fetchUserData();
+  // }, []);
 
   // Handle profile picture upload
   // const handleProfilePicChange = async (event) => {
@@ -102,10 +107,12 @@ const UserProfile = () => {
       const response = await api.patch("/api/user/profile/", formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setUserData(response.data); // Update UI with new profile data
+      // setUserData(response.data); 
+      dispatch(setPatientProfile(response.data))
       toast.success("Profile picture updated successfully");
       resetCropper();
     } catch (error) {
+      console.error(error)
       console.error('Error uploading profile picture:', error.response?.data);
       toast.error("Failed to update profile picture");
     } finally {
@@ -113,13 +120,13 @@ const UserProfile = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+  //     </div>
+  //   );
+  // }
 
   if (!userData) {
     return <UserProfileNotCreated/>;
@@ -290,6 +297,9 @@ const UserProfile = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Crop Your Profile Picture</DialogTitle>
+            <DialogDescription>
+            Adjust the crop area to fit your profile picture. Click "Save" when you're done.
+          </DialogDescription>
           </DialogHeader>
           {selectedImage && (
             <ReactCrop

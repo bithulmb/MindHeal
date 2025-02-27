@@ -18,6 +18,8 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { setPatientProfile } from '@/redux/slices/patientProfileSlice';
+import { useDispatch } from 'react-redux';
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -65,7 +67,8 @@ const UserProfileUpdateForm = () => {
 
   const location = useLocation()
   const profileData = location?.state?.profile
-  console.log(profileData)
+ 
+  const dispatch = useDispatch()
 
   const form = useForm({
     resolver: zodResolver(profileSchema),
@@ -108,7 +111,7 @@ const UserProfileUpdateForm = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data);
+      dispatch(setPatientProfile(response.data))
       navigate("/user/profile");
       toast.success("Patient profile updated successfully");
     } catch (error) {

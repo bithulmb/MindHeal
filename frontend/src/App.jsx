@@ -81,8 +81,6 @@ function App() {
                 <Route path="/user/verify-email" element={<EmailNotVerifiedPage/>} />
 
                 <Route element={<UserProtectedRoute />}>
-                  
-                  {/* <Route path="/user/dashboard" element={<UserDashboard />} /> */}
                   <Route path='/user' element={<UserLayout/>} >
                         <Route path="dashboard" element={<UserDashboard/>} />
                         <Route path="profile" element={<UserProfile/>} />             

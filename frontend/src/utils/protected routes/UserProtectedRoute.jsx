@@ -6,7 +6,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 const UserProtectedRoute = () => {
 
   // const dispatch = useDispatch()
-  console.log("inside")
+
 
  
  
@@ -34,7 +34,7 @@ const UserProtectedRoute = () => {
     if (!isEmailVerified){
       return <Navigate to='/user/verify-email' replace/>
     }
-   console.log("outlet")
+   
     return <Outlet/>
 
  

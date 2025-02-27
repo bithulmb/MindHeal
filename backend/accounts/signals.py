@@ -42,7 +42,8 @@ def delete_old_profile_image(sender, instance, **kwargs):
     try:
         old_instance = sender.objects.get(pk=instance.pk)
        
-        if old_instance.profile_image and instance.profile_image and old_instance.profile_image != instance.profile_image:
+       
+        if old_instance.profile_image and instance.profile_image and str(old_instance.profile_image) != str(instance.profile_image):
             old_public_id = old_instance.profile_image.public_id
             try:
                 cloudinary.uploader.destroy(old_public_id)
@@ -51,7 +52,5 @@ def delete_old_profile_image(sender, instance, **kwargs):
                print(f"Failed to delete old image {old_public_id}: {e}")
     except Exception as e:
         print("no old instance ", e)
-
-
 
 
