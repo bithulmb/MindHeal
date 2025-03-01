@@ -311,26 +311,6 @@ class CheckRefreshTokenView(APIView):
         else:
             return Response({"message": "Refresh token not found"}, status=status.HTTP_404_NOT_FOUND)
 
-#view to handle psychologist profile creation
-class PsychologistProfileView(APIView):
-    permission_classes=[IsAuthenticated]
-    def get(self,request):
-        try:
-            profile = PsychologistProfile.objects.get(user=request.user)
-            serializer = PsychologistProfileSerializer(profile)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except PsychologistProfile.DoesNotExist:
-            return Response({'error': "PsychologistProfileNotFound"},status=status.HTTP_404_NOT_FOUND)
-
-    def post(self, request, *args, **kwargs):
-       
-        serializer = PsychologistProfileSerializer(data = request.data, context = {'request':request})
-        
-        if serializer.is_valid():
-            serializer.save(user=request.user,approval_status=ApprovalStatusChoices.PENDING)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    
 
 
 # class PsychologistProfileView(generics.CreateAPIView):
@@ -429,4 +409,35 @@ class UserProfileRetrieveCreateUpdateView(APIView):
             return Response({'error': "Patient Profile Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
 
+
+#view to handle psychologist profile creation
+class PsychologistProfileRetrieveCreateUpdateView(APIView):
+    permission_classes=[IsPsychologist]
+    def get(self,request):
+        try:
+            profile = PsychologistProfile.objects.get(user=request.user)
+            serializer = PsychologistProfileSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except PsychologistProfile.DoesNotExist:
+            return Response({'error': "PsychologistProfileNotFound"},status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, *args, **kwargs):
+       
+        serializer = PsychologistProfileSerializer(data = request.data, context = {'request':request})
         
+        if serializer.is_valid():
+            serializer.save(user=request.user,approval_status=ApprovalStatusChoices.PENDING)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    def patch(self, request, *args, **kwargs):
+        try:
+            profile = PsychologistProfile.objects.get(user=request.user)
+            serializer = PsychologistProfileSerializer(profile, data=request.data, partial=True, context={'request': request})
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except PsychologistProfile.DoesNotExist:
+            return Response({'error': "Patient Profile Not Found"}, status=status.HTTP_404_NOT_FOUND)
+
+    

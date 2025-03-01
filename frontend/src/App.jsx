@@ -48,6 +48,10 @@ import UserProfileForm from './components/user/UserProfileForm';
 import UserProfileCreationForm from './components/user/UserProfileCreationForm';
 import UserProfileUpdateForm from './components/user/UserProfileUpdateForm';
 import PublicRoute from './utils/protected routes/PublicRoute';
+import PsychologistProfile from './components/psychologist/PsychologistProfile';
+import PsychologistProfileUpdateForm from './components/psychologist/PsychologistProfileUpdateForm';
+import PsychologistConsultations from './components/psychologist/PsychologistConsultations';
+import PsychologistEarnings from './components/psychologist/PsychologistEarnings';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -105,7 +109,12 @@ function App() {
            
                   <Route element={<PsychologistProfileProtectedRoute/>} >
                       <Route path='/psychologist' element={<PsychologistLayout/>} >
-                        <Route path="dashboard" element={<PsychologistDashboard/>} />            
+                        <Route path="dashboard" element={<PsychologistDashboard/>} />
+                        <Route path="profile" element={<PsychologistProfile/>} /> 
+                        <Route path="profile/update" element={<PsychologistProfileUpdateForm/>} />   
+                        <Route path="change-password" element={<ChangePassword/>} /> 
+                        <Route path="consultations" element={<PsychologistConsultations/>} />
+                        <Route path="earnings" element={<PsychologistEarnings/>} />            
                       </Route>
                   </Route>
                 </Route>

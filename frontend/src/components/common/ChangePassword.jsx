@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,14 +24,14 @@ const ChangePasswordSchema = z.object({
 
 const ChangePassword = () => {
   
-
+  const [error, setError] = useState(null)
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: zodResolver(ChangePasswordSchema),
   });
 
   const onSubmit = async (data) => {
     try {
-     
+      setError(null)
       const response = await api.put("/api/auth/change-password/",{
         old_password : data.old_password,
         new_password : data.new_password,
@@ -42,8 +42,15 @@ const ChangePassword = () => {
      console.log(response.data)
       reset();
     } catch (error) {
-      toast.error("Password change failed")
-      console.log(error.response?.data?.detail || "Password change failed",)
+      
+      if (error.response?.data?.old_password[0] === "Old Password is not correct"){
+        toast.error("Old Password is not correct")
+        setError("Old Password is not correct")
+      } else {
+        toast.error("Password change failed")
+        setError("Password change failed. Try again")
+      }
+      console.log(error.response?.data || "Password change failed",)
     }
   };
 
@@ -57,6 +64,7 @@ const ChangePassword = () => {
           
           
           <div>
+         
             <Label htmlFor="old_password">Old Password</Label>
             <Input
               id="old_password"
@@ -94,7 +102,9 @@ const ChangePassword = () => {
               <p className="text-red-500 text-sm">{errors.confirm_password.message}</p>
             )}
           </div>
-
+          {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
           <Button type="submit" className="w-full">
             Change Password
           </Button>

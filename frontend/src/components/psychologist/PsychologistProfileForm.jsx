@@ -37,8 +37,8 @@ const formSchema = z.object({
     ),
   date_of_birth: z.date({
     required_error: "Date of birth is required",
-  }).refine((dob) => calculateAge(dob) >=18 ,{
-    message : "You must be atleast 18 years old",
+  }).refine((dob) => calculateAge(dob) >=21 ,{
+    message : "You must be atleast 21 years old",
   }),
   gender: z.string({
     required_error: "Please select a gender",

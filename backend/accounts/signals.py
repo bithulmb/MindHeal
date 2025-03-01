@@ -33,7 +33,7 @@ def delete_profile_image(sender, instance, **kwargs):
 
 
 @receiver(pre_save, sender = PatientProfile)
-def delete_old_profile_image(sender, instance, **kwargs):
+def delete_old_profile_image_patient(sender, instance, **kwargs):
     """signal to delted the old profile picture when the profile picture is updated"""
     #if the instance is newly created one, skip the signal
     if not instance.pk:
@@ -54,3 +54,24 @@ def delete_old_profile_image(sender, instance, **kwargs):
         print("no old instance ", e)
 
 
+@receiver(pre_save, sender = PsychologistProfile)
+def delete_old_profile_image_psychologist(sender, instance, **kwargs):
+    """signal to delete the old profile picture when the profile picture is updated"""
+    
+    #if the instance is newly created one, skip the signal
+    if not instance.pk:
+        return 
+   
+    try:
+        old_instance = sender.objects.get(pk=instance.pk)
+       
+       
+        if old_instance.profile_image and instance.profile_image and str(old_instance.profile_image) != str(instance.profile_image):
+            old_public_id = old_instance.profile_image.public_id
+            try:
+                cloudinary.uploader.destroy(old_public_id)
+                print(f"Deleted old image: {old_public_id}")
+            except Exception as e:
+               print(f"Failed to delete old image {old_public_id}: {e}")
+    except Exception as e:
+        print("no old instance ", e)

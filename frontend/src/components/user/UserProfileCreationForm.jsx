@@ -18,6 +18,8 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { fetchPatientProfile, setPatientProfile } from '@/redux/slices/patientProfileSlice';
 
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
@@ -59,6 +61,7 @@ const profileSchema = z.object({
 const UserProfileCreationForm = () => {
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -97,6 +100,7 @@ const UserProfileCreationForm = () => {
             'Content-Type' : 'multipart/form-data'
         }
      })
+     dispatch(setPatientProfile(response.data))
      console.log(response.data)
      navigate("/user/profile")
       toast.success("Patient profile created successfully");

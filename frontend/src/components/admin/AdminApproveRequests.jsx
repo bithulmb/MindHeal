@@ -17,7 +17,7 @@ const AdminApproveRequests = () => {
     const fetchProfiles = async () => {
         try {
           const response = await api.get("api/admin/psychologist-profiles/")
-          clears(response.data)
+          setProfiles(response.data)
         } catch (error) {
           console.error("error fetching profiles of psychologist", error)
         }

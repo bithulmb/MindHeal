@@ -10,11 +10,11 @@ const PsychologistSidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
   
     const menuItems = [
-      { name: "Dashboard", icon: <LayoutDashboard />, path: "/dashboard" },
-      { name: "My Profile", icon: <User />, path: "/profile" },
-      { name: "Change Password", icon: <Lock />, path: "/change-password" },
-      { name: "My Consultations", icon: <CalendarCheck />, path: "/consultation" },
-      { name: "My Earnings", icon: <DollarSign />, path: "/earnings" },
+      { name: "Dashboard", icon: <LayoutDashboard />, path: "dashboard" },
+      { name: "My Profile", icon: <User />, path: "profile" },
+      { name: "Change Password", icon: <Lock />, path: "change-password" },
+      { name: "My Consultations", icon: <CalendarCheck />, path: "consultations" },
+      { name: "My Earnings", icon: <DollarSign />, path: "earnings" },
     ];
   
     return (
