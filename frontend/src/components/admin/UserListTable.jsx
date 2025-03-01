@@ -47,8 +47,7 @@ const UserListTable = () => {
       console.error("Error updating user block status", error);
     }
   }
-  
-  console.log(users)
+
   return (
     <div>
       <Table>  

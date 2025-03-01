@@ -79,6 +79,7 @@ INSTALLED_APPS = [
 
     #local
     'accounts',
+    'admin_panel',
 
 ]
 

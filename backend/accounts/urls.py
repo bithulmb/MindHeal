@@ -13,13 +13,8 @@ from .views import (
     GoogleLoginView,
     PasswordResetRequestView,
     PasswordResetConfirmView,
-    UserListView,
-    PsychologistListView,
-    UserUpdateBlockStatusView,
     CheckRefreshTokenView,
     PsychologistProfileRetrieveCreateUpdateView,
-    PsychologistProfilePendingListView,
-    PsychologistRetrieveUpdateView,
     PasswordChangeView,
     UserProfileRetrieveCreateUpdateView
     
@@ -37,14 +32,8 @@ urlpatterns = [
     path("api/auth/google/", GoogleLoginView.as_view(), name="google-login"),
     path("api/auth/reset-password/", PasswordResetRequestView.as_view(), name="password-reset-request"),
     path("api/auth/reset-password-confirm/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="password-reset-confirm"),
-
     path("api/auth/change-password/",PasswordChangeView.as_view(),name='password-change'),
     
-    path("api/admin/users/", UserListView.as_view(), name = "admin-user-list"),
-    path("api/admin/psychologists/", PsychologistListView.as_view(), name = "admin-psychologist-list"),
-    path("api/admin/users/<int:id>", UserUpdateBlockStatusView.as_view(), name = "admin-user-block"),
-    path("api/admin/psychologist-profiles/", PsychologistProfilePendingListView.as_view(), name = "admin-psychologist-profile"),
-    path("api/admin/psychologist-profiles/<int:pk>/", PsychologistRetrieveUpdateView.as_view(), name = "admin-psychologist-profile-retrieve-update"),
 
     path("api/psychologist/profile/",PsychologistProfileRetrieveCreateUpdateView.as_view(),name='psychologist-profile'),
 
