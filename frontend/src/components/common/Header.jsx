@@ -73,7 +73,7 @@ const Header = () => {
               className={({ isActive }) =>
                 isActive
                   ? "text-foreground font-bold"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground "
               }>
               Psychologists
             </NavLink>

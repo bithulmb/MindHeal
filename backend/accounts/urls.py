@@ -16,7 +16,9 @@ from .views import (
     CheckRefreshTokenView,
     PsychologistProfileRetrieveCreateUpdateView,
     PasswordChangeView,
-    UserProfileRetrieveCreateUpdateView
+    UserProfileRetrieveCreateUpdateView,
+    GetPsychologistsView,
+    GetPsychologistDetailView
     
 )
 
@@ -38,6 +40,9 @@ urlpatterns = [
     path("api/psychologist/profile/",PsychologistProfileRetrieveCreateUpdateView.as_view(),name='psychologist-profile'),
 
     path("api/user/profile/",UserProfileRetrieveCreateUpdateView.as_view(),name = "user-profile-get-update"),
+
+    path("api/psychologists/",GetPsychologistsView.as_view(), name = 'get-approved-psychologists'),
+    path("api/psychologists/<int:pk>/", GetPsychologistDetailView.as_view(), name="get-psychologist-detail"),
    
 
     

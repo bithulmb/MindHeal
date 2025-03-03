@@ -51,7 +51,7 @@ export default function Contact() {
           </Card>
 
           {/* Contact Information */}
-          <div className="space-y-8 mx-auto">
+          <div className="space-y-8 m-auto ">
             <h2 className="text-3xl font-bold">Get in Touch</h2>
             <div className="space-y-6">
               <div className="flex items-start gap-4">

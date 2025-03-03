@@ -22,6 +22,7 @@ import {
   GraduationCap,
   DollarSign,
   Info,
+  IndianRupee,
   
 } from 'lucide-react';
 import api from '../api/api';
@@ -267,7 +268,7 @@ const PsychologistProfile = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <DollarSign className="w-5 h-5 text-primary" />
+          <IndianRupee className="w-5 h-5 text-primary" />
           <div>
             <p className="text-sm text-gray-600">Fees</p>
             <p className="font-medium">

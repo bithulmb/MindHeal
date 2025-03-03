@@ -378,4 +378,16 @@ class PsychologistProfileRetrieveCreateUpdateView(APIView):
         except PsychologistProfile.DoesNotExist:
             return Response({'error': "Patient Profile Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
+#view for getting the profiles of approved psychologists to be displayed in the page        
+class GetPsychologistsView(generics.ListAPIView):
+    queryset = PsychologistProfile.objects.filter(approval_status = ApprovalStatusChoices.APPROVED).order_by('id')
+    serializer_class = PsychologistProfileSerializer
+    permission_classes = [AllowAny]
+
+class GetPsychologistDetailView(generics.RetrieveAPIView):
+    queryset = PsychologistProfile.objects.all()
+    serializer_class = PsychologistProfileSerializer
+    permission_classes = [AllowAny]
+
+
     

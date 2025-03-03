@@ -7,7 +7,7 @@ import Header from './components/common/Header';
 import Footer from './components/common/Footer';
 import Home from './pages/common/Home';
 import Services from './pages/common/Services';
-import Psychologists from './pages/common/Psychologists';
+import Psychologists from './pages/common/PsychologistsPage';
 import About from './pages/common/About';
 import Contact from './pages/common/Contact';
 import LoginPage from './pages/common/LoginPage';
@@ -52,6 +52,8 @@ import PsychologistProfile from './components/psychologist/PsychologistProfile';
 import PsychologistProfileUpdateForm from './components/psychologist/PsychologistProfileUpdateForm';
 import PsychologistConsultations from './components/psychologist/PsychologistConsultations';
 import PsychologistEarnings from './components/psychologist/PsychologistEarnings';
+import PsychologistsPage from './pages/common/PsychologistsPage';
+import PsychologistDetailPage from './pages/common/PsychologistDetailPage';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -68,7 +70,8 @@ function App() {
                 {/* Common Routes */}
                 <Route index element={<Home />} />
                 <Route path="/services" element={<Services />} />
-                <Route path="/psychologists" element={<Psychologists />} />
+                <Route path="/psychologists" element={<PsychologistsPage />} />
+                <Route path="/psychologists/:id" element={<PsychologistDetailPage/>} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
 
