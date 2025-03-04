@@ -65,11 +65,11 @@ class TimeSlotSerializer(serializers.ModelSerializer):
 class ConsultationSerializer(serializers.ModelSerializer):
     patient_name = serializers.CharField(source = 'patient.user.first_name', read_only = True)
     psychologist_name = serializers.CharField(source = 'time_slot.psychologist.user.first_name', read_only = True)
-
+    
     class Meta:
         model = Consultation
         fields = '__all__'
-        read_only_fields = ['created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at','patient']
     
     def validate_time_slot(self,value):
         if value.is_booked:

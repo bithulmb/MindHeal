@@ -6,7 +6,8 @@ from .views import (
     ConsultationDetailView,
     ConsultationListCreateView,
     PaymentListCreateView,
-    PaymentDetailView
+    PaymentDetailView,
+    PsychologistTimeSlotListView
     )
 
 # router = DefaultRouter( )
@@ -15,7 +16,7 @@ from .views import (
 urlpatterns = [
     path('timeslots/', TimeSlotListCreateView.as_view(), name='timeslot-list-create'),
     path('timeslots/<int:pk>/', TimeSlotDetailView.as_view(), name='timeslot-detail'),
-
+    path('psychologists/<int:psychologist_id>/timeslots/', PsychologistTimeSlotListView.as_view(), name='psychologist-timeslots'),
     
     path('consultations/', ConsultationListCreateView.as_view(), name='consultation-list-create'),
     path('consultations/<int:pk>/', ConsultationDetailView.as_view(), name='consultation-detail'),

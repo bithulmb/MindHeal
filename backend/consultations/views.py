@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import viewsets, generics
 from .models import TimeSlot,Consultation,Payment
 from .serializers import TimeSlotSerializer,ConsultationSerializer,PaymentSerializer
-from rest_framework.permissions import IsAuthenticated
-from accounts.models import PsychologistProfile, UserRole
+from rest_framework.permissions import IsAuthenticated,AllowAny
+from accounts.models import PsychologistProfile, UserRole, PatientProfile
 from accounts.permissions import IsPatient,IsPsychologist
 
 # Create your views here.
@@ -21,6 +21,7 @@ class TimeSlotListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         psychologist = PsychologistProfile.objects.get(user = self.request.user)
         serializer.save(psychologist=psychologist)
+        
 
 
 
@@ -31,6 +32,16 @@ class TimeSlotDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return TimeSlot.objects.filter(psychologist__user=self.request.user)
+
+
+class PsychologistTimeSlotListView(generics.ListAPIView):
+    serializer_class = TimeSlotSerializer
+    permission_classes = [AllowAny] 
+
+    def get_queryset(self):
+        # getting the pyschologist id from the url as path parameter
+        psychologist_id = self.kwargs['psychologist_id']
+        return TimeSlot.objects.filter(psychologist_id=psychologist_id, is_active=True, is_booked = False)
 
 
 class ConsultationListCreateView(generics.ListCreateAPIView):
@@ -44,6 +55,10 @@ class ConsultationListCreateView(generics.ListCreateAPIView):
         elif self.request.user.role == 'Psychologist':
             return Consultation.objects.filter(time_slot__psychologist__user=self.request.user)
         return Consultation.objects.none()
+    
+    def perform_create(self, serializer):
+        patient = PatientProfile.objects.get(user = self.request.user)
+        serializer.save(patient = patient)
     
 class ConsultationDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ConsultationSerializer

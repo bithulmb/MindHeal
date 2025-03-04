@@ -5,10 +5,6 @@ import { Navigate, Outlet } from 'react-router-dom'
 
 const UserProtectedRoute = () => {
 
-  // const dispatch = useDispatch()
-
-
- 
  
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
 
@@ -16,11 +12,14 @@ const UserProtectedRoute = () => {
 
     const isEmailVerified = useSelector((state) => state.auth?.user?.is_email_verified)
 
-    // useEffect(() => {
-    //   if (isAuthenticated && role==="Patient"){
-    //   dispatch(fetchPatientProfile());
-    //   }
-    // }, [dispatch]);
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+      console.log("user despatching")
+      if (isAuthenticated && role==="Patient"){
+      dispatch(fetchPatientProfile());
+      }
+    }, [dispatch]);
       
 
     if (!isAuthenticated){

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle,CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { GraduationCap, Star, Globe, User, CheckCircle, Video, Mic, MessageSquare, Briefcase, BadgeAlert } from "lucide-react"
+import { GraduationCap, Star, Globe, User, CheckCircle, Video, Mic, MessageSquare, Briefcase, BadgeAlert,Clock,Calendar } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import api from "../api/api"
@@ -9,7 +9,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CLOUDINARY_BASE_URL } from "@/utils/constants/constants"
 import calculateAge from "@/utils/util functions/calculateAge"
 import NotFound from "./NotFound"
-
+import formatIndianDate from "@/utils/util functions/formatIndianDate"
+import { useSelector } from "react-redux"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner"
+import Swal from "sweetalert2"
 
 
 export default function PsychologistDetail() {
@@ -17,29 +21,75 @@ export default function PsychologistDetail() {
   const [psychologist,setPsychologist] = useState()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [timeSlots, setTimeSlots] = useState([])
+  const [dialogOpen, setDialogOpen] = useState(false);
+  
+  const user = useSelector((state) => state.auth.user)
 
   const { id } = useParams()
-
-
+  
   useEffect(() => {
       const fetchPsychologistData = async (id) => {
-        try{
+        try {
           setLoading(true)
-          const response = await api.get(`/api/psychologists/${id}/`)
-          setPsychologist(response.data)
-          console.log("profile fetched succesfuly")
-    
-        } catch(error){
-            if (error.response?.status === 404) {
-                setError(true)
-              }
-          console.error("error while fetching"|| error?.response?.data )
-        } finally{
-          setLoading(false)
+          const [psychologistResponse, timeSlotsResponse] = await Promise.all([
+            api.get(`/api/psychologists/${id}/`),
+            api.get(`/api/psychologists/${id}/timeslots/`)
+          ])
+          setPsychologist(psychologistResponse.data)
+          setTimeSlots(timeSlotsResponse.data)
+          console.log("profile and time slots fetched succesfully")
+        }  catch (error) {
+          if (error.response?.status === 404) {
+            setError(true);
+          }
+          console.error("Error while fetching:", error?.response?.data || error);
+        } finally {
+          setLoading(false);
         }
+      };
+      fetchPsychologistData(id);
+  },[id])
+   
+  const handleBookConsultation = () => {
+    
+    if (!user) {
+      toast.error("You need to login to book a consultation");
+      return;
+    }
+    if (user.role !== "Patient") {
+      toast.error("Only patients can book consultations");
+      return;
+    }
+    setDialogOpen(true);
+  };
+
+  const bookConsultation = async (slotId) => {
+    Swal.fire({
+      title: "Confirm Booking",
+      text: "Are you sure you want to book this time slot?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#28A745",
+      cancelButtonColor: "#DC3545",
+      confirmButtonText: "Yes, Book it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await api.post(`/api/consultations/`, { time_slot : slotId});
+          setTimeSlots(timeSlots.filter((slot) => slot.id !== slotId)); // Remove booked slot from list
+          toast.success("Your Consultation booking is succesful" )
+          setDialogOpen(false);
+         
+        } catch (err) {
+          console.log(err?.response?.data || err)
+          
+          toast.error("Failed to book consultation")
       }
-      fetchPsychologistData(id)
-  },[])
+    }});
+  }
+
+
 
   if (loading) {
     return (
@@ -167,30 +217,102 @@ export default function PsychologistDetail() {
                         </section>
 
                         <section className="w-1/3 ">
-                          <h3 className="text-lg font-semibold mb-2">Available Slots</h3>
+                          <h3 className="text-lg font-semibold mb-2"> Next Available Slots</h3>
                           <div className="grid gap-2">
-                            {["Mon 10:00-11:00", "Wed 14:00-15:00", "Fri 09:00-10:00"].map((slot, index) => (
-                              <div key={index} className="p-2 bg-muted rounded-md text-sm">
-                                {slot}
-                              </div>
-                            ))}
+                            {
+                              timeSlots.length > 0 ? (
+                                  timeSlots.slice(0,3).map((slot) => (
+                                  
+                                    <div key={slot.id} className="p-2 bg-muted rounded-md text-sm">
+                                      {`${formatIndianDate(slot.date)} ${slot.start_time.slice(0, 5)} - ${slot.end_time.slice(0, 5)}`}
+                                    </div>
+                                  ))
+                              ) : (
+                                <p className="text-sm text-gray-500">No available slots.</p>
+                              )
+                            }
                           </div>
                         </section>
                             <section className="w-1/2  mt-4">
-                            <Button >
+                            <Button onClick={handleBookConsultation}>
                               Book Consultation
                             </Button>
                             </section>
-                        
-
                   </div>
                     
                 </CardContent>
               </Card>
-          </div>
-        </div>
-      </div>
-    </div>
-    </>
+              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center justify-center gap-2">
+                          <Clock className="w-6 h-6 text-primary" />
+                          Select Time Slot
+                        </DialogTitle>
+                        <DialogDescription className="text-center text-muted-foreground">
+                          Choose an available consultation time
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      {timeSlots && timeSlots.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto">
+                          {timeSlots.map((slot) => (
+                            <div 
+                              key={slot.id} 
+                              className="
+                                flex items-center justify-between 
+                                p-3 border 
+                                bg-background 
+                                rounded-lg 
+                                shadow-sm 
+                                hover:bg-primary/5 
+                                transition-colors 
+                                cursor-pointer 
+                                group
+                              "
+                              onClick={() => {
+                                bookConsultation(slot.id);
+                                setDialogOpen(false);
+                              }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <Calendar className="w-5 h-5 text-primary opacity-70 group-hover:opacity-100 transition-opacity" />
+                                <div>
+                                  <p className="text-sm font-medium group-hover:text-primary transition-colors">
+                                    {formatIndianDate(slot.date)}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {`${slot.start_time.slice(0, 5)} - ${slot.end_time.slice(0, 5)}`}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="
+                                opacity-0 
+                                group-hover:opacity-100 
+                                text-primary 
+                                transition-opacity
+                                text-sm
+                              ">
+                                Book
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center p-6 text-muted-foreground">
+                          <Clock className="w-12 h-12 mb-4 text-primary/50" />
+                          <p className="text-center">No available slots at the moment</p>
+                          <p className="text-xs text-center mt-2">Please check back later</p>
+                        </div>
+                      )}
+                    </DialogContent>
+                  </Dialog>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  </>
   )
 }
+
+
