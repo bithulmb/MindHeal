@@ -11,6 +11,8 @@ import {
 import { Button } from '../ui/button'
 import api from '../api/api'
 import { format } from 'date-fns'
+import Swal from 'sweetalert2'
+
   
 
 const UserListTable = () => {
@@ -30,23 +32,36 @@ const UserListTable = () => {
   },[])
 
   const blockUser = async (userId, isBlocked) => {
-    try{
-      const response = await api.patch(`api/admin/users/${userId}`,{
-        is_blocked : !isBlocked
-      })
 
-      if (response.status == 200){
-        setUsers(users.map(user => 
-          user.id === userId 
-          ? {...user, is_blocked:!isBlocked}
-          : user 
-        ))
-      }
+    Swal.fire({
+      title: 'Are you sure?',
       
-    } catch (error){
-      console.error("Error updating user block status", error);
-    }
-  }
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try{
+          const response = await api.patch(`api/admin/users/${userId}`,{
+            is_blocked : !isBlocked
+          })
+    
+          if (response.status == 200){
+            setUsers(users.map(user => 
+              user.id === userId 
+              ? {...user, is_blocked:!isBlocked}
+              : user 
+            ))
+          }
+          
+        } catch (error){
+          console.error("Error updating user block status", error);
+        }
+      }
+    });
+  };
 
   return (
     <div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
-import { Home, User, Lock, CalendarCheck, DollarSign, Menu, X, LayoutDashboard } from "lucide-react";
+import { Home, User, Lock, CalendarCheck, DollarSign, Menu, X, LayoutDashboard, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -13,8 +13,10 @@ const PsychologistSidebar = () => {
       { name: "Dashboard", icon: <LayoutDashboard />, path: "dashboard" },
       { name: "My Profile", icon: <User />, path: "profile" },
       { name: "Change Password", icon: <Lock />, path: "change-password" },
+      { name: "Slot Management", icon: <Timer />, path: "slots" },
       { name: "My Consultations", icon: <CalendarCheck />, path: "consultations" },
       { name: "My Earnings", icon: <DollarSign />, path: "earnings" },
+      
     ];
   
     return (
