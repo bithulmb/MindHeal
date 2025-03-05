@@ -11,21 +11,26 @@ const PsychologistProfileProtectedRoute = () => {
   const { profile, loading } = useSelector((state) => state.psychologistProfile);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
 
-  // useEffect(() => {
-   
-  //   dispatch(fetchPsychologistProfile())
-  //     .then(() => {
-  //       setInitialLoadDone(true);
-  //     })
-  //     .catch(() => {
-  //       setInitialLoadDone(true); 
-  //     });
-  // }, [dispatch]);
+   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
+  
+    const role = useSelector((state) => state.auth?.role)
+
+  useEffect(() => {
+    if (isAuthenticated && role==="Psychologist"){
+    dispatch(fetchPsychologistProfile())
+      .then(() => {
+        setInitialLoadDone(true);
+      })
+      .catch(() => {
+        setInitialLoadDone(true); 
+      });
+    }
+  }, [dispatch]);
 
  //show loading  page while loading or in initial state
-  // if (!initialLoadDone || loading) {
-  //   return <LoadingPage />;
-  // }
+  if (!initialLoadDone || loading) {
+    return <LoadingPage />;
+  }
 
   // if no profile exists after fetching, redirect to verify profile page
   if (!profile) {

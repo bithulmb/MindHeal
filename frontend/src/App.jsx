@@ -56,6 +56,8 @@ import PsychologistsPage from './pages/common/PsychologistsPage';
 import PsychologistDetailPage from './pages/common/PsychologistDetailPage';
 import AddTimeSlot from './components/psychologist/AddTimeSlot';
 import TimeSlots from './components/psychologist/TimeSlots';
+import UserConsultationsPage from './pages/user/UserConsultationsPage';
+import PsychologistConsultationsPage from './pages/psychologist/PsychologistConsultationsPage';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -94,7 +96,7 @@ function App() {
                         <Route path="dashboard" element={<UserDashboard/>} />
                         <Route path="profile" element={<UserProfile/>} />             
                         <Route path="change-password" element={<ChangePassword/>} /> 
-                        <Route path="consultations" element={<UserConsultations/>} />  
+                        <Route path="consultations" element={<UserConsultationsPage/>} />  
                         <Route path="chats" element={<UserChats/>} />  
                         <Route path="wallet" element={<UserWallet/>} />
                         <Route path="profile/create" element={<UserProfileCreationForm/>} />
@@ -118,7 +120,7 @@ function App() {
                         <Route path="profile" element={<PsychologistProfile/>} /> 
                         <Route path="profile/update" element={<PsychologistProfileUpdateForm/>} />   
                         <Route path="change-password" element={<ChangePassword/>} /> 
-                        <Route path="consultations" element={<PsychologistConsultations/>} />
+                        <Route path="consultations" element={<PsychologistConsultationsPage/>} />
                         <Route path="earnings" element={<PsychologistEarnings/>} /> 
                         <Route path="slots" element={<TimeSlots/>} />           
                       </Route>

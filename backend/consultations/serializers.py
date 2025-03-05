@@ -12,45 +12,44 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         """
         Custom validation for the entire object, using request context for psychologist.
         """
-        # Extract fields from data
+       
         date = data.get('date')
         start_time = data.get('start_time')
         end_time = data.get('end_time')
 
-        # Get psychologist from request context (set by the view)
-        print(self.context)
+        # Get psychologist from request context (set by the view)        
         request = self.context.get('request')
-        print(request,request.user)
+        
         if not request :
             raise serializers.ValidationError('Psychologist information is missing or invalid.')
 
         psychologist = PsychologistProfile.objects.get(user = request.user)
 
-        # 1. Check if end_time is after start_time
+        
         if start_time >= end_time:
             raise serializers.ValidationError({'end_time': 'End time must be after start time'})
 
-        # 2. Check past date/time
+        
         now = timezone.now()
         if date < now.date():
             raise serializers.ValidationError({'date': 'Cannot create time slots in the past date'})
         elif date == now.date() and start_time < now.time():
             raise serializers.ValidationError({'start_time': 'Cannot create time slots in the past'})
 
-        # 3. Check 1-hour duration
+       
         slot_start = datetime.combine(date, start_time)
         slot_end = datetime.combine(date, end_time)
         duration = slot_end - slot_start
         if duration != timedelta(hours=1):
             raise serializers.ValidationError('Time slot must be exactly 1 hour')
 
-        # 4. Check for overlapping time slots
+        #Checking  for overlapping time slots
         overlapping_slots = TimeSlot.objects.filter(
             psychologist=psychologist,
             date=date,
-            start_time__lt=end_time,  # Starts before this slot ends
-            end_time__gt=start_time,  # Ends after this slot starts
-        ).exclude(pk=self.instance.pk if self.instance else None)  # Exclude current instance for updates
+            start_time__lt=end_time,  
+            end_time__gt=start_time,  
+        ).exclude(pk=self.instance.pk if self.instance else None)  
 
         if overlapping_slots.exists():
             raise serializers.ValidationError('This time slot overlaps with an existing slot.')
@@ -63,13 +62,25 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         read_only_fields = ['is_booked', 'created_at', 'updated_at','psychologist']
 
 class ConsultationSerializer(serializers.ModelSerializer):
-    patient_name = serializers.CharField(source = 'patient.user.first_name', read_only = True)
-    psychologist_name = serializers.CharField(source = 'time_slot.psychologist.user.first_name', read_only = True)
-    
+    # patient_name = serializers.CharField(source = 'patient.user.first_name', read_only = True)
+    # psychologist_name = serializers.CharField(source = 'time_slot.psychologist.user.first_name', read_only = True)
+    patient_name = serializers.SerializerMethodField()
+    psychologist_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Consultation
         fields = '__all__'
         read_only_fields = ['created_at', 'updated_at','patient']
+        depth = 1
+    
+    #method for serialzier field
+    def get_patient_name(self, obj):
+        return f"{obj.patient.user.first_name} {obj.patient.user.last_name}".strip()
+    
+    #method for serializer field
+    def get_psychologist_name(self, obj):
+        return f"{obj.time_slot.psychologist.user.first_name} {obj.time_slot.psychologist.user.last_name}".strip()
+    
     
     def validate_time_slot(self,value):
         if value.is_booked:

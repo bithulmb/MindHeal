@@ -74,7 +74,7 @@ class TimeSlot(models.Model):
 class Consultation(models.Model):
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='consultations')
     time_slot = models.OneToOneField(TimeSlot, on_delete=models.CASCADE, related_name='consultation')
-    consultation_status = models.CharField(max_length=20, choices=ConsultationStatus, default=ConsultationStatus.PENDING)
+    consultation_status = models.CharField(max_length=20, choices=ConsultationStatus, default=ConsultationStatus.SCHEDULED)
     
     
     created_at = models.DateTimeField(auto_now_add=True)

@@ -74,7 +74,7 @@ INSTALLED_APPS = [
     # "drf_social_oauth2",
     'cloudinary',
     'cloudinary_storage',
-    
+     'django_filters',
     
 
     #local
@@ -193,7 +193,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
          "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
         # "drf_social_oauth2.authentication.SocialAuthentication",
-    )
+    ),
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'PAGE_SIZE': 10, 
     
 }
 

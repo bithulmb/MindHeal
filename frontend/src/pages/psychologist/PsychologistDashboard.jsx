@@ -17,7 +17,7 @@ const PsychologistDashboard = () => {
               <h1 className="font-semibold text-lg">Dashboard</h1>
             
             </header>
-            <main className="flex-1 overflow-y-auto">
+            {/* <main className="flex-1 overflow-y-auto">
               <div className="container mx-auto p-8 ">
               <div className="flex items-end gap-2 justify-end mb-4 text-xl font-extrabold text-green-500">
                 <h2>Account verified</h2>
@@ -73,13 +73,13 @@ const PsychologistDashboard = () => {
                       <CardDescription>Your latest consultations and patient interactions</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {/* Add a table or list of recent activities here */}
+                 
                       <p>Recent activity content goes here...</p>
                     </CardContent>
                   </Card>
                 </div>
               </div>
-            </main>
+            </main> */}
           </div>
       
       

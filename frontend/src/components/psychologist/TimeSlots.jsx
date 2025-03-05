@@ -44,7 +44,7 @@ const TimeSlots = () => {
     fetchTimeSlots();
   }, []);
 
-  // Function to refresh time slots after adding a new one
+ 
   const refreshTimeSlots = async () => {
    
     try {
@@ -96,7 +96,6 @@ const TimeSlots = () => {
      
      <h2 className="text-3xl font-semibold">Manage Your Time Slots</h2>
 
-     {/* Slot Management Section */}
      <div className="flex flex-col gap-4">
        <div className="flex justify-between items-center">
          <h3 className="text-lg font-medium "></h3>
@@ -115,7 +114,6 @@ const TimeSlots = () => {
          </Dialog>
        </div>
 
-       {/* Time Slots Table */}
        <div className="border rounded-lg w-5/6 mx-auto">
          {loading ? (
            <p className="p-4 text-gray-500">Loading...</p>
@@ -147,7 +145,7 @@ const TimeSlots = () => {
                          variant="outline-danger"
                          size="xsm"
                          onClick={() => handleDelete(slot.id)}
-                         disabled={slot.is_booked} // Optional: disable if booked
+                         disabled={slot.is_booked} 
                        >
                          Cancel
                        </Button></TableCell>
