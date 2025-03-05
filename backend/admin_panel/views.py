@@ -1,21 +1,29 @@
 from django.shortcuts import render
-from rest_framework import generics,status
+from rest_framework import generics,status,filters
 from django.contrib.auth import get_user_model
 from accounts.serializers import UserSerializer,PsychologistProfileSerializer
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from accounts.models import PsychologistProfile,ApprovalStatusChoices
-
-
+from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend 
 # Create your views here.
 User = get_user_model()
 
+class UserPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = page_size
+    max_page_size = 100
 
 #api view for getting the details of the users
 class UserListView(generics.ListAPIView):
-    queryset = User.objects.filter(role="Patient")
+    queryset = User.objects.filter(role="Patient").order_by('-id')
     serializer_class = UserSerializer
     permission_classes=[IsAdminUser]
+    pagination_class = UserPagination
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    search_fields = ['first_name', 'last_name', 'email'] 
+
 
 
 #api view for getting the details of the psychologists
@@ -23,6 +31,9 @@ class PsychologistListView(generics.ListAPIView):
     queryset = User.objects.filter(role="Psychologist")
     serializer_class = UserSerializer
     permission_classes=[IsAdminUser]
+    pagination_class = UserPagination
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    search_fields = ['first_name', 'last_name', 'email'] 
 
 #api view from admin to block or unblock the user
 class UserUpdateBlockStatusView(generics.RetrieveUpdateAPIView):

@@ -6,6 +6,7 @@ import api from '../api/api';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext } from "@/components/ui/pagination";
+import PaginationComponent from '../common/PaginationComponent';
 
 
 
@@ -54,17 +55,6 @@ const PsychologistConsultations = () => {
     setPage(1);
   };
 
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (page < totalPages) {
-      setPage(page + 1);
-    }
-  };
 
   if (loading) {
     return (
@@ -142,25 +132,7 @@ const PsychologistConsultations = () => {
           </Table>
 
           {totalPages > 1 && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={handlePreviousPage}
-                disabled={page === 1}
-              />
-            </PaginationItem>
-            <span className="text-sm text-muted-foreground">
-              Page {page} of {totalPages}
-            </span>
-            <PaginationItem>
-              <PaginationNext
-                onClick={handleNextPage}
-                disabled={page === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+           <PaginationComponent page={page} setPage={setPage} totalPages={totalPages} />
       )}
 
         </div>

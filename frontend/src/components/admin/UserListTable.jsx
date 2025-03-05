@@ -12,24 +12,54 @@ import { Button } from '../ui/button'
 import api from '../api/api'
 import { format } from 'date-fns'
 import Swal from 'sweetalert2'
+import PaginationComponent from '../common/PaginationComponent'
+import { LoadingSpinner } from '../common/LoadingPage'
+import { Input } from '../ui/input'
+import useDebounce from '@/hooks/useDebounce'
 
   
 
 const UserListTable = () => {
   
   const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const debouncedSearchQuery = useDebounce(searchQuery,500)
+
+
+  const fetchUsers = async (page,query) => {
+    try{
+
+      setLoading(true)
+      
+      const response = await api.get(`/api/admin/users/?page=${page}&search=${query}`)
+      
+      setUsers(response.data.results)
+      setTotalPages(Math.ceil(response.data.count / 5))
+    } catch (error){
+
+      console.error("error fetching users", error)
+    
+    } finally{
+      setLoading(false)
+    }
+  }
+
   useEffect( () => {
    
-    api.get("/api/admin/users/")
-    .then((response) => {
-      setUsers(response.data)
-      console.log(users)
-    })
-    .catch((error) => {
-      console.error("error fetching users", error)
-    })
+      fetchUsers(currentPage,debouncedSearchQuery)
       
-  },[])
+  },[currentPage, debouncedSearchQuery])
+
+
+  useEffect(() => {
+    
+    setCurrentPage(1);
+  }, [debouncedSearchQuery]);
+
 
   const blockUser = async (userId, isBlocked) => {
 
@@ -65,6 +95,18 @@ const UserListTable = () => {
 
   return (
     <div>
+
+        <div className="flex w-1/4 my-4">
+        <Input
+          type="text"
+          placeholder="Search users..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+
+
       <Table>  
         <TableHeader>
           <TableRow>
@@ -79,10 +121,20 @@ const UserListTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          { users.length > 0 ? (
+          { loading ? (
+            <TableRow>
+              <TableCell colSpan="8" className="text-center p-4">
+                <div className="flex flex-col items-center space-y-4">
+                        <LoadingSpinner/>
+                        <p className="text-lg font-medium text-gray-700">Loading...</p>
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : (
+           users.length > 0 ? (
             users.map((user,index) => (
               <TableRow key={user.id}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell className="font-medium">{(currentPage - 1) * 5 + index + 1}</TableCell>
                 <TableCell>{`${user.first_name} ${user.last_name}`}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{ format(new Date(user.created_at),'dd-MM-yyyy HH:mm:ss')}</TableCell>
@@ -103,11 +155,16 @@ const UserListTable = () => {
               </TableCell>
             </TableRow>
           )
-
+        )
           }
          
         </TableBody>
       </Table>
+
+
+      {totalPages > 1 && (
+            <PaginationComponent page={currentPage} setPage={setCurrentPage} totalPages={totalPages} />
+      )}
 
     </div>
   )
