@@ -151,7 +151,7 @@ const UserListTable = () => {
           ) : (
             <TableRow>
               <TableCell colSpan="7" className="text-center p-4">
-                No users found
+                No Users found
               </TableCell>
             </TableRow>
           )

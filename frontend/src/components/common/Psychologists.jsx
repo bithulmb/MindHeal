@@ -59,19 +59,17 @@ export default function PsychologistsPage() {
         {loading || !psychologistData
           ? Array.from({ length: 6 }).map((_, index) => <SkeletonCard key={index} />)
           : psychologistData.map((psychologist) => (
-              <motion.div
+              <div
                 key={psychologist.id}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
+               
               >
                 <Card className="bg-card shadow-lg rounded-2xl overflow-hidden">
                   <img
                     src={`${CLOUDINARY_BASE_URL}${psychologist.profile_image}`}
                     alt={psychologist.user.first_name}
-                    width={300}
+                    width={400}
                     height={300}
-                    className="w-full h-full object-cover"
+                    className="w-full h-80 object-cover"
                   />
                   <CardHeader>
                     <CardTitle>{`${psychologist.user.first_name} ${psychologist.user.last_name}`}</CardTitle>
@@ -83,7 +81,7 @@ export default function PsychologistsPage() {
                     <Button variant="" className="w-full" onClick={() => navigate(`${psychologist.id}`)}>View Details</Button>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
       </section>
     </div>
