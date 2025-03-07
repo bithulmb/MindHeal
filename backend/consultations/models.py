@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta
 from django.utils.translation import gettext_lazy as _
 import uuid
+from payments.models import Payment
 
 # Create your models here.
 
@@ -69,9 +70,8 @@ class TimeSlot(models.Model):
 class Consultation(models.Model):
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='consultations')
     time_slot = models.OneToOneField(TimeSlot, on_delete=models.CASCADE, related_name='consultation')
-    consultation_status = models.CharField(max_length=20, choices=ConsultationStatus, default=ConsultationStatus.SCHEDULED)
-    
-    
+    consultation_status = models.CharField(max_length=20, choices=ConsultationStatus, default=ConsultationStatus.SCHEDULED) 
+    payment = models.OneToOneField(Payment, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

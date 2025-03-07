@@ -2,8 +2,8 @@ from rest_framework import serializers
 from .models import Payment
 
 class PaymentSerializer(serializers.ModelSerializer):
-    patient_name = serializers.CharField(source='consultation.patient.user.first_name', read_only=True)
-    psychologist_name = serializers.CharField(source='consultation.time_slot.psychologist.user.first_name', read_only=True)
+    # patient_name = serializers.CharField(source='consultation.patient.user.first_name', read_only=True)
+    # psychologist_name = serializers.CharField(source='consultation.time_slot.psychologist.user.first_name', read_only=True)
 
     class Meta:
         model = Payment

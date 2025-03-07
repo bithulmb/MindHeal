@@ -1,12 +1,13 @@
 from django.db import models
-from consultations.models import Consultation
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
 
 # Create your models here.
 
+User = get_user_model()
 class PaymentStatus(models.TextChoices):
     PENDING = 'Pending', _('Pending')
-    COMPLETED = 'Completed', _('Completed')
+    SUCCESS = 'Success', _('Success')
     FAILED = 'Failed', _('Failed')
 
 class PaymentGateways(models.TextChoices):
@@ -14,7 +15,7 @@ class PaymentGateways(models.TextChoices):
 
 
 class Payment(models.Model):
-    consultation = models.OneToOneField(Consultation, on_delete=models.CASCADE, related_name='payment')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_status = models.CharField(max_length=20,choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
     payment_gateway = models.CharField(max_length=20, choices = PaymentGateways.choices)
@@ -23,10 +24,6 @@ class Payment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def save(self, *args, **kwargs):
-        if not self.amount:
-            self.amount = self.consultation.time_slot.psychologist.fees
-        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Payment for {self.consultation.patient.user.first_name} {self.consultation.patient.user.last_name} - {self.amount}"
+        return f"Payment for {self.user.first_name} - {self.amount}"

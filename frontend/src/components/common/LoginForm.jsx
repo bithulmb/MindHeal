@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
-import { zodResolver} from '@hookform/resolvers/zod'
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import api from "../api/api";
@@ -19,221 +18,222 @@ import Swal from "sweetalert2";
 import { fetchPatientProfile } from "@/redux/slices/patientProfileSlice";
 import { fetchPsychologistProfile } from "@/redux/slices/psychologistProfileSlice";
 
-  //zod form schema
-  const schema = z.object({
-    email : z.string().email("Invalid email address"),
-    password : z.string().min(6,"Password must be atleast 6 characters"),
-  })
-
+//zod form schema
+const schema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be atleast 6 characters"),
+});
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
 
-  
-  const [loading, setLoading] = useState(false)
-  const [serverError,setServerError] = useState("")
-
-   //initialising the form using useForm hook from react hook form
-   const { register, control, handleSubmit, formState : {errors},} = useForm({
-    resolver : zodResolver(schema),
-    defaultValues : {
-      email : "",
-      password : "",
-    }
-  }) 
+  //initialising the form using useForm hook from react hook form
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   const onSubmit = async (data) => {
+    setLoading(true);
+    setServerError(" ");
 
-    setLoading(true)
-    setServerError(" ")
-    
-    try{
-      
-      const response = await api.post("/api/auth/login/", data)
+    try {
+      const response = await api.post("/api/auth/login/", data);
 
-      if (response.status === 200){ 
-        
-        const {access,refresh, role} = response.data
-        
-        const user = jwtDecode(access)
+      if (response.status === 200) {
+        const { access, refresh, role } = response.data;
 
-        localStorage.setItem(ACCESS_TOKEN,response.data.access)
-        localStorage.setItem(REFRESH_TOKEN,refresh)
-        dispatch(loginSuccess({
-          token : access,
-          role,
-          }))
+        const user = jwtDecode(access);
 
-        if(!user.is_email_verified){
-          Swal.fire({
-            title:"Email Not Verified",
-            text :"Verify your email",
-            icon: 'error',
-            iconColor: '#dc35', // Red color
-            confirmButtonColor: '#dc3545'
-
+        localStorage.setItem(ACCESS_TOKEN, response.data.access);
+        localStorage.setItem(REFRESH_TOKEN, refresh);
+        dispatch(
+          loginSuccess({
+            token: access,
+            role,
           })
-            navigate(`/verify-email`)
-            toast.error("Email not verified")
-            console.log("email not verified")
-            return
-          }
+        );
 
-          if (role==="Patient"){
-            await dispatch(fetchPatientProfile()) 
-          } else if (role==="Psychologist") {
-            await dispatch(fetchPsychologistProfile())
-          }
-
-        
-        const userRole = role==="Psychologist" ? "psychologist" : "user"
-       
-        navigate(`/${userRole}/dashboard`)
-        toast.success("You have succesfully logged in")
-        console.log("login succesful")
-
-      }
-
-    }
-    catch(error){
-      console.log("login failed", error)
-      
-      if (error.response){
-        Swal.fire({
-                title: 'Error!',
-                text: 'Invalid credentials',
-                icon: 'error',
-                iconColor: '#dc35', // Red color
-                confirmButtonColor: '#dc3545'
-              });
-              toast.error("Your credentails does not match")
-        setServerError(error.response.data.detail || "Invalid credentials")
-      }
-      else {
-        setServerError("Something went wrong. Please try again.")
-        toast.error("Login failed. Please Try again")
-      }
-    }  finally {
-      setLoading(false)
-    }
-    
-  } 
-  
-  //for implementing google authentication
-  const handleSuccess = async (response) => {
-
-      
-
-      try{
-       
-
-        if (!response.credential) {
-            console.error("Google token is missing!");
-            return;
+        if (!user.is_email_verified) {
+          Swal.fire({
+            title: "Email Not Verified",
+            text: "Verify your email",
+            icon: "error",
+            iconColor: "#dc35", // Red color
+            confirmButtonColor: "#dc3545",
+          });
+          navigate(`/verify-email`);
+          toast.error("Email not verified");
+          console.log("email not verified");
+          return;
         }
 
-        const res = await api.post('/api/auth/google/',{token: response.credential})
-        
-        if (res.data){
-          const {access, refresh, role} = res.data
+        if (role === "Patient") {
+          await dispatch(fetchPatientProfile());
+        } else if (role === "Psychologist") {
+          await dispatch(fetchPsychologistProfile());
+        }
 
-          console.log(access, role)
-    
+        const userRole = role === "Psychologist" ? "psychologist" : "user";
 
-          localStorage.setItem(ACCESS_TOKEN,access)
-          localStorage.setItem(REFRESH_TOKEN,refresh)
-          dispatch(loginSuccess({
-            token : access, 
-            role : role
-          }
-        )
-      )
-
-      if (role==="Patient"){
-        await dispatch(fetchPatientProfile()) 
-      } else if (role==="Psychologist") {
-        await dispatch(fetchPsychologistProfile())
+        navigate(`/${userRole}/dashboard`);
+        toast.success("You have succesfully logged in");
+        console.log("login succesful");
       }
-      
-      let dashboardRoute = res.data.role === "Psychologist" ? '/psychologist/dashboard' : '/user/dashboard';
-      
-      navigate(dashboardRoute)
-      toast.success("login succesful")
-      console.log("google login succesful")
-    }
-        
     } catch (error) {
-      toast.error("Login failed. Try again")
+      console.log("login failed", error);
+
+      if (error.response) {
+        Swal.fire({
+          title: "Error!",
+          text: "Invalid credentials",
+          icon: "error",
+          iconColor: "#dc35", 
+          confirmButtonColor: "#dc3545",
+        });
+        toast.error("Your credentails does not match");
+        setServerError(error.response.data.detail || "Invalid credentials");
+      } else {
+        setServerError("Something went wrong. Please try again.");
+        toast.error("Login failed. Please Try again");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //for implementing google authentication
+  const handleSuccess = async (response) => {
+    try {
+      if (!response.credential) {
+        console.error("Google token is missing!");
+        return;
+      }
+
+      const res = await api.post("/api/auth/google/", {
+        token: response.credential,
+      });
+
+      if (res.data) {
+        const { access, refresh, role } = res.data;
+
+        console.log(access, role);
+
+        localStorage.setItem(ACCESS_TOKEN, access);
+        localStorage.setItem(REFRESH_TOKEN, refresh);
+        dispatch(
+          loginSuccess({
+            token: access,
+            role: role,
+          })
+        );
+
+        if (role === "Patient") {
+          await dispatch(fetchPatientProfile());
+        } else if (role === "Psychologist") {
+          await dispatch(fetchPsychologistProfile());
+        }
+
+        let dashboardRoute =
+          res.data.role === "Psychologist"
+            ? "/psychologist/dashboard"
+            : "/user/dashboard";
+
+        navigate(dashboardRoute);
+        toast.success("login succesful");
+        console.log("google login succesful");
+      }
+    } catch (error) {
+      toast.error("Login failed. Try again");
       console.error("Error during Google authentication:", error);
       if (error.response) {
         console.error("Server response:", error.response.data);
+      }
     }
-  }
-    
   };
 
   const handleFailure = (error) => {
-      console.log("Google Login Failed:", error);
+    console.log("Google Login Failed:", error);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
-                {serverError && (
-              <p className="text-sm text-red-500 text-center">{serverError}</p>
-            )}
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                {/* <Input
+      <div className="flex flex-col gap-6">
+        {serverError && (
+          <p className="text-sm text-red-500 text-center">{serverError}</p>
+        )}
+        <div className="grid gap-2">
+          <Label htmlFor="email">Email</Label>
+          {/* <Input
                  
                   {...register("email")}
                 /> */}
-                <Controller
-                name="email"
-                control={control}
-                render={({field}) => <Input {...field}/> }
-                />
-                { errors.email && <p className="text-sm text-red-500 ">{errors.email.message}</p>}
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <span
-                    onClick={() => navigate(`/user/reset-password`)}
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline cursor-pointer"
-                  >
-                    Forgot your password?
-                  </span>
-                </div>
-                {/* <Input type="password" {...register("password")} /> */}
-                 <Controller
-                    name="password"
-                    control={control}
-                    render={({ field }) => <Input {...field} type="password"/>}
-                  />
-                {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
-              </div>
-              <div>
-              </div>
-              <Button type="submit" className="w-full">
-              {loading ? "Logging in" : "Login"}
-              </Button>
-              <div className="text-center">
-              <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                  Or Continue
-                </span>
-              </div>
-              <GoogleLogin logo_alignment="center"  onSuccess={handleSuccess} onError={handleFailure} />
-            </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <a onClick={() => navigate(`/user/register`)} className="underline underline-offset-4 cursor-pointer">
-                Sign up
-              </a>
-            </div>
-          </form>
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => <Input {...field} />}
+          />
+          {errors.email && (
+            <p className="text-sm text-red-500 ">{errors.email.message}</p>
+          )}
+        </div>
+        <div className="grid gap-2">
+          <div className="flex items-center">
+            <Label htmlFor="password">Password</Label>
+            <span
+              onClick={() => navigate(`/user/reset-password`)}
+              className="ml-auto inline-block text-sm underline-offset-4 hover:underline cursor-pointer"
+            >
+              Forgot your password?
+            </span>
+          </div>
+          {/* <Input type="password" {...register("password")} /> */}
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => <Input {...field} type="password" />}
+          />
+          {errors.password && (
+            <p className="text-sm text-red-500">{errors.password.message}</p>
+          )}
+        </div>
+        <div></div>
+        <Button type="submit" className="w-full">
+          {loading ? "Logging in" : "Login"}
+        </Button>
+        <div className="text-center">
+          <span className="relative z-10 bg-background px-2 text-muted-foreground">
+            Or Continue
+          </span>
+        </div>
+        <GoogleLogin
+          logo_alignment="center"
+          onSuccess={handleSuccess}
+          onError={handleFailure}
+        />
+      </div>
+      <div className="mt-4 text-center text-sm">
+        Don&apos;t have an account?{" "}
+        <a
+          onClick={() => navigate(`/user/register`)}
+          className="underline underline-offset-4 cursor-pointer"
+        >
+          Sign up
+        </a>
+      </div>
+    </form>
   );
 };
 
