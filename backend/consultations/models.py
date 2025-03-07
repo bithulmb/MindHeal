@@ -14,11 +14,6 @@ class ConsultationStatus(models.TextChoices):
     COMPLETED = 'Completed', _('Completed')
     CANCELLED = 'Cancelled', _('Cancelled')
 
-class PaymentStatus(models.TextChoices):
-    PENDING = 'Pending', _('Pending')
-    COMPLETED = 'Completed', _('Completed')
-    FAILED = 'Failed', _('Failed')
-
 class TimeSlot(models.Model):
     psychologist = models.ForeignKey(PsychologistProfile, on_delete=models.CASCADE, related_name='time_slots', blank=True)
     date = models.DateField()
@@ -90,20 +85,3 @@ class Consultation(models.Model):
     def __str__(self):
         return f"Consultation: {self.patient.user.first_name} with {self.time_slot.psychologist.user.first_name} on {self.time_slot.date} at {self.time_slot.start_time}"
 
-class Payment(models.Model):
-    consultation = models.OneToOneField(Consultation, on_delete=models.CASCADE, related_name='payment')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_status = models.CharField(max_length=20,choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
-    payment_method = models.CharField(max_length=50)
-    transaction_id = models.CharField(max_length=100, blank=True, null=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def save(self, *args, **kwargs):
-        if not self.amount:
-            self.amount = self.consultation.time_slot.psychologist.fees
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Payment for {self.consultation.patient.user.first_name} {self.consultation.patient.user.last_name} - {self.amount}"

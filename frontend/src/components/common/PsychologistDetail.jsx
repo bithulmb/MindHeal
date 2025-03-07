@@ -77,7 +77,7 @@ export default function PsychologistDetail() {
       if (result.isConfirmed) {
         try {
           const response = await api.post(`/api/consultations/`, { time_slot : slotId});
-          setTimeSlots(timeSlots.filter((slot) => slot.id !== slotId)); // Remove booked slot from list
+          setTimeSlots(timeSlots.filter((slot) => slot.id !== slotId))
           toast.success("Your Consultation booking is succesful" )
           setDialogOpen(false);
          

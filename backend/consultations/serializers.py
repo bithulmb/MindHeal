@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import TimeSlot,Consultation,Payment
+from .models import TimeSlot,Consultation
 from django.utils import timezone
 from datetime import datetime,timedelta
 from accounts.models import PsychologistProfile
@@ -90,14 +90,6 @@ class ConsultationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Cannot book past time slots.')
         return value
 
-class PaymentSerializer(serializers.ModelSerializer):
-    patient_name = serializers.CharField(source='consultation.patient.user.first_name', read_only=True)
-    psychologist_name = serializers.CharField(source='consultation.time_slot.psychologist.user.first_name', read_only=True)
-
-    class Meta:
-        model = Payment
-        fields = '__all__'
-        read_only_fields = ['created_at', 'updated_at']
 
 
     

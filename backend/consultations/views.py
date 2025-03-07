@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
-from .models import TimeSlot,Consultation,Payment
-from .serializers import TimeSlotSerializer,ConsultationSerializer,PaymentSerializer
+from .models import TimeSlot,Consultation
+from .serializers import TimeSlotSerializer,ConsultationSerializer
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from accounts.models import PsychologistProfile, UserRole, PatientProfile
 from accounts.permissions import IsPatient,IsPsychologist
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.serializers import ValidationError
 
 # Create your views here.
 
@@ -16,6 +17,7 @@ class TimeSlotListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+
         #if requested by psychologist it will list only the timeslots of psychologist else it will list all timeslots
         if self.request.user.role == UserRole.PSYCHOLOGIST:
             return TimeSlot.objects.filter(psychologist__user=self.request.user)
@@ -82,9 +84,20 @@ class ConsultationListCreateView(generics.ListCreateAPIView):
         return queryset
     
     def perform_create(self, serializer):
-        patient = PatientProfile.objects.get(user = self.request.user)
-        serializer.save(patient = patient)
-    
+        patient = PatientProfile.objects.get(user=self.request.user)
+        time_slot_id = self.request.data.get('time_slot')  
+        
+        if not time_slot_id:
+            raise ValidationError({'time_slot': 'This field is required.'})
+        
+        try:
+            time_slot = TimeSlot.objects.get(id=time_slot_id)
+        except TimeSlot.DoesNotExist:
+            raise ValidationError({'time_slot': 'Invalid time slot.'})
+
+        
+        serializer.save(patient=patient, time_slot=time_slot)
+        
 class ConsultationDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ConsultationSerializer
     permission_classes = [IsAuthenticated]
@@ -96,16 +109,3 @@ class ConsultationDetailView(generics.RetrieveUpdateDestroyAPIView):
             return Consultation.objects.filter(time_slot__psychologist__user=self.request.user)
         return Consultation.objects.none()
 
-class PaymentListCreateView(generics.ListCreateAPIView):
-    serializer_class = PaymentSerializer
-    permission_classes = [IsPatient]
-
-    def get_queryset(self):
-        return Payment.objects.filter(consultation__patient__user=self.request.user)
-
-class PaymentDetailView(generics.RetrieveUpdateAPIView):
-    serializer_class = PaymentSerializer
-    permission_classes = [IsPatient]
-
-    def get_queryset(self):
-        return Payment.objects.filter(consultation__patient__user=self.request.user)

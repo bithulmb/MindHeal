@@ -24,6 +24,7 @@ urlpatterns = [
     path('',include('accounts.urls')),
     path('',include('admin_panel.urls')),
     path('api/', include('consultations.urls')),
+    path('api/',include('payments.urls')),
     path('accounts/', include('dj_rest_auth.urls')),
     path('accounts/registration/', include('dj_rest_auth.registration.urls')),
     path('accounts/google/', include('allauth.socialaccount.urls')),

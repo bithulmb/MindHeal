@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     'accounts',
     'admin_panel',
     'consultations',
+    'payments',
 
 ]
 
@@ -296,3 +297,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+#Razor pay credentials
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET')

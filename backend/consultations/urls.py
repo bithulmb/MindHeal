@@ -5,8 +5,6 @@ from .views import (
     TimeSlotDetailView,
     ConsultationDetailView,
     ConsultationListCreateView,
-    PaymentListCreateView,
-    PaymentDetailView,
     PsychologistTimeSlotListView
     )
 
@@ -20,9 +18,5 @@ urlpatterns = [
     
     path('consultations/', ConsultationListCreateView.as_view(), name='consultation-list-create'),
     path('consultations/<int:pk>/', ConsultationDetailView.as_view(), name='consultation-detail'),
-
-    
-    path('payments/', PaymentListCreateView.as_view(), name='payment-list-create'),
-    path('payments/<int:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
 
     ]

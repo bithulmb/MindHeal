@@ -28,7 +28,7 @@ class UserListView(generics.ListAPIView):
 
 #api view for getting the details of the psychologists
 class PsychologistListView(generics.ListAPIView):
-    queryset = User.objects.filter(role="Psychologist")
+    queryset = User.objects.filter(role="Psychologist").order_by('-id')
     serializer_class = UserSerializer
     permission_classes=[IsAdminUser]
     pagination_class = UserPagination
