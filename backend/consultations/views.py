@@ -56,7 +56,7 @@ class PsychologistTimeSlotListView(generics.ListAPIView):
     def get_queryset(self):
         # getting the pyschologist id from the url as path parameter
         psychologist_id = self.kwargs['psychologist_id']
-        return TimeSlot.objects.filter(psychologist_id=psychologist_id, is_active=True, is_booked = False)
+        return TimeSlot.objects.filter(psychologist_id=psychologist_id, is_active=True, is_booked = False,is_expired=False)
 
 
 #pagination class for implementing pagination

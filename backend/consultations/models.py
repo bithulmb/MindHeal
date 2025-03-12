@@ -22,6 +22,7 @@ class TimeSlot(models.Model):
     end_time = models.TimeField()
     is_booked = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    is_expired = models.BooleanField(default=False)  #for changing to true when not booked at the end of each day.
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
