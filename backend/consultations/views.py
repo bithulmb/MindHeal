@@ -30,7 +30,7 @@ class TimeSlotListCreateView(generics.ListCreateAPIView):
 
         #if requested by psychologist it will list only the timeslots of psychologist else it will list all timeslots
         if self.request.user.role == UserRole.PSYCHOLOGIST:
-            return TimeSlot.objects.filter(psychologist__user=self.request.user)
+            return TimeSlot.objects.filter(psychologist__user=self.request.user, is_expired=False)
         return TimeSlot.objects.filter(is_booked = False, is_active = True)
     
     def perform_create(self, serializer):
@@ -38,6 +38,52 @@ class TimeSlotListCreateView(generics.ListCreateAPIView):
         serializer.save(psychologist=psychologist)
         
 
+
+class TimeSlotBulkCreateView(generics.CreateAPIView):
+    serializer_class = TimeSlotSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        psychologist = PsychologistProfile.objects.get(user=self.request.user)
+        timeslot_data = request.data.get("timeslots", [])
+
+        if not isinstance(timeslot_data, list):
+            return Response({"error": "Invalid data format"}, status=status.HTTP_400_BAD_REQUEST)
+
+        created_timeslots = []
+        for slot in timeslot_data:
+            start_time = slot["start_time"]
+            end_time = slot["end_time"]
+            date = slot["date"]
+
+            # Check for overlapping slots
+            overlap_exists = TimeSlot.objects.filter(
+                psychologist=psychologist,
+                date=date,
+                start_time__lt=end_time,
+                end_time__gt=start_time
+            ).exists()
+
+            if overlap_exists:
+                return Response(
+                    {"error": f"Time slot {start_time} - {end_time} on {date} overlaps with an existing slot."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Use serializer instead of directly creating the object
+            serializer = TimeSlotSerializer(data={ 
+                "date": date, 
+                "start_time": start_time, 
+                "end_time": end_time
+            }, context={'request': request} )
+
+            if serializer.is_valid():
+                serializer.save(psychologist=psychologist)
+                created_timeslots.append(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "Time slots created successfully", "timeslots": created_timeslots}, status=status.HTTP_201_CREATED)
 
 
 class TimeSlotDetailView(generics.RetrieveUpdateDestroyAPIView):
