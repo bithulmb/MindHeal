@@ -92,8 +92,8 @@ const PsychologistProfileUpdateForm = () => {
   const form = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      first_name: profileData?.user?.first_name || "",
-      last_name: profileData?.user?.last_name || "",
+      first_name: profileData?.first_name || "",
+      last_name: profileData?.last_name || "",
       date_of_birth: profileData?.date_of_birth ? new Date(profileData.date_of_birth) : undefined,
       gender: profileData?.gender || "",
       mobile_number: profileData?.mobile_number || "",

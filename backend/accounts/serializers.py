@@ -15,11 +15,15 @@ from rest_framework.exceptions import PermissionDenied
 User = get_user_model()
 FRONTEND_URL = settings.FRONTEND_URL
 class UserSerializer(serializers.ModelSerializer):
+
+    patient_profile = serializers.SerializerMethodField()
+    psychologist_profile = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ['id', 'first_name', 'last_name', 'email', 'role',
             'is_email_verified', 'is_blocked', 'is_active', 'is_staff', 'is_superuser','password',
-            'created_at', 'updated_at']
+            'created_at', 'updated_at', 'patient_profile', 'psychologist_profile']
         read_only_fields = ['role','is_email_verified', 'is_blocked', 'is_active', 'is_staff', 'is_superuser',
             'created_at', 'updated_at']
         extra_kwargs = {
@@ -27,6 +31,26 @@ class UserSerializer(serializers.ModelSerializer):
                 'write_only' : True
             }
         }
+    
+    def get_patient_profile(self, obj):
+        """
+        Get the patient profile of the user and serialie it.
+        """
+        patient_profile = PatientProfile.objects.filter(user=obj).first()
+        if patient_profile:
+            return PatientProfileSerializer(patient_profile).data
+        return None
+    
+    def get_psychologist_profile(self, obj):
+        """
+        Get the psychologist profile of the user and serialie it.
+        """
+        psychologist_profile = PsychologistProfile.objects.filter(user=obj).first()
+        if psychologist_profile:
+            return PsychologistProfileSerializer(psychologist_profile).data
+        return None
+    
+
     
     def validate_first_name(self, value):
         """ Ensure first name contains only alphabets """
@@ -49,19 +73,31 @@ class UserSerializer(serializers.ModelSerializer):
      
         return user
 
+
+class UserBasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'role', 'is_email_verified', 'is_blocked', 'is_active', 'created_at']
 class PatientProfileSerializer(serializers.ModelSerializer):
     
     first_name = serializers.CharField(source = 'user.first_name', required = False)
     last_name = serializers.CharField(source='user.last_name', required=False)
+    email = serializers.EmailField(source='user.email', required=False)
+    role = serializers.CharField(source='user.role', required=False)
+  
+
+    # user = UserBasicSerializer(read_only=True)
     
     class Meta:
         model = PatientProfile        
         fields = ['id', 'user', 'date_of_birth', 
-                 'gender','occupation', 'mobile_number', 'medical_history', 'profile_image','created_at', 'updated_at','first_name','last_name']
+                 'gender','occupation', 'mobile_number', 'medical_history', 'profile_image','created_at', 'updated_at','first_name','last_name','email','role']
         read_only_fields = ['created_at', 'updated_at']
-        depth = 1
+        
     
     def update(self, instance, validated_data):
+        """ Update the user object if user data is provided """
+       
         user_data = validated_data.pop('user',{})
         if user_data:
             user = instance.user
@@ -73,16 +109,35 @@ class PatientProfileSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class PsychologistProfileSerializer(serializers.ModelSerializer):    
+class PsychologistProfileSerializer(serializers.ModelSerializer):
+    # user = UserBasicSerializer(read_only=True)   
+    first_name = serializers.CharField(source = 'user.first_name', required = False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
+    email = serializers.EmailField(source='user.email', required=False)
+    role = serializers.CharField(source='user.role', required=False) 
     class Meta:
         model = PsychologistProfile
         fields = ('id', 'user', 'profile_image', 'date_of_birth', 'gender',
                  'mobile_number', 'about_me', 'qualification', 'experience', 'specialization',
                  'fees', 'id_card', 'education_certificate', 
                  'experience_certificate', 'approval_status','is_admin_approved',
-                 'created_at', 'updated_at')
-        read_only_fields = ('is_admin_verified', 'created_at', 'updated_at')
-        depth = 1
+                 'created_at', 'updated_at','first_name','last_name','email','role')
+        read_only_fields = ('is_admin_approved', 'created_at', 'updated_at')
+    
+    def update(self, instance, validated_data):
+        """ Update the user object if user data is provided """
+        user_data = validated_data.pop('user',{})
+        print(validated_data)
+        if user_data:
+            print("inside")
+            user = instance.user
+            if 'first_name' in user_data:
+                user.first_name = user_data['first_name']
+            if 'last_name' in user_data:
+                user.last_name = user_data['last_name']
+            user.save()
+        return super().update(instance, validated_data)
+
 
 
 #serializer to include user email,name and role in jwt

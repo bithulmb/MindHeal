@@ -155,10 +155,10 @@ const PsychologistProfile = () => {
         <Avatar className="w-40 h-40 ring-4 ring-primary/20">
           <AvatarImage 
             src={`${CLOUDINARY_BASE_URL}${profileData.profile_image}`} 
-            alt={`${profileData.user.first_name} ${profileData.user.last_name}`} 
+            alt={`${profileData.first_name} ${profileData.last_name}`} 
           />
           <AvatarFallback className="text-4xl bg-primary/10">
-            {profileData.user.first_name[0]}
+            {profileData.first_name[0]}
           </AvatarFallback>
         </Avatar>
         <label htmlFor="profile-pic-upload" className="absolute bottom-0 right-0">
@@ -188,7 +188,7 @@ const PsychologistProfile = () => {
       </div>
       <div className="text-center sm:text-left my-auto">
         <CardTitle className="text-3xl font-bold text-primary">
-          {profileData.user.first_name} {profileData.user.last_name}
+          {profileData.first_name} {profileData.last_name}
         </CardTitle>
         <div className="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
           <Badge variant="secondary">Psychologist</Badge>
@@ -210,7 +210,7 @@ const PsychologistProfile = () => {
           <Mail className="w-5 h-5 text-primary" />
           <div>
             <p className="text-sm text-gray-600">Email</p>
-            <p className="font-medium">{profileData.user.email}</p>
+            <p className="font-medium">{profileData.email}</p>
           </div>
         </div>
 

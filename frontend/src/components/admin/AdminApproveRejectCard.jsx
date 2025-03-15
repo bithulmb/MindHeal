@@ -90,13 +90,13 @@ export default function AdminApproveRejectCard() {
             <Avatar className="h-24 w-24">
               <AvatarImage
                 src={`${CLOUDINARY_BASE_URL}${profile.profile_image}`}
-                alt={`${profile.user.first_name} ${profile.user.last_name}`}
+                alt={`${profile.first_name} ${profile.last_name}`}
               />
-              <AvatarFallback>{profile.user.first_name[0]}</AvatarFallback>
+              <AvatarFallback>{profile.first_name[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <h2 className="text-2xl font-bold">{`${profile.user.first_name} ${profile.user.last_name}`}</h2>
-              <p className="text-muted-foreground">{profile.user.email}</p>
+              <h2 className="text-2xl font-bold">{`${profile.first_name} ${profile.last_name}`}</h2>
+              <p className="text-muted-foreground">{profile.email}</p>
             </div>
           </div>
 

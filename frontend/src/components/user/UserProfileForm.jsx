@@ -6,7 +6,8 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { toast } from 'sonner'; // ✅ Importing toast from Sonner
+import { toast } from 'sonner';
+
 
 const profileSchema = z.object({
   first_name: z.string().min(1, "First name is required"),

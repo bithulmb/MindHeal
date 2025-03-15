@@ -338,6 +338,7 @@ class UserProfileRetrieveCreateUpdateView(APIView):
     def patch(self, request, *args, **kwargs):
         try:
             profile = PatientProfile.objects.get(user=request.user)
+            print(request.data)
             serializer = PatientProfileSerializer(profile, data=request.data, partial=True, context={'request': request})
             if serializer.is_valid():
                 serializer.save()

@@ -155,10 +155,10 @@ const UserProfile = () => {
               <Avatar className="w-40 h-40 ring-4 ring-primary/20">
                 <AvatarImage 
                   src={`${CLOUDINARY_BASE_URL}${userData.profile_image}`} 
-                  alt={`${userData.user.first_name} ${userData.user.last_name}`} 
+                  alt={`${userData.first_name} ${userData.last_name}`} 
                 />
                 <AvatarFallback className="text-4xl bg-primary/10">
-                  {userData.user.first_name[0]}
+                  {userData.first_name[0]}
                 </AvatarFallback>
               </Avatar>
               {/* Change Profile Picture Button */}
@@ -189,7 +189,7 @@ const UserProfile = () => {
             </div>
             <div className="text-center sm:text-left my-auto">
               <CardTitle className="text-3xl font-bold text-primary">
-                {userData.user.first_name} {userData.user.last_name}
+                {userData.first_name} {userData.last_name}
               </CardTitle>
               {/* <div className="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
                 <Badge variant="secondary" className="capitalize">
@@ -213,7 +213,7 @@ const UserProfile = () => {
                 <Mail className="w-5 h-5 text-primary" />
                 <div>
                   <p className="text-sm text-gray-600">Email</p>
-                  <p className="font-medium">{userData.user.email}</p>
+                  <p className="font-medium">{userData.email}</p>
                 </div>
               </div>
 
@@ -268,7 +268,7 @@ const UserProfile = () => {
                 <div>
                   <p className="text-sm text-gray-600">Member Since</p>
                   <p className="font-medium">
-                    {formatDate(userData.user.created_at)}
+                    {formatDate(userData.created_at)}
                   </p>
                 </div>
               </div>

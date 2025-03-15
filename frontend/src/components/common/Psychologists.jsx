@@ -66,13 +66,13 @@ export default function PsychologistsPage() {
                 <Card className="bg-card shadow-lg rounded-2xl overflow-hidden">
                   <img
                     src={`${CLOUDINARY_BASE_URL}${psychologist.profile_image}`}
-                    alt={psychologist.user.first_name}
+                    alt={psychologist.first_name}
                     width={400}
                     height={300}
                     className="w-full h-80 object-cover"
                   />
                   <CardHeader>
-                    <CardTitle>{`${psychologist.user.first_name} ${psychologist.user.last_name}`}</CardTitle>
+                    <CardTitle>{`${psychologist.first_name} ${psychologist.last_name}`}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <p><strong>Qualification:</strong> {psychologist.qualification}</p>

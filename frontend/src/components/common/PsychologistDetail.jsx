@@ -193,11 +193,11 @@ export default function PsychologistDetail() {
               <div className="relative w-80 h-80 p-4 overflow-hidden rounded-md">
                 <img
                   src={`${CLOUDINARY_BASE_URL}${psychologist.profile_image}`}
-                  alt={psychologist.user.first_name}
+                  alt={psychologist.first_name}
                   className="object-cover"
                 />
               </div>
-              <h2 className="text-2xl font-bold text-center">{`${psychologist.user.first_name} ${psychologist.user.last_name}`}</h2>
+              <h2 className="text-2xl font-bold text-center">{`${psychologist.first_name} ${psychologist.last_name}`}</h2>
               <p className="text-muted-foreground text-center">Psychologist</p>
 
               {/* <div className="flex justify-center gap-4 mt-6">

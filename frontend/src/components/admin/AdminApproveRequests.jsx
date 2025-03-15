@@ -36,7 +36,7 @@ const AdminApproveRequests = () => {
               {/* Left Side: Name, Age, Specialization, Experience */}
               <div className="flex-1">
                 <CardHeader>
-                  <CardTitle className="text-lg font-semibold">{`${profile.user.first_name} ${profile.user.last_name}`}</CardTitle>
+                  <CardTitle className="text-lg font-semibold">{`${profile?.first_name} ${profile?.last_name}`}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-gray-600">
                   <p><strong>Age:</strong> {calculateAge(profile.date_of_birth)}</p>
