@@ -31,7 +31,7 @@ const PsychologistConsultations = () => {
       setLoading(true)
       const response = await api.get(`/api/consultations/?page=${page}&status=${statusFilter==="all" ? "" :statusFilter}`);
       setConsultations(response.data.results);
-      setTotalPages(Math.ceil(response.data.count / 10)); 
+      setTotalPages(Math.ceil(response.data.count / 5)); 
     } catch (error) {
       setError(error?.response?.data || "Failed to load consultations. Please try again later.")
       console.error("Failed to fetch consultations", error);
@@ -114,7 +114,7 @@ const PsychologistConsultations = () => {
             <TableBody>
               {consultations.map((consultation,index) => (
                 <TableRow key={consultation.id}>
-                   <TableCell>{index + 1}</TableCell>
+                   <TableCell>{(page-1) * 5 + index + 1}</TableCell>
                   <TableCell>{consultation.patient_name}</TableCell>
                   <TableCell>{new Date(consultation.time_slot.date).toLocaleDateString()}</TableCell>
                   <TableCell>{consultation.time_slot.start_time.slice(0, 5)}</TableCell>

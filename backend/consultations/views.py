@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
 import razorpay
+from django.db import transaction
 
 
 
@@ -107,7 +108,7 @@ class PsychologistTimeSlotListView(generics.ListAPIView):
 
 #pagination class for implementing pagination
 class ConsultationPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -153,7 +154,7 @@ class BookConsultationView(APIView):
 
 
         try:
-            
+            #verifying the razor pay payment
             payment = razorpay_client.payment.fetch(razorpay_payment_id)
             if payment['order_id'] != razorpay_order_id or payment['status'] != 'captured':
                 return Response(
@@ -163,34 +164,39 @@ class BookConsultationView(APIView):
 
 
             try:
-                payment_obj = Payment.objects.get(id=payment_id)
+                with transaction.atomic():
+                    
+                    #locking the timeslot to prevent the double booking
+                    time_slot = TimeSlot.objects.select_for_update().get(id=time_slot_id)
+                    
+                    if time_slot.is_booked:
+                        return Response(
+                        {"error": "Time slot already booked"},
+                        status=status.HTTP_400_BAD_REQUEST
+                        )
+                
+                    #updating the payment object
+                    payment_obj = Payment.objects.get(id=payment_id)
+                    payment_obj.transaction_id = razorpay_payment_id
+                    payment_obj.payment_status = PaymentStatus.SUCCESS
+                    payment_obj.save()
 
-                payment_obj.transaction_id = razorpay_payment_id
-                payment_obj.payment_status = PaymentStatus.SUCCESS
-                payment_obj.save()
 
-                time_slot = TimeSlot.objects.get(id=time_slot_id)
-                if time_slot.is_booked:
-                    return Response(
-                    {"error": "Time slot already booked"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+                    patient_profile = PatientProfile.objects.get(user=request.user)
 
-                patient_profile = PatientProfile.objects.get(user=request.user)
+                    consultation = Consultation.objects.create(
+                        patient=patient_profile,
+                        time_slot=time_slot,
+                        payment=payment_obj,                
+                    )
 
-                consultation = Consultation.objects.create(
-                    patient=patient_profile,
-                    time_slot=time_slot,
-                    payment=payment_obj,                
-                )
+                    time_slot.is_booked = True
+                    time_slot.save()
 
-                time_slot.is_booked = True
-                time_slot.save()
-
-                return Response({
-                    "success": True,
-                    "consultation_id": consultation.id,
-                }, status=status.HTTP_201_CREATED)
+                    return Response({
+                        "success": True,
+                        "consultation_id": consultation.id,
+                    }, status=status.HTTP_201_CREATED)
 
             except Payment.DoesNotExist:
                 return Response({"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND)

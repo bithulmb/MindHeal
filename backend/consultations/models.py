@@ -61,7 +61,8 @@ class TimeSlot(models.Model):
             raise ValidationError("This time slot overlaps with an existing slot.")
 
     def save(self, *args, **kwargs):
-        self.clean()
+        if self.pk is None:
+            self.clean()
         super().save(*args, **kwargs)
 
     def __str__(self):

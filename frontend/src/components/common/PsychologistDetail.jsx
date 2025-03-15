@@ -49,6 +49,7 @@ export default function PsychologistDetail() {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const user = useSelector((state) => state.auth.user);
+  const userProfile = useSelector((state) => state.patientProfile.profile);
 
   const { id } = useParams();
 
@@ -82,6 +83,10 @@ export default function PsychologistDetail() {
     }
     if (user.role !== "Patient") {
       toast.error("Only patients can book consultations");
+      return;
+    }
+    if (!userProfile) {
+      toast.error("Please create your profile to book a consultation");
       return;
     }
     setDialogOpen(true);
@@ -144,7 +149,7 @@ export default function PsychologistDetail() {
   };
 
   const bookConsultation = async (slotId, fees) => {
-    console.log(fees);
+    
     Swal.fire({
       title: "Confirm Booking",
       text: "Proceed to Payment?",
