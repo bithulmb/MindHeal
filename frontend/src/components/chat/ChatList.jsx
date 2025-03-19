@@ -4,8 +4,6 @@ import { cn } from "@/lib/utils"
 
 export default function ChatList({ chats, selectedChatId, onSelectChat }) {
 
-  console.log(chats)
-
   return (
     <div className="overflow-y-auto">
       {chats.map((chat) => (

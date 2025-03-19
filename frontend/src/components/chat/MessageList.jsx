@@ -4,8 +4,9 @@ import { useSelector } from "react-redux";
 import {format} from 'date-fns'
 
 export default function MessageList({ messages }) {
+  
   const loggedinUserId = useSelector((state) => state.auth.user.user_id);
-  console.log(loggedinUserId);
+
 
   if (messages.length === 0) {
     return (
@@ -16,8 +17,6 @@ export default function MessageList({ messages }) {
       </div>
     );
   }
-
-  console.log(messages);
 
   return (
     <div className="space-y-4">
