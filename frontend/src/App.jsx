@@ -58,6 +58,7 @@ import AddTimeSlot from './components/psychologist/AddTimeSlot';
 import TimeSlots from './components/psychologist/TimeSlots';
 import UserConsultationsPage from './pages/user/UserConsultationsPage';
 import PsychologistConsultationsPage from './pages/psychologist/PsychologistConsultationsPage';
+import Chat from './components/chat/Chat';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -82,9 +83,11 @@ function App() {
 
                  
                 {/* User Routes */}
-                <Route path="/user/login" element={<LoginPage />} />
-                <Route path="/user/register" element={<UserRegisterPage />} />
-                <Route path="/user/psychologist-register" element={<UserRegisterPage />} />
+                <Route element={<PublicRoute />}>
+                  <Route path="/user/login" element={<LoginPage />} />
+                  <Route path="/user/register" element={<UserRegisterPage />} />
+                  <Route path="/user/psychologist-register" element={<UserRegisterPage />} />
+                </Route>
                 <Route path="/user/verify-otp" element={<OtpVerficationPage />} />
                 <Route path="/user/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/user/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirmPage />} />
@@ -100,7 +103,8 @@ function App() {
                         <Route path="chats" element={<UserChats/>} />  
                         <Route path="wallet" element={<UserWallet/>} />
                         <Route path="profile/create" element={<UserProfileCreationForm/>} />
-                        <Route path="profile/update" element={<UserProfileUpdateForm/>} />    
+                        <Route path="profile/update" element={<UserProfileUpdateForm/>} /> 
+                        {/* <Route path="chat" element={<Chat/>} />    */}
                   </Route>
                 </Route>
                     
