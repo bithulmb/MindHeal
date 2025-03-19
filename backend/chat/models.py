@@ -8,11 +8,11 @@ User = get_user_model()
 
 class ChatThread(models.Model):
     """A persistent chat thread between a user and a psychologist"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="chat_threads")
-    psychologist = models.ForeignKey(User, on_delete=models.CASCADE, related_name="psychologist_threads")
+    user = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name="chat_threads")
+    psychologist = models.ForeignKey(PsychologistProfile, on_delete=models.CASCADE, related_name="psychologist_threads")
 
     def __str__(self):
-        return f"Chat between {self.user.first_name} and {self.psychologist.first_name}"
+        return f"Chat between {self.user.user.first_name} and {self.psychologist.user.first_name}"
     
 
 

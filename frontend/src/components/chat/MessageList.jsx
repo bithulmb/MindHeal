@@ -1,40 +1,93 @@
-import { Avatar } from "@/components/ui/avatar"
-import { cn } from "@/lib/utils"
-
-
+import { Avatar } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
+import { useSelector } from "react-redux";
+import {format} from 'date-fns'
 
 export default function MessageList({ messages }) {
+  const loggedinUserId = useSelector((state) => state.auth.user.user_id);
+  console.log(loggedinUserId);
+
   if (messages.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-muted-foreground">No messages yet. Start a conversation!</p>
+        <p className="text-muted-foreground">
+          No messages yet. Start a conversation!
+        </p>
       </div>
-    )
+    );
   }
+
+  console.log(messages);
 
   return (
     <div className="space-y-4">
       {messages.map((message) => (
-        <div key={message.id} className={cn("flex gap-3", message.sender === "me" && "flex-row-reverse")}>
-          {message.sender === "them" && (
-            <Avatar className="h-8 w-8 bg-orange-500">
-              <div className="text-white text-xs">JD</div>
-            </Avatar>
-          )}
-          {message.sender === "me" && (
-            <Avatar className="h-8 w-8  bg-gray-600">
-              <div className="text-xs">ME</div>
-            </Avatar>
-          )}
-          <div className="max-w-[70%]">
-            <div className={cn("rounded-lg p-3", message.sender === "me" ? "bg-black text-white" : "bg-muted")}>
-              {message.content}
+        <div key={message.id}>
+          {message.sender === loggedinUserId ? (
+            <div className="flex gap-3 flex-row-reverse">
+              <Avatar className="h-10 w-10 bg-gray-600">
+                {message.sender_profile_image ? (
+                  <img
+                    src={message.sender_profile_image}
+                    alt="Sender Profile"
+                    className="h-full w-full object-cover rounded-full"
+                  />
+                ) : (
+                  <div className="text-white text-xs m-auto bg-gray-500 flex items-center justify-center h-full w-full rounded-full">
+                    {message.sender_name?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </Avatar>
+              <div className="max-w-[70%]">
+                <div
+                  className={cn(
+                    "rounded-lg p-3",
+                    message.sender === loggedinUserId
+                      ? "bg-black text-white"
+                      : "bg-muted"
+                  )}
+                >
+                  {message.message}
+                </div>
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {format(new Date(message.timestamp), "dd/MM/yyyy hh:mm a")}
+                </div>
+              </div>
             </div>
-            <div className="mt-1 text-xs text-muted-foreground">{message.timestamp}</div>
-          </div>
+          ) : (
+            <div className="flex gap-3">
+              <Avatar className="h-10 w-10 bg-gray-600">
+                {message.sender_profile_image ? (
+                  <img
+                    src={message.sender_profile_image}
+                    alt="Sender Profile"
+                    className="h-full w-full object-cover rounded-full"
+                  />
+                ) : (
+                  <div className="text-white text-xs m-auto bg-gray-500 flex items-center justify-center h-full w-full rounded-full">
+                    {message.sender_name?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </Avatar>
+              <div className="max-w-[70%]">
+                <div
+                  className={cn(
+                    "rounded-lg p-3",
+                    message.sender === loggedinUserId
+                      ? "bg-black text-white"
+                      : "bg-muted"
+                  )}
+                >
+                  {message.message}
+                </div>
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {format(new Date(message.timestamp), "dd/MM/yyyy hh:mm a")}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </div>
-  )
+  );
 }
-

@@ -59,6 +59,7 @@ import TimeSlots from './components/psychologist/TimeSlots';
 import UserConsultationsPage from './pages/user/UserConsultationsPage';
 import PsychologistConsultationsPage from './pages/psychologist/PsychologistConsultationsPage';
 import Chat from './components/chat/Chat';
+import ChatInterface from './components/chat/ChatInterface';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;

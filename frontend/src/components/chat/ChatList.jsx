@@ -1,10 +1,11 @@
-import { Avatar } from "@/components/ui/avatar"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 
 
 export default function ChatList({ chats, selectedChatId, onSelectChat }) {
 
-  
+  console.log(chats)
+
   return (
     <div className="overflow-y-auto">
       {chats.map((chat) => (
@@ -16,18 +17,24 @@ export default function ChatList({ chats, selectedChatId, onSelectChat }) {
           )}
           onClick={() => onSelectChat(chat)}
         >
-          <Avatar className={cn("h-10 w-10", chat.color)}>
-            <div className="text-white">
-              {chat.name
+          <Avatar className="h-10 w-10">
+            {chat.psychologist_image ? (
+              <AvatarImage src={chat.psychologist_image} />
+            ) : (
+              <div className="text-white bg-orange-400 m-auto">
+              {chat.psychologist_name
                 .split(" ")
                 .map((n) => n[0])
                 .join("")}
             </div>
+            )}
+        
           </Avatar>
           <div className="flex-1 overflow-hidden">
-            <div className="font-medium">{chat.name}</div>
+            <div className="font-medium">{chat.psychologist_name}</div>
             <div className="truncate text-sm text-muted-foreground">{chat.status || "No recent messages"}</div>
           </div>
+
         </div>
       ))}
     </div>

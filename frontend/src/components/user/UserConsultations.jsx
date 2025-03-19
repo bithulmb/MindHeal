@@ -39,6 +39,7 @@ const UserConsultations = () => {
   const [error, setError] = useState(null);
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [threadId,setThreadId] = useState(null)
 
   const navigate = useNavigate();
 
@@ -96,9 +97,28 @@ const UserConsultations = () => {
     // navigate(`/video-call/${selectedConsultation.id}`);
   };
 
-  const startChat = () => {
-    // Replace with actual chat navigation
-    // navigate(`/chat/${selectedConsultation.id}`);
+  const startChat = async () => {
+    if (!selectedConsultation) return;
+
+    const userId = selectedConsultation.patient.id;
+    const psychologistId = selectedConsultation.time_slot.psychologist;
+    console.log(" ids are ",userId,psychologistId)
+    try{
+      const response = await api.get('/api/chat/thread/',{
+        params : {
+          user_id :userId,
+          psychologist_id : psychologistId,
+        }
+      
+      })
+      // setThreadId(response.data.thread_id)
+      navigate(`/user/chats?thread_id=${response.data.thread_id}`);
+    
+    } catch (error){
+      console.error('error fetching tread'. error)
+    }
+
+
   };
 
   if (loading) {
