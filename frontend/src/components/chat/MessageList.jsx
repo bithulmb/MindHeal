@@ -2,11 +2,11 @@ import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import {format} from 'date-fns'
+import { useEffect, useRef } from "react";
 
 export default function MessageList({ messages }) {
   
   const loggedinUserId = useSelector((state) => state.auth.user.user_id);
-
 
   if (messages.length === 0) {
     return (
@@ -19,7 +19,7 @@ export default function MessageList({ messages }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 ">
       {messages.map((message) => (
         <div key={message.id}>
           {message.sender === loggedinUserId ? (
@@ -42,7 +42,7 @@ export default function MessageList({ messages }) {
                   className={cn(
                     "rounded-lg p-3",
                     message.sender === loggedinUserId
-                      ? "bg-black text-white"
+                      ? "bg-foreground text-background"
                       : "bg-muted"
                   )}
                 >
@@ -87,6 +87,7 @@ export default function MessageList({ messages }) {
           )}
         </div>
       ))}
+       
     </div>
   );
 }

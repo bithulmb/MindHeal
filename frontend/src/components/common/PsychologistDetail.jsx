@@ -355,7 +355,7 @@ export default function PsychologistDetail() {
 
                   {timeSlots && timeSlots.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto">
-                      {timeSlots.map((slot) => (
+                      {timeSlots.slice(0,6).map((slot) => (
                         <div
                           key={slot.id}
                           className="

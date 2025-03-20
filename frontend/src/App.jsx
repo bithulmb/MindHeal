@@ -126,6 +126,7 @@ function App() {
                         <Route path="profile/update" element={<PsychologistProfileUpdateForm/>} />   
                         <Route path="change-password" element={<ChangePassword/>} /> 
                         <Route path="consultations" element={<PsychologistConsultationsPage/>} />
+                        <Route path='chats' element={<UserChats/>} />
                         <Route path="earnings" element={<PsychologistEarnings/>} /> 
                         <Route path="slots" element={<TimeSlots/>} />           
                       </Route>

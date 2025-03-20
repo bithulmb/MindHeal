@@ -28,7 +28,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         sender = await sync_to_async(User.objects.get)(id=sender_id)
         thread = await sync_to_async(ChatThread.objects.get)(id = self.thread_id)
-
+        
         chat_message = await sync_to_async(ChatMessage.objects.create)(thread=thread, sender= sender, message=message)
 
         # Broadcast message to group
@@ -37,7 +37,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 "type": "chat_message",
                 "message": message,
-                "sender": sender.first_name,
+                "sender": sender.id,
                 "timestamp": str(chat_message.timestamp),
             },
         )
