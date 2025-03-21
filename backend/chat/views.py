@@ -8,21 +8,6 @@ from accounts.models import PatientProfile,PsychologistProfile
 
 User = get_user_model()
 
-# class ChatThreadView(generics.GenericAPIView):
-#     """Fetch or create a chat thread for a user and psychologist"""
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request, psychologist_id):
-#         user = request.user
-#         psychologist = User.objects.get(id=psychologist_id)
-
-#         # Check if a chat thread already exists
-#         chat_thread, created = ChatThread.objects.get_or_create(user=user, psychologist=psychologist)
-
-#         return Response({
-#             "thread_id": chat_thread.id,
-#             "created": created
-#         })
 
 class ChatThreadView(generics.GenericAPIView):     
     """Fetch or create a chat thread for a user and psychologist"""

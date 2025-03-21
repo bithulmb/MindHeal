@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'consultations',
     'payments',
     'chat',
+    'video_call',
 
 ]
 
@@ -328,3 +329,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+
+#Agora app credentials
+AGORA_APP_ID = os.getenv("AGORA_APP_ID")
+AGORA_APP_CERTIFICATE = os.getenv("AGORA_APP_CERTIFICATE")

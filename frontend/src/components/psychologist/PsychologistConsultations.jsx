@@ -7,6 +7,16 @@ import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext } from "@/components/ui/pagination";
 import PaginationComponent from '../common/PaginationComponent';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { MessageCircle, MessageSquare, Mic, Video, VideoIcon } from "lucide-react";
 
 
 
@@ -18,6 +28,10 @@ const PsychologistConsultations = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedConsultation, setSelectedConsultation] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [threadId,setThreadId] = useState(null)
+  
 
   const navigate = useNavigate()
   
@@ -53,6 +67,41 @@ const PsychologistConsultations = () => {
   const handleFilterChange = (value) => {
     setStatusFilter(value);
     setPage(1);
+  };
+
+  const openDialog = (consultation) => {
+    setSelectedConsultation(consultation);
+    setIsDialogOpen(true);
+  };
+
+  const startVideoCall = () => {
+   
+    navigate(`/psychologist/video-call/${selectedConsultation.id}`);
+    
+  };
+
+  const startChat = async () => {
+    if (!selectedConsultation) return;
+
+    const userId = selectedConsultation.patient.id;
+    const psychologistId = selectedConsultation.time_slot.psychologist;
+    
+    try{
+      const response = await api.get('/api/chat/thread/',{
+        params : {
+          user_id :userId,
+          psychologist_id : psychologistId,
+        }
+      
+      })
+     
+      navigate(`/psychologist/chats?thread_id=${response.data.thread_id}`);
+    
+    } catch (error){
+      console.error('error fetching tread'. error)
+    }
+
+
   };
 
 
@@ -124,7 +173,13 @@ const PsychologistConsultations = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Button variant="secondary" size="sm">View Details</Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => openDialog(consultation)}
+                      >
+                        View Details
+                      </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -137,6 +192,74 @@ const PsychologistConsultations = () => {
 
         </div>
       )}
+
+      {/* Consultation Details Dialog */}
+            {selectedConsultation && (
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Consultation Details</DialogTitle>
+                    <DialogDescription>
+                      Detailed information about your consultation.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-2">
+               
+                    <p>
+                      <strong>Patient Name:</strong>{" "}
+                      {selectedConsultation.patient_name}
+                    </p>
+                    <p>
+                      <strong>Consultation Status:</strong> {selectedConsultation.consultation_status}
+                    </p>
+                    <p>
+                      <strong>Consultation Date:</strong>{" "}
+                      {new Date(selectedConsultation.time_slot.date).toLocaleDateString()}
+                    </p>
+                    <p>
+                      <strong>Consultation Time:</strong> {selectedConsultation.time_slot.start_time} -{" "}
+                      {selectedConsultation.time_slot.end_time}
+                    </p>
+                    {selectedConsultation.payment && (
+                    <div  className="space-y-2">
+                       <p>
+                      <strong>Consultation Fees:</strong> ₹ {selectedConsultation.payment.amount}
+                      </p>
+                        <p>                  
+                        <strong>Payment Status:</strong>{" "}
+                        {selectedConsultation.payment.payment_status} 
+                      </p>
+                      <p>
+                      <strong>Payment Gateway:</strong> {selectedConsultation.payment.payment_gateway}
+                     </p>
+                     <p>
+                      <strong>Booked On:</strong> {new Date(selectedConsultation.payment.created_at).toLocaleDateString()}
+                    </p>
+                    </div>
+                    )}
+                  </div>
+                  {
+                    selectedConsultation.consultation_status==="Scheduled" && (
+                      <div className="flex justify-center gap-4 mt-6">
+                    <Button onClick={startChat}>
+                      <MessageCircle className="h-5 w-5 mr-2" />
+                      Start Chat
+                    </Button>
+                    <Button onClick={startVideoCall}>
+                      <VideoIcon className="h-5 w-5 mr-2" />
+                      Start Video Call
+                    </Button>
+                  </div>
+                    )
+                  }   
+                  
+                  <DialogFooter>
+                    
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+
     </div>
   );
 };

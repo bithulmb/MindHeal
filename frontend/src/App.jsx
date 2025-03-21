@@ -60,6 +60,7 @@ import UserConsultationsPage from './pages/user/UserConsultationsPage';
 import PsychologistConsultationsPage from './pages/psychologist/PsychologistConsultationsPage';
 import Chat from './components/chat/Chat';
 import ChatInterface from './components/chat/ChatInterface';
+import VideoCallPage from './components/video-call/VIdeoCallPage';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -105,7 +106,7 @@ function App() {
                         <Route path="wallet" element={<UserWallet/>} />
                         <Route path="profile/create" element={<UserProfileCreationForm/>} />
                         <Route path="profile/update" element={<UserProfileUpdateForm/>} /> 
-                        {/* <Route path="chat" element={<Chat/>} />    */}
+                        <Route path="video-call/:consultation_id" element={<VideoCallPage/>} />   
                   </Route>
                 </Route>
                     
@@ -128,7 +129,8 @@ function App() {
                         <Route path="consultations" element={<PsychologistConsultationsPage/>} />
                         <Route path='chats' element={<UserChats/>} />
                         <Route path="earnings" element={<PsychologistEarnings/>} /> 
-                        <Route path="slots" element={<TimeSlots/>} />           
+                        <Route path="slots" element={<TimeSlots/>} /> 
+                        <Route path="video-call/:consultation_id" element={<VideoCallPage/>} />           
                       </Route>
                   </Route>
                 </Route>

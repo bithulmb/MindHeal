@@ -93,8 +93,9 @@ const UserConsultations = () => {
 
 
   const startVideoCall = () => {
-    // Replace with actual video call page navigation
-    // navigate(`/video-call/${selectedConsultation.id}`);
+   
+    navigate(`/user/video-call/${selectedConsultation.id}`);
+    // navigate(`/user/video-call`);
   };
 
   const startChat = async () => {
@@ -102,7 +103,7 @@ const UserConsultations = () => {
 
     const userId = selectedConsultation.patient.id;
     const psychologistId = selectedConsultation.time_slot.psychologist;
-    console.log(" ids are ",userId,psychologistId)
+    
     try{
       const response = await api.get('/api/chat/thread/',{
         params : {
