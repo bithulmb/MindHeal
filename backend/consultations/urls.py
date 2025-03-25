@@ -7,7 +7,8 @@ from .views import (
     ConsultationListView,
     PsychologistTimeSlotListView,
     BookConsultationView,
-    TimeSlotBulkCreateView
+    TimeSlotBulkCreateView,
+    CheckDuplicateConsultationView
     )
 
 # router = DefaultRouter( )
@@ -22,5 +23,6 @@ urlpatterns = [
     path('consultations/', ConsultationListView.as_view(), name='consultation-list'),
     path('consultations/book/', BookConsultationView.as_view(), name='consultation-create'),
     path('consultations/<int:pk>/', ConsultationDetailView.as_view(), name='consultation-detail'),
+    path('consultations/check/', CheckDuplicateConsultationView.as_view(), name='consultation-check'),
 
     ]

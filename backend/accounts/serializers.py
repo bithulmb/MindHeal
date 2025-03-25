@@ -92,7 +92,7 @@ class PatientProfileSerializer(serializers.ModelSerializer):
         model = PatientProfile        
         fields = ['id', 'user', 'date_of_birth', 
                  'gender','occupation', 'mobile_number', 'medical_history', 'profile_image','created_at', 'updated_at','first_name','last_name','email','role']
-        read_only_fields = ['created_at', 'updated_at']
+        read_only_fields = ['user','created_at', 'updated_at']
         
     
     def update(self, instance, validated_data):
@@ -122,7 +122,7 @@ class PsychologistProfileSerializer(serializers.ModelSerializer):
                  'fees', 'id_card', 'education_certificate', 
                  'experience_certificate', 'approval_status','is_admin_approved',
                  'created_at', 'updated_at','first_name','last_name','email','role')
-        read_only_fields = ('is_admin_approved', 'created_at', 'updated_at')
+        read_only_fields = ('is_admin_approved','user','created_at', 'updated_at')
     
     def update(self, instance, validated_data):
         """ Update the user object if user data is provided """

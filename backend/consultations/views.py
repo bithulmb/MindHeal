@@ -275,3 +275,21 @@ class ConsultationDetailView(generics.RetrieveUpdateDestroyAPIView):
             return Consultation.objects.filter(time_slot__psychologist__user=self.request.user)
         return Consultation.objects.none()
 
+
+
+class CheckDuplicateConsultationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.query_params.get('userId')
+        psychologist_id = request.query_params.get('psychologistId')
+
+        if not user_id or not psychologist_id:
+            return Response({"error": "Missing userId or psychologistId"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if a consultation exists with 'scheduled' status
+        has_scheduled = Consultation.objects.filter(
+            patient_id=user_id, time_slot__psychologist_id=psychologist_id, consultation_status='Scheduled'
+        ).exists()
+
+        return Response({"already_scheduled": has_scheduled}, status=status.HTTP_200_OK)

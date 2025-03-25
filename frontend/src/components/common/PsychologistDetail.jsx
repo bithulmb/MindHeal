@@ -76,7 +76,43 @@ export default function PsychologistDetail() {
     fetchPsychologistData(id);
   }, [id]);
 
-  const handleBookConsultation = () => {
+
+const checkExistingConsultation = async (psychologistId)=> {
+  try {
+    const response = await api.get(
+      `api/consultations/check/`, {
+        params: {
+          userId: userProfile.id,
+          psychologistId: psychologistId,
+        }
+      }
+    
+    );
+   
+
+    if (response.data.already_scheduled) {
+      const confirmBooking = await Swal.fire({
+        title: "Session Already Booked",
+        text: "You have already booked a session with this psychologist. Do you want to book again?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Book Again",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#28A745",
+        cancelButtonColor: "#DC3545",
+      });
+
+      return confirmBooking.isConfirmed; // Returns true if user clicks "Yes"
+    }
+
+    return true; // If no session booked, allow booking
+  } catch (error) {
+    console.error("Error checking consultation:", error);
+    return false;
+  }
+};
+
+  const handleBookConsultation = async () => {
     if (!user) {
       toast.error("You need to login to book a consultation");
       return;
@@ -88,6 +124,12 @@ export default function PsychologistDetail() {
     if (!userProfile) {
       toast.error("Please create your profile to book a consultation");
       return;
+    }
+
+    const duplicateBooking = await checkExistingConsultation(id)
+    if (!duplicateBooking){
+      
+      return
     }
     setDialogOpen(true);
   };
