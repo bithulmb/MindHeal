@@ -5,6 +5,7 @@ from .models import ChatThread, ChatMessage
 from .serializers import ChatThreadSerializer, ChatMessageSerializer
 from django.contrib.auth import get_user_model
 from accounts.models import PatientProfile,PsychologistProfile
+from rest_framework.exceptions import PermissionDenied
 
 User = get_user_model()
 
@@ -20,9 +21,16 @@ class ChatThreadView(generics.GenericAPIView):
         if not user_id or not psychologist_id:
             return Response({"error": "Missing user_id or psychologist_id"}, status=400)
 
-        user = PatientProfile.objects.get(id=user_id)
-        psychologist = PsychologistProfile.objects.get(id=psychologist_id)
-
+        try:
+            user = PatientProfile.objects.get(id=user_id)
+            psychologist = PsychologistProfile.objects.get(id=psychologist_id)
+        except (PatientProfile.DoesNotExist, PsychologistProfile.DoesNotExist):
+            return Response({"error": "Invalid user or psychologist"}, status=404)
+        
+        # Check if the requesting user is either the patient or psychologist
+        if request.user != user.user and request.user != psychologist.user:
+            return Response({"error": "You are not authorized to access this thread"}, status=403)
+        
         # Create new thread
         chat_thread, created = ChatThread.objects.get_or_create(user=user, psychologist=psychologist)
 
@@ -37,11 +45,23 @@ class ChatMessageView(generics.ListCreateAPIView):
     def get_queryset(self):
         """Get messages for the specified chat thread"""
         thread_id = self.kwargs['thread_id']
+        thread = ChatThread.objects.get(id=thread_id)
+
+        # Authorization check
+        if self.request.user != thread.user.user and self.request.user != thread.psychologist.user:
+            raise PermissionDenied("You are not authorized to view this chat thread")
+        
         return ChatMessage.objects.filter(thread_id=thread_id).order_by('timestamp')
 
     def perform_create(self, serializer):
         """Save new chat messages"""
         thread_id = self.kwargs['thread_id']
+        thread = ChatThread.objects.get(id=thread_id)
+
+        # Authorization check
+        if self.request.user != thread.user.user and self.request.user != thread.psychologist.user:
+            raise PermissionDenied("You are not authorized to send messages in this chat thread")
+        
         serializer.save(sender=self.request.user, thread_id=thread_id)
 
 class GetChatThreadsListView(generics.ListAPIView):

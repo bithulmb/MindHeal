@@ -8,6 +8,14 @@ export default function MessageList({ messages }) {
   
   const loggedinUserId = useSelector((state) => state.auth.user.user_id);
 
+  const messagesEndRef = useRef(null)
+  
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   if (messages.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -87,7 +95,7 @@ export default function MessageList({ messages }) {
           )}
         </div>
       ))}
-       
+       <div ref={messagesEndRef} /> 
     </div>
   );
 }
