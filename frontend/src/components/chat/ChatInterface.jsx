@@ -175,12 +175,6 @@ export default function ChatInterface({ threadIdFromURL }) {
         {/* Message Input */}
         <div className="border-t p-3">
           <div className="flex items-center gap-2">
-            {/* <Button variant="ghost" size="icon" className="rounded-full">
-              <PlusCircle className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Mic className="h-5 w-5" />
-            </Button> */}
             <div className="relative flex-1">
               <Input
                 placeholder="Type a message..."

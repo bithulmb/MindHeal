@@ -74,11 +74,32 @@ const PsychologistConsultations = () => {
     setIsDialogOpen(true);
   };
 
+
   const startVideoCall = () => {
+
+    if (!selectedConsultation) return;
+
+    const consultationDate = selectedConsultation.time_slot.date; 
+    const consultationTime = selectedConsultation.time_slot.start_time; 
    
-    navigate(`/psychologist/video-call/${selectedConsultation.id}`);
+    const scheduledDateTime = new Date(`${consultationDate}T${consultationTime}`);
+
+    const now = new Date();
+
+    const timeDifference = scheduledDateTime - now
+    const timeDifferenceInMinutes = timeDifference/(1000 * 60)
+
+    console.info(timeDifferenceInMinutes)
+    if (timeDifferenceInMinutes <=30 && timeDifferenceInMinutes >=-60){
+      navigate(`/psychologist/video-call/${selectedConsultation.id}`);
+    } else {
+      toast.error("You can only start the video call 30 minutes before the scheduled time.")
+      return
+    }
+   
     
   };
+
 
   const startChat = async () => {
     if (!selectedConsultation) return;

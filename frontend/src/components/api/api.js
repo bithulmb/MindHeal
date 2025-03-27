@@ -52,7 +52,7 @@ api.interceptors.response.use(
             }
         }
 
-        if (error.response && error.response.status === 403){
+        if (error.response.status === 403 && error.response.data.detail=="User is blocked"){
             console.log("user has been blocked. removing access token")
             localStorage.clear()
             window.location.href = '/user/blocked';

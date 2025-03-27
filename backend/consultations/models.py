@@ -85,5 +85,5 @@ class Consultation(models.Model):
 
 
     def __str__(self):
-        return f"Consultation: {self.patient.user.first_name} with {self.time_slot.psychologist.user.first_name} on {self.time_slot.date} at {self.time_slot.start_time}"
+        return f"Consultation: {self.patient.user.first_name} with {self.time_slot.psychologist.user.first_name} on {self.time_slot.date} at {self.time_slot.start_time} "
 

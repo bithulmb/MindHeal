@@ -334,3 +334,7 @@ CHANNEL_LAYERS = {
 #Agora app credentials
 AGORA_APP_ID = os.getenv("AGORA_APP_ID")
 AGORA_APP_CERTIFICATE = os.getenv("AGORA_APP_CERTIFICATE")
+
+#zegocloud video call api integration credentials
+ZEGO_APP_ID=os.getenv("ZEGO_APP_ID")
+ZEGO_SERVER_SECRET=os.getenv("ZEGO_SERVER_SECRET")

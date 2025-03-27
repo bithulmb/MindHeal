@@ -8,11 +8,10 @@ function VideoCallPage() {
   const [userId, setUserId] = useState(null);
   const [psychologistId, setPsychologistId] = useState(null);
   const [channelName, setChannelName] = useState(null);
+  const [isCallStarted, setIsCallStarted] = useState(false); // New state to control video call start
 
- 
-  const location = useLocation()
-  const isPsychologist = location.pathname.includes("psychologist")
-
+  const location = useLocation();
+  const isPsychologist = location.pathname.includes("psychologist");
 
   // Create a channel id using consultation id
   useEffect(() => {
@@ -31,18 +30,34 @@ function VideoCallPage() {
     };
 
     createChannel();
-  }, []);
+  }, [consultation_id]);
+
+  // Function to handle button click and start the video call
+  const handleStartCall = () => {
+    setIsCallStarted(true);
+  };
 
   return (
-    <div className="">
-      <h1>{isPsychologist ? "Psychologist-User Video Call" : "User-Psychologist Video Call"}</h1>
+    <div className="text-center">
+      <h1 className="font-extrabold text-center text-2xl">Therapy Video Session</h1>
       {channelName ? (
-        <VideoCall
-          userId={userId}
-          psychologistId={psychologistId}
-          channelName={channelName}
-         
-        />
+        <>
+          {!isCallStarted ? (
+            <button
+              onClick={handleStartCall}
+              className="bg-blue-600 text-white px-6 py-3 m-6 rounded-lg shadow-md hover:bg-blue-700 transition-all"
+            >
+              Start Video Call
+            </button>
+          ) : (
+            <VideoCall
+              userId={userId}
+              psychologistId={psychologistId}
+              channelName={channelName}
+              isPsychologist={isPsychologist}
+            />
+          )}
+        </>
       ) : (
         <p>Loading video call setup...</p>
       )}
