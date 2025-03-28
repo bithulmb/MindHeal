@@ -28,8 +28,9 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { MessageCircle, MessageSquare, Mic, Video, VideoIcon } from "lucide-react";
+import { MessageCircle, MessageSquare, Mic, Star, StarIcon, Video, VideoIcon } from "lucide-react";
 import { toast } from "sonner";
+import Rating from "react-rating";
 
 const UserConsultations = () => {
   const [consultations, setConsultations] = useState([]);
@@ -41,6 +42,9 @@ const UserConsultations = () => {
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [threadId,setThreadId] = useState(null)
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
 
   const navigate = useNavigate();
 
@@ -92,6 +96,11 @@ const UserConsultations = () => {
     setIsDialogOpen(true);
   };
 
+  const openReviewDialog = () => {
+    setIsReviewDialogOpen(true);
+    setIsDialogOpen(false); 
+  };
+
 
   const startVideoCall = () => {
 
@@ -140,6 +149,26 @@ const UserConsultations = () => {
     }
 
 
+  };
+
+  const submitReview = async () => {
+    if (!selectedConsultation) return;
+
+    try {
+      const response = await api.post("/api/consultation/submit-review/", {
+        consultation_id: selectedConsultation.id,
+        rating: reviewRating,
+        comment: reviewComment,
+      });
+      console.log("Review submitted:", response.data);
+      setIsReviewDialogOpen(false);
+      setReviewRating(5); // Reset form
+      setReviewComment("");
+      toast.success("Review submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error("Failed to submit review. Please try again.");
+    }
   };
 
   if (loading) {
@@ -308,7 +337,15 @@ const UserConsultations = () => {
               </Button>
             </div>
               )
-            }   
+            } 
+            {selectedConsultation.consultation_status === "Completed" && (
+              <div className="flex justify-center mt-6">
+                <Button onClick={openReviewDialog}>
+                  <Star className="h-5 w-5 mr-2" />
+                  Submit Review
+                </Button>
+              </div>
+            )}  
             
             <DialogFooter>
               
@@ -316,6 +353,47 @@ const UserConsultations = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Review Submission Dialog */}
+      {selectedConsultation && (
+        <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Submit Review</DialogTitle>
+              <DialogDescription>Rate and comment on your consultation experience.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+            <div>
+                <label className="block text-sm font-medium">Rating:</label>
+                <Rating
+                  initialRating={reviewRating}
+                  onChange={(value) => setReviewRating(value)}
+                  emptySymbol={<Star className="h-6 w-6 text-gray-300" />}
+                  fullSymbol={<Star className="h-6 w-6 text-yellow-500" fill="currentColor"/>}
+                  fractions={1} // Whole stars only
+                  stop={5} // Max 5 stars
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Comment (optional):</label>
+                <textarea
+                  className="w-full p-2 border rounded dark:text-background"
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  placeholder="Share your experience..."
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="secondary" onClick={() => setIsReviewDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={submitReview}>Submit Review</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
     </div>
   );
 };

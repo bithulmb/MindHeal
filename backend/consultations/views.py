@@ -255,3 +255,72 @@ class UpdateConsultationStatus(APIView):
             return Response({"message": "Consultation marked as completed"}, status=status.HTTP_200_OK)
         except Consultation.DoesNotExist:
             return Response({"error": "Consultation not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from .models import Review, Consultation
+from .serializers import ReviewSerializer
+
+class SubmitReviewView(APIView):
+    permission_classes = [IsPatient]
+
+    def post(self, request):
+        consultation_id = request.data.get("consultation_id")
+        rating = request.data.get("rating")
+        comment = request.data.get("comment", "")
+
+        try:
+            consultation = Consultation.objects.get(id=consultation_id)
+            # Check if consultation is completed
+            if consultation.consultation_status != "Completed":
+                return Response(
+                    {"error": "Reviews can only be submitted for completed consultations"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            # Check if the user is the patient
+            if consultation.patient.user != request.user:
+                return Response(
+                    {"error": "You are not authorized to review this consultation"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            # Try to get existing review or create a new one
+            review, created = Review.objects.get_or_create(
+                consultation=consultation,
+                user=request.user,
+                defaults={"rating": rating, "comment": comment}  # Defaults for new review
+            )
+
+            if not created:
+                # If review already exists, update it
+                review.rating = rating
+                review.comment = comment
+                review.save()
+                serializer = ReviewSerializer(review)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            # If new review was created, serialize and return it
+            serializer = ReviewSerializer(review)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Consultation.DoesNotExist:
+            return Response({"error": "Invalid consultation ID"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PsychologistReviewsView(APIView):
+    def get(self, request, psychologist_id):
+        try:
+            # Fetch reviews for consultations linked to the psychologist
+            reviews = Review.objects.filter(
+                consultation__time_slot__psychologist_id=psychologist_id
+            ).select_related("user", "consultation")
+            
+            serializer = ReviewSerializer(reviews, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

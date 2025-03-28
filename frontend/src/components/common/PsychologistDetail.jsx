@@ -47,6 +47,7 @@ export default function PsychologistDetail() {
   const [error, setError] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [reviews, setReviews] = useState([]);
 
   const user = useSelector((state) => state.auth.user);
   const userProfile = useSelector((state) => state.patientProfile.profile);
@@ -57,13 +58,15 @@ export default function PsychologistDetail() {
     const fetchPsychologistData = async (id) => {
       try {
         setLoading(true);
-        const [psychologistResponse, timeSlotsResponse] = await Promise.all([
+        const [psychologistResponse, timeSlotsResponse, reviewsResponse] = await Promise.all([
           api.get(`/api/psychologists/${id}/`),
           api.get(`/api/psychologists/${id}/timeslots/`),
+          api.get(`/api/psychologists/${id}/reviews/`),
         ]);
         setPsychologist(psychologistResponse.data);
         setTimeSlots(timeSlotsResponse.data);
-        console.log("profile and time slots fetched succesfully");
+        setReviews(reviewsResponse.data); // Set
+        console.log("profile, reviews and time slots fetched succesfully");
       } catch (error) {
         if (error.response?.status === 404) {
           setError(true);
@@ -76,6 +79,9 @@ export default function PsychologistDetail() {
     fetchPsychologistData(id);
   }, [id]);
 
+const averageRating = reviews.length
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : null;
 
 const checkExistingConsultation = async (psychologistId)=> {
   try {
@@ -380,9 +386,15 @@ const checkExistingConsultation = async (psychologistId)=> {
                         Book Consultation
                       </Button>
                     </section>
+                    
                   </div>
                 </CardContent>
               </Card>
+
+    
+              
+
+
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
@@ -460,7 +472,56 @@ const checkExistingConsultation = async (psychologistId)=> {
             </div>
           </div>
         </div>
+                  {/* Separate Reviews Card */}
+            <Card className="shadow-xl bg-background border border-gray-100">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                <Star className="h-6 w-6 text-yellow-500" fill="currentColor" />
+                Reviews
+                <Badge className="ml-2 bg-primary/10 text-primary">{reviews.length} Reviews</Badge>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">{averageRating ? `Average Rating: ${averageRating}/5` : `Average Rating : N/A`}</p>
+            </CardHeader>
+            <CardContent>
+              {reviews.length > 0 ? (
+                <div className="space-y-6">
+                  {reviews.slice(0, 3).map((review) => (
+                    <div
+                      key={review.id}
+                      className="p-4 bg-muted rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-5 w-5 ${
+                              i < review.rating ? "text-yellow-500" : "text-gray-300"
+                            }`}
+                            fill={i < review.rating ? "currentColor" : "none"}
+                          />
+                        ))}
+                        <span className="text-sm font-semibold text-gray-400">({review.rating}/5)</span>
+                      </div>
+                      <p className="text-gray-400">{review.comment || "No comment provided."}</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        By <span className="font-medium">{review.user_name}</span> on{" "}
+                        {new Date(review.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ))}
+                  {reviews.length > 3 && (
+                    <p className="text-sm text-primary cursor-pointer hover:underline">
+                      Show {reviews.length - 3} more reviews
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No reviews yet. Be the first to review!</p>
+              )}
+            </CardContent>
+          </Card>
       </div>
+      
     </>
   );
 }

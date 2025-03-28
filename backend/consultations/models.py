@@ -6,9 +6,11 @@ from datetime import datetime, timedelta
 from django.utils.translation import gettext_lazy as _
 import uuid
 from payments.models import Payment
+from django.contrib.auth import get_user_model
 
 # Create your models here.
 
+User=get_user_model()
 class ConsultationStatus(models.TextChoices):
     PENDING = 'Pending', _('Pending')
     SCHEDULED = 'Scheduled', _('Scheduled')
@@ -87,3 +89,16 @@ class Consultation(models.Model):
     def __str__(self):
         return f"Consultation: {self.patient.user.first_name} with {self.time_slot.psychologist.user.first_name} on {self.time_slot.date} at {self.time_slot.start_time} "
 
+
+class Review(models.Model):
+    consultation = models.OneToOneField(Consultation, on_delete=models.CASCADE, related_name="review")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(default=5) 
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("consultation", "user") 
+
+    def __str__(self):
+        return f"Review for Consultation {self.consultation.id} by {self.user.get_full_name()}"

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import TimeSlot,Consultation
+from .models import TimeSlot,Consultation,Review
 from django.utils import timezone
 from datetime import datetime,timedelta
 from accounts.models import PsychologistProfile
@@ -91,5 +91,14 @@ class ConsultationSerializer(serializers.ModelSerializer):
         return value
 
 
-
     
+class ReviewSerializer(serializers.ModelSerializer):
+    user_name = serializers.CharField(source='user.get_full_name',read_only=True)
+    class Meta:
+        model = Review
+        fields = ["id", "consultation", "user","user_name", "rating", "comment", "created_at"]
+        read_only_fields = ["user", 'user_name',"created_at"]  
+    
+
+       
+     
