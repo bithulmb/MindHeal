@@ -17,6 +17,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { MessageCircle, MessageSquare, Mic, Video, VideoIcon } from "lucide-react";
+import { toast } from 'sonner';
 
 
 
@@ -90,7 +91,7 @@ const PsychologistConsultations = () => {
     const timeDifferenceInMinutes = timeDifference/(1000 * 60)
 
     console.info(timeDifferenceInMinutes)
-    if (timeDifferenceInMinutes <=30 && timeDifferenceInMinutes >=-60){
+    if (timeDifferenceInMinutes <=30 ){
       navigate(`/psychologist/video-call/${selectedConsultation.id}`);
     } else {
       toast.error("You can only start the video call 30 minutes before the scheduled time.")

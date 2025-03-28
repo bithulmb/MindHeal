@@ -108,7 +108,7 @@ const UserConsultations = () => {
     const timeDifferenceInMinutes = timeDifference/(1000 * 60)
 
     console.info(timeDifferenceInMinutes)
-    if (timeDifferenceInMinutes <=30 && timeDifferenceInMinutes >=-5){
+    if (timeDifferenceInMinutes <=30){
       navigate(`/user/video-call/${selectedConsultation.id}`);
     } else {
       toast.error("You can only start the video call 30 minutes before the scheduled time.")

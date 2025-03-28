@@ -28,13 +28,17 @@ class CreateChannelView(APIView):
         try:
             consultation = Consultation.objects.get(id=consultation_id) 
     
-            user_id = consultation.patient.id
-            psychologist_id = consultation.time_slot.psychologist.id
+            patient_profile_id = consultation.patient.id
+            psychologist_profile_id = consultation.time_slot.psychologist.id
+            user_id = consultation.patient.user.id
+            psychologist_id = consultation.time_slot.psychologist.user.id
         except Consultation.DoesNotExist:
             return Response({'error': "invalid consultation id"}, status=status.HTTP_400_BAD_REQUEST)   
         
         # Check if the requesting user is the patient or psychologist
+        print("ids are",request.user.id,user_id,psychologist_id)
         if request.user.id not in [user_id, psychologist_id]:
+        
             return Response({'error': "You are not authorized for this consultation"}, status=status.HTTP_403_FORBIDDEN)
 
         # Check if a session already exists for this consultation
@@ -50,8 +54,8 @@ class CreateChannelView(APIView):
 
             channel_data = {
                 'channel_name': channel_name,
-                'user': user_id,
-                'psychologist': psychologist_id,
+                'user': patient_profile_id,
+                'psychologist': psychologist_profile_id,
                 'consultation': consultation_id,  
             }
 

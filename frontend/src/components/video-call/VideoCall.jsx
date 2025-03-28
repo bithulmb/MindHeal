@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import api from "../api/api"; 
+import { useParams } from "react-router-dom";
 
 const VideoCall = ({ userId, psychologistId, channelName, isPsychologist }) => {
   const requestedUserName = useSelector((state) => state.auth.user.name);
@@ -9,6 +10,8 @@ const VideoCall = ({ userId, psychologistId, channelName, isPsychologist }) => {
   const roomID = channelName;
   const requestedUserId = (isPsychologist ? psychologistId : userId).toString();
   const [token, setToken] = useState(""); 
+
+  const {consultation_id} = useParams()
   
   // Fetch token from backend 
   useEffect(() => {
@@ -27,6 +30,18 @@ const VideoCall = ({ userId, psychologistId, channelName, isPsychologist }) => {
 
     fetchToken();
   }, [requestedUserId, roomID]); 
+
+    // Function to update consultation status after leaving
+    const updateConsultationStatus = async () => {
+      try {
+        const response = await api.patch(`/api/consultations/${consultation_id}/complete/`, {
+          status: "Completed",
+        });
+        console.log("Consultation status updated successfully");
+      } catch (error) {
+        console.error("Error updating consultation status:", error);
+      }
+    };
 
   // Function to start the video call
   const startCall = (element) => {
@@ -47,6 +62,10 @@ const VideoCall = ({ userId, psychologistId, channelName, isPsychologist }) => {
       },
       showScreenSharingButton: false,
       showPreJoinView: false,
+      onLeaveRoom: () => {
+        console.log("User left the room");
+        updateConsultationStatus(); 
+      },
     });
   };
 

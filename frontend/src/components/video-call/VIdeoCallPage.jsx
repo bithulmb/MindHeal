@@ -25,6 +25,7 @@ function VideoCallPage() {
         setUserId(data.user);
         setPsychologistId(data.psychologist);
       } catch (error) {
+        
         console.error("Error creating channel:", error);
       }
     };

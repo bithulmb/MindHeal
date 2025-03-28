@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
-from .models import TimeSlot,Consultation
+from .models import TimeSlot,Consultation,ConsultationStatus
 from .serializers import TimeSlotSerializer,ConsultationSerializer
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from accounts.models import PsychologistProfile, UserRole, PatientProfile
@@ -213,56 +213,6 @@ class BookConsultationView(APIView):
         except razorpay.errors.RazorpayError as e:
             return Response({"error": f"Razorpay error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
-
-
-
-
-
-# class ConsultationListCreateView(generics.ListCreateAPIView):
-#     serializer_class = ConsultationSerializer
-#     pagination_class = ConsultationPagination
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_fields = ['consultation_status'] 
-   
-#     def get_permissions(self):
-#         if self.request.method == 'POST':
-#             return [IsPatient()]
-#         return [IsAuthenticated()]
-    
-    
-
-#     def get_queryset(self):
-        
-#         user = self.request.user
-#         queryset = Consultation.objects.none()
-
-#         if user.role == 'Patient':
-#             queryset = Consultation.objects.filter(patient__user=user).order_by("time_slot__date")
-#         elif user.role == 'Psychologist':
-#             queryset = Consultation.objects.filter(time_slot__psychologist__user=user).order_by("time_slot__date")
-        
-#         status = self.request.query_params.get('status', None)  
-        
-#         if status:
-#             queryset = queryset.filter(consultation_status=status) 
-
-#         return queryset
-    
-#     def perform_create(self, serializer):
-#         patient = PatientProfile.objects.get(user=self.request.user)
-#         time_slot_id = self.request.data.get('time_slot')
-#         print(self.request.data)
-        
-#         if not time_slot_id:
-#             raise ValidationError({'time_slot': 'This field is required.'})
-        
-#         try:
-#             time_slot = TimeSlot.objects.get(id=time_slot_id)
-#         except TimeSlot.DoesNotExist:
-#             raise ValidationError({'time_slot': 'Invalid time slot.'})
-
-        
-#         serializer.save(patient=patient, time_slot=time_slot)
         
 class ConsultationDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ConsultationSerializer
@@ -293,3 +243,15 @@ class CheckDuplicateConsultationView(APIView):
         ).exists()
 
         return Response({"already_scheduled": has_scheduled}, status=status.HTTP_200_OK)
+
+
+
+class UpdateConsultationStatus(APIView):
+    def patch(self, request, consultation_id):
+        try:
+            consultation = Consultation.objects.get(id=consultation_id)
+            consultation.consultation_status = ConsultationStatus.COMPLETED
+            consultation.save()
+            return Response({"message": "Consultation marked as completed"}, status=status.HTTP_200_OK)
+        except Consultation.DoesNotExist:
+            return Response({"error": "Consultation not found"}, status=status.HTTP_404_NOT_FOUND)
