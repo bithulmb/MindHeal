@@ -16,6 +16,8 @@ import PaginationComponent from '../common/PaginationComponent'
 import { LoadingSpinner } from '../common/LoadingPage'
 import { Input } from '../ui/input'
 import useDebounce from '@/hooks/useDebounce'
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog"
+import { CLOUDINARY_BASE_URL } from '@/utils/constants/constants'
 
   
 
@@ -26,6 +28,8 @@ const UserListTable = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null); 
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const debouncedSearchQuery = useDebounce(searchQuery,500)
 
@@ -93,6 +97,11 @@ const UserListTable = () => {
     });
   };
 
+  const handleViewClick = (user) => {
+    setSelectedUser(user)
+    setIsDialogOpen(true)
+  }
+
   return (
     <div>
 
@@ -145,7 +154,14 @@ const UserListTable = () => {
                     {!user.is_blocked ? "Block" : "Unblock"}
                   </Button>
                 </TableCell>
-                <TableCell  className="text-right"><Button variant="link">View</Button></TableCell>
+                <TableCell className="text-right">
+                    <Button 
+                      variant="link"
+                      onClick={() => handleViewClick(user)}
+                    >
+                      View
+                    </Button>
+                  </TableCell>
               </TableRow>
             ))
           ) : (
@@ -164,6 +180,87 @@ const UserListTable = () => {
 
       {totalPages > 1 && (
             <PaginationComponent page={currentPage} setPage={setCurrentPage} totalPages={totalPages} />
+      )}
+
+{selectedUser && (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>User Details</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              {selectedUser.patient_profile?.profile_image && (
+                <div className="flex justify-center">
+                  <img
+                    src={`${CLOUDINARY_BASE_URL}${selectedUser.patient_profile.profile_image}`}
+                    alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
+                    className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+                    onError={(e) => {
+                      e.target.src = 'path/to/fallback-image.jpg' // Optional: Add a fallback image
+                    }}
+                  />
+                </div>
+              )}
+
+              <div className="grid gap-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="font-semibold text-sm">Name:</p>
+                    <p className="text-sm">{`${selectedUser.first_name} ${selectedUser.last_name}`}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">Email:</p>
+                    <p className="text-sm">{selectedUser.email}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">Date Joined:</p>
+                    <p className="text-sm">{format(new Date(selectedUser.created_at), 'dd-MM-yyyy HH:mm:ss')}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">Status:</p>
+                    <p className="text-sm">{selectedUser.is_active ? 'Active' : 'Inactive'}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">Role:</p>
+                    <p className="text-sm">{selectedUser.role}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">Email Verified:</p>
+                    <p className="text-sm">{selectedUser.is_email_verified ? 'Yes' : 'No'}</p>
+                  </div>
+                </div>
+
+                {selectedUser.patient_profile && (
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-base">Patient Profile</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <p className="font-semibold text-sm">Date of Birth:</p>
+                        <p className="text-sm">{selectedUser.patient_profile.date_of_birth}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">Gender:</p>
+                        <p className="text-sm">{selectedUser.patient_profile.gender}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">Occupation:</p>
+                        <p className="text-sm">{selectedUser.patient_profile.occupation}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">Mobile Number:</p>
+                        <p className="text-sm">{selectedUser.patient_profile.mobile_number}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">Medical History:</p>
+                      <p className="text-sm">{selectedUser.patient_profile.medical_history}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
 
     </div>

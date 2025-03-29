@@ -16,6 +16,12 @@ from rest_framework import status
 from django.conf import settings
 import razorpay
 from django.db import transaction
+from django.db.models import Q
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from .models import Review, Consultation
+from .serializers import ReviewSerializer
 
 
 
@@ -116,8 +122,9 @@ class ConsultationPagination(PageNumberPagination):
 class ConsultationListView(generics.ListAPIView):
     serializer_class = ConsultationSerializer
     pagination_class = ConsultationPagination
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['consultation_status'] 
+    # filter_backends = [DjangoFilterBackend,filters.SearchFilter]
+    # filterset_fields = ['consultation_status'] 
+    # search_fields = ['patient__user__first_name', 'time_slot__psychologist__user__first_name', 'consultation_status']
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -125,16 +132,28 @@ class ConsultationListView(generics.ListAPIView):
         user = self.request.user
         queryset = Consultation.objects.none()
 
+        status = self.request.query_params.get('status', None)  
+        search_query = self.request.query_params.get('search',None)
+
         if user.role == 'Patient':
             queryset = Consultation.objects.filter(patient__user=user).order_by("time_slot__date")
+            if search_query:
+                queryset = queryset.filter(Q(time_slot__psychologist__user__first_name__icontains=search_query) |  # Search by psychologist's first name
+                Q(time_slot__psychologist__user__last_name__icontains=search_query)     # Search by psychologist's last name
+            )
+
         elif user.role == 'Psychologist':
             queryset = Consultation.objects.filter(time_slot__psychologist__user=user).order_by("time_slot__date")
+            if search_query:
+                queryset = queryset.filter(Q(patient__user__first_name__icontains=search_query) |  # Search by patient's first name
+                Q(patient__user__last_name__icontains=search_query) )  # Search by patient's last name)
         
-        status = self.request.query_params.get('status', None)  
-        
+       
+
         if status:
             queryset = queryset.filter(consultation_status=status) 
-
+        
+        
         return queryset
     
 class BookConsultationView(APIView):
@@ -257,12 +276,7 @@ class UpdateConsultationStatus(APIView):
             return Response({"error": "Consultation not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
-from .models import Review, Consultation
-from .serializers import ReviewSerializer
+
 
 class SubmitReviewView(APIView):
     permission_classes = [IsPatient]

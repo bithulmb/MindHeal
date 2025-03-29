@@ -16,6 +16,14 @@ import PaginationComponent from '../common/PaginationComponent'
 import { LoadingSpinner } from '../common/LoadingPage'
 import { Input } from '../ui/input'
 import useDebounce from '@/hooks/useDebounce'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { CLOUDINARY_BASE_URL } from '@/utils/constants/constants'
   
 
 const PsychologistListTable = () => {
@@ -25,6 +33,8 @@ const PsychologistListTable = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPsychologist, setSelectedPsychologist] = useState(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const debouncedSearchQuery = useDebounce(searchQuery,500)
 
@@ -91,7 +101,10 @@ const PsychologistListTable = () => {
     });
   };
 
-
+  const handleViewClick = (psychologist) => {
+    setSelectedPsychologist(psychologist)
+    setIsDialogOpen(true)
+  }
 
   return (
     <div>
@@ -145,7 +158,14 @@ const PsychologistListTable = () => {
                     {!user.is_blocked ? "Block" : "Unblock"}
                   </Button>
                 </TableCell>
-                <TableCell  className="text-right"><Button variant="link">View</Button></TableCell>
+                <TableCell  className="text-right">
+                <Button 
+                      variant="link"
+                      onClick={() => handleViewClick(user)}
+                    >
+                      View
+                    </Button>
+                </TableCell>
               </TableRow>
             ))
           ) : (
@@ -166,6 +186,95 @@ const PsychologistListTable = () => {
             <PaginationComponent page={currentPage} setPage={setCurrentPage} totalPages={totalPages} />
       )}
 
+{selectedPsychologist && (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent  className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Psychologist Details</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              {/* Add profile picture section */}
+              {selectedPsychologist.psychologist_profile?.profile_image && (
+                <div className="flex justify-center">
+                  <img
+                    src={`${CLOUDINARY_BASE_URL}${selectedPsychologist.psychologist_profile.profile_image}`}
+                    alt={`${selectedPsychologist.first_name} ${selectedPsychologist.last_name}`}
+                    className="w-32 h-32 rounded-full object-cover border-2 border-gray-200"
+                    onError={(e) => {
+                      e.target.src = 'path/to/fallback-image.jpg' // Optional: Add a fallback image
+                    }}
+                  />
+                </div>
+              )}
+
+              <div className="grid gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="font-semibold">Name:</p>
+                    <p>{`${selectedPsychologist.first_name} ${selectedPsychologist.last_name}`}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Email:</p>
+                    <p>{selectedPsychologist.email}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Date Joined:</p>
+                    <p>{format(new Date(selectedPsychologist.created_at), 'dd-MM-yyyy HH:mm:ss')}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Status:</p>
+                    <p>{selectedPsychologist.is_active ? 'Active' : 'Inactive'}</p>
+                  </div>
+                </div>
+                
+                {selectedPsychologist.psychologist_profile && (
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-lg">Professional Details</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="font-semibold">Date of Birth:</p>
+                        <p>{selectedPsychologist.psychologist_profile.date_of_birth}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold">Gender:</p>
+                        <p>{selectedPsychologist.psychologist_profile.gender}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold">Mobile Number:</p>
+                        <p>{selectedPsychologist.psychologist_profile.mobile_number}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold">Qualification:</p>
+                        <p>{selectedPsychologist.psychologist_profile.qualification}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold">Experience:</p>
+                        <p>{selectedPsychologist.psychologist_profile.experience} years</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold">Specialization:</p>
+                        <p>{selectedPsychologist.psychologist_profile.specialization}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold">Fees:</p>
+                        <p>₹{selectedPsychologist.psychologist_profile.fees}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold">Approval Status:</p>
+                        <p>{selectedPsychologist.psychologist_profile.approval_status}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-semibold">About:</p>
+                      <p>{selectedPsychologist.psychologist_profile.about_me}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }
