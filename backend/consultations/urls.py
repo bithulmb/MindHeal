@@ -11,7 +11,8 @@ from .views import (
     CheckDuplicateConsultationView,
     UpdateConsultationStatus,
     SubmitReviewView,
-    PsychologistReviewsView
+    PsychologistReviewsView,
+    PsychologistDashboardView,
     )
 
 # router = DefaultRouter( )
@@ -31,5 +32,5 @@ urlpatterns = [
 
     path('consultation/submit-review/',SubmitReviewView.as_view(), name='submit-review'),
     path("psychologists/<int:psychologist_id>/reviews/", PsychologistReviewsView.as_view(), name="psychologist_reviews"),
-
+    path('psychologist/dashboard/',PsychologistDashboardView.as_view(),name='psychologist-dashboard'),
     ]

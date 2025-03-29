@@ -22,6 +22,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import Review, Consultation
 from .serializers import ReviewSerializer
+from datetime import date
+from django.db.models import Count, Avg, Sum
 
 
 
@@ -138,17 +140,16 @@ class ConsultationListView(generics.ListAPIView):
         if user.role == 'Patient':
             queryset = Consultation.objects.filter(patient__user=user).order_by("time_slot__date")
             if search_query:
-                queryset = queryset.filter(Q(time_slot__psychologist__user__first_name__icontains=search_query) |  # Search by psychologist's first name
-                Q(time_slot__psychologist__user__last_name__icontains=search_query)     # Search by psychologist's last name
+                queryset = queryset.filter(Q(time_slot__psychologist__user__first_name__icontains=search_query) | 
+                Q(time_slot__psychologist__user__last_name__icontains=search_query)     
             )
 
         elif user.role == 'Psychologist':
             queryset = Consultation.objects.filter(time_slot__psychologist__user=user).order_by("time_slot__date")
             if search_query:
-                queryset = queryset.filter(Q(patient__user__first_name__icontains=search_query) |  # Search by patient's first name
-                Q(patient__user__last_name__icontains=search_query) )  # Search by patient's last name)
-        
-       
+                queryset = queryset.filter(Q(patient__user__first_name__icontains=search_query) | 
+                Q(patient__user__last_name__icontains=search_query) ) 
+               
 
         if status:
             queryset = queryset.filter(consultation_status=status) 
@@ -338,3 +339,37 @@ class PsychologistReviewsView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
+class PsychologistDashboardView(APIView):
+    permission_classes=[IsPsychologist]
+    def get(self, request):
+        user = request.user  
+        psychologist = PsychologistProfile.objects.get(user=user)
+        today = date.today()
+
+        upcoming_consultations = Consultation.objects.filter(
+            time_slot__psychologist=psychologist,
+            consultation_status='Scheduled',
+            time_slot__date__gte=today
+        ).select_related('patient', 'time_slot').order_by('time_slot__date', 'time_slot__start_time')[:5]
+
+     
+        total_consultations = Consultation.objects.filter(time_slot__psychologist=psychologist).count()
+        total_earnings = Payment.objects.filter(consultation__time_slot__psychologist=psychologist).aggregate(Sum('amount'))['amount__sum'] or 0
+       
+        reviews = Review.objects.filter(consultation__time_slot__psychologist=psychologist)
+        average_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+
+      
+
+        data = {
+            'upcoming_consultations': ConsultationSerializer(upcoming_consultations, many=True).data,            
+            'total_consultations': total_consultations,
+            'total_earnings': total_earnings,                
+            'reviews': ReviewSerializer(reviews,many=True).data,
+            'average_rating': average_rating,        
+            
+        }
+        return Response(data)

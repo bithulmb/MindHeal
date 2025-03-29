@@ -177,7 +177,7 @@ const PsychologistConsultations = () => {
         <div className="flex-1">
           <Input
             type="text"
-            placeholder="Search by patient name..."
+            placeholder="Search by Patient name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-1/2 max-w-md"
@@ -197,7 +197,7 @@ const PsychologistConsultations = () => {
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="Scheduled">Scheduled</SelectItem>
               <SelectItem value="Completed">Completed</SelectItem>
-              <SelectItem value="Cancelled">Cancelled</SelectItem>
+              {/* <SelectItem value="Cancelled">Cancelled</SelectItem> */}
             </SelectContent>
           </Select>
         </div>

@@ -16,7 +16,7 @@ const PsychologistSidebar = () => {
       { name: "Slot Management", icon: <Timer />, path: "slots" },
       { name: "My Consultations", icon: <CalendarCheck />, path: "consultations" },
       { name: "My Chats", icon: <MessageCircle />, path: "chats" },
-      { name: "My Earnings", icon: <DollarSign />, path: "earnings" },
+      // { name: "My Earnings", icon: <DollarSign />, path: "earnings" },
       
     ];
   

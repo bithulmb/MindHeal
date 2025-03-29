@@ -391,4 +391,3 @@ class GetPsychologistDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
 
 
-    
