@@ -87,5 +87,5 @@ Contributions are welcome! Please open an issue or submit a pull request.
 This project is licensed under the MIT License.
 
 ## Contact
-For any inquiries, reach out to **[Bithul Krishna]** at **bithulmb@gmail.com**.
+For any inquiries, reach out to **Bithul Krishna** at **bithulmb@gmail.com**.
 

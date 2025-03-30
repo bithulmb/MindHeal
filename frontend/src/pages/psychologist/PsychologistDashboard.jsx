@@ -20,10 +20,12 @@ import {
   DollarSign,
   Users,
   Star,
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 import useDebounce from "@/hooks/useDebounce";
 import { useSelector } from "react-redux";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const PsychologistDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
@@ -71,8 +73,28 @@ const PsychologistDashboard = () => {
 
   const handleViewAllReviews = () => {};
 
-  const startVideoCall = (consultationId) => {
-    navigate(`/psychologist/video-call/${consultationId}`);
+  const startVideoCall = (selectedConsultation) => {
+
+         if (!selectedConsultation) return;
+
+        const consultationDate = selectedConsultation.time_slot.date;
+        const consultationTime = selectedConsultation.time_slot.start_time;
+    
+        const scheduledDateTime = new Date(
+          `${consultationDate}T${consultationTime}`
+        );
+        const now = new Date();
+        const timeDifference = scheduledDateTime - now;
+        const timeDifferenceInMinutes = timeDifference / (1000 * 60);
+    
+        console.info(timeDifferenceInMinutes);
+        if (timeDifferenceInMinutes <= 30) {
+          navigate(`/psychologist/video-call/${selectedConsultation.id}`);
+        } else {
+          toast.error(
+            "You can only start the video call 30 minutes before the scheduled time."
+          );
+        }
   };
 
 
@@ -200,7 +222,7 @@ const PsychologistDashboard = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => startVideoCall(consultation.id)}
+                        onClick={() => startVideoCall(consultation)}
                       >
                         <VideoIcon className="h-4 w-4 mr-1" /> Video
                       </Button>
@@ -230,33 +252,44 @@ const PsychologistDashboard = () => {
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Patient Reviews</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {dashboardData.reviews.length === 0 ? (
-            <p className="text-muted-foreground">No reviews yet.</p>
-          ) : (
-            <div className="space-y-4">
+      <CardHeader>
+        <CardTitle>Patient Reviews</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {dashboardData.reviews.length === 0 ? (
+          <p className="text-muted-foreground">No reviews yet.</p>
+        ) : (
+          <ScrollArea className="w-full">
+            <div className="flex gap-4 pb-2">
               {dashboardData.reviews.map((review) => (
-                <div key={review.id} className="border-b pb-4 last:border-b-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold">{review.user_name}</p>
-                    <Badge variant="outline">{review.rating}/5 <Star className="h-3 w-3 inline ml-1" /></Badge>
+                <Card key={review.id} className="p-4 min-w-[280px] shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <User className="h-8 w-8 text-gray-500" />
+                    <div>
+                      <p className="font-semibold">{review.user_name}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(review.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">{review.comment}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {new Date(review.created_at).toLocaleDateString()}
-                  </p>
-                </div>
+                  <p className="text-sm mt-2">{review.comment}</p>
+                  <div className="flex items-center mt-2">
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      {review.rating} <Star className="h-4 w-4 text-yellow-500" />
+                    </Badge>
+                  </div>
+                </Card>
               ))}
             </div>
-          )}
-          <div className="mt-4">
-            <Button onClick={handleViewAllReviews}>View All Reviews</Button>
-          </div>
-        </CardContent>
-      </Card>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        )}
+        <div className="mt-4 text-center">
+          <Button onClick={handleViewAllReviews}>View All Reviews</Button>
+        </div>
+      </CardContent>
+    </Card>
+
     </div>
   );
 };

@@ -359,7 +359,7 @@ class PsychologistDashboardView(APIView):
         total_consultations = Consultation.objects.filter(time_slot__psychologist=psychologist).count()
         total_earnings = Payment.objects.filter(consultation__time_slot__psychologist=psychologist).aggregate(Sum('amount'))['amount__sum'] or 0
        
-        reviews = Review.objects.filter(consultation__time_slot__psychologist=psychologist)
+        reviews = Review.objects.filter(consultation__time_slot__psychologist=psychologist).order_by('-created_at')
         average_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
 
       
@@ -370,6 +370,35 @@ class PsychologistDashboardView(APIView):
             'total_earnings': total_earnings,                
             'reviews': ReviewSerializer(reviews,many=True).data,
             'average_rating': average_rating,        
+            
+        }
+        return Response(data)
+    
+class PatientDashboardView(APIView):
+    permission_classes=[IsPatient]
+    def get(self, request):
+        user = request.user  
+        patient = PatientProfile.objects.get(user=user)
+        today = date.today()
+
+        upcoming_consultations = Consultation.objects.filter(
+            patient=patient,
+            consultation_status='Scheduled',
+            time_slot__date__gte=today
+        ).select_related('time_slot').order_by('time_slot__date', 'time_slot__start_time')
+
+     
+        total_consultations = Consultation.objects.filter(patient=patient,consultation_status = "Completed").count()
+        total_payments = Payment.objects.filter(consultation__patient=patient).aggregate(Sum('amount'))['amount__sum'] or 0
+       
+      
+      
+
+        data = {
+            'upcoming_consultations': ConsultationSerializer(upcoming_consultations, many=True).data,            
+            'total_consultations': total_consultations,
+            'total_payments': total_payments,                
+              
             
         }
         return Response(data)
