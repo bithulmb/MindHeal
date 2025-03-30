@@ -15,13 +15,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         user = self.scope["user"]
         print(user)
         if not user.is_authenticated:
-            await self.close(code=4001)  # Unauthorized
+            await self.close() 
             return
 
         # Fetch the thread and related fields asynchronously
         thread = await self.get_thread(self.thread_id)
         if not thread:
-            await self.close(code=4003)  # Forbidden
+            await self.close() 
             return
 
         # Fetch related user objects asynchronously

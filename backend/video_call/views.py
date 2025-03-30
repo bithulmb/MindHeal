@@ -95,7 +95,7 @@ class GenerateZegoTokenView(APIView):
         effective_time_in_seconds = 3600  
 
         try:
-            # Determine if strict token is needed (e.g., if room_id is provided)
+           
             if room_id:
                 
                 payload = {

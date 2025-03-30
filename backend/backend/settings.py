@@ -256,28 +256,6 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_CLIENT_ID')
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
-
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'profile']
-# SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
-
-# SOCIALACCOUNT_PROVIDERS = {
-#     'google': {
-#         'APP': {
-#             'client_id': os.getenv('GOOGLE_CLIENT_ID'),
-#             'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
-#             'key': ''
-#         },
-#         'SCOPE': [
-#             'profile',
-#             'email',
-#         ],
-#         'AUTH_PARAMS': {
-#             'access_type': 'online',
-#         }
-#     }
-# }
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # Disable username field
@@ -294,7 +272,6 @@ ACCOUNT_EMAIL_VERIFICATION = "optional"
 FRONTEND_URL = os.getenv('FRONTEND_URL')
 
 # Cloudinary settings
-
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
@@ -330,10 +307,6 @@ CHANNEL_LAYERS = {
     },
 }
 
-
-#Agora app credentials
-AGORA_APP_ID = os.getenv("AGORA_APP_ID")
-AGORA_APP_CERTIFICATE = os.getenv("AGORA_APP_CERTIFICATE")
 
 #zegocloud video call api integration credentials
 ZEGO_APP_ID=os.getenv("ZEGO_APP_ID")

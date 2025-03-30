@@ -1,22 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  ChevronDown,
-  Info,
-  Mic,
-  MoreHorizontal,
-  PenSquare,
-  Phone,
-  PlusCircle,
-  Send,
-  Smile,
-  VideoIcon,
-} from "lucide-react";
+import { Send} from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ChatList from "@/components/chat/ChatList";
 import MessageList from "@/components/chat/MessageList";
-import { cn } from "@/lib/utils";
 import api from "../api/api";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";

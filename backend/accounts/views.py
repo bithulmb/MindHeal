@@ -46,7 +46,7 @@ class UserRegisterView(APIView):
                         user.save()
                         otp = generate_otp()
                         print(otp)
-                        # send_otp_email(user.email,otp)
+                        send_otp_email(user.email,otp)
                     
                         otp_instance = EmailVerificationOTP.objects.create(user = user, otp = otp)
                         
