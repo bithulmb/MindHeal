@@ -21,6 +21,8 @@ import {
   Users,
   Star,
   User,
+  Percent,
+  Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
 import useDebounce from "@/hooks/useDebounce";
@@ -74,30 +76,27 @@ const PsychologistDashboard = () => {
   const handleViewAllReviews = () => {};
 
   const startVideoCall = (selectedConsultation) => {
+    if (!selectedConsultation) return;
 
-         if (!selectedConsultation) return;
+    const consultationDate = selectedConsultation.time_slot.date;
+    const consultationTime = selectedConsultation.time_slot.start_time;
 
-        const consultationDate = selectedConsultation.time_slot.date;
-        const consultationTime = selectedConsultation.time_slot.start_time;
-    
-        const scheduledDateTime = new Date(
-          `${consultationDate}T${consultationTime}`
-        );
-        const now = new Date();
-        const timeDifference = scheduledDateTime - now;
-        const timeDifferenceInMinutes = timeDifference / (1000 * 60);
-    
-        console.info(timeDifferenceInMinutes);
-        if (timeDifferenceInMinutes <= 30) {
-          navigate(`/psychologist/video-call/${selectedConsultation.id}`);
-        } else {
-          toast.error(
-            "You can only start the video call 30 minutes before the scheduled time."
-          );
-        }
+    const scheduledDateTime = new Date(
+      `${consultationDate}T${consultationTime}`
+    );
+    const now = new Date();
+    const timeDifference = scheduledDateTime - now;
+    const timeDifferenceInMinutes = timeDifference / (1000 * 60);
+
+    console.info(timeDifferenceInMinutes);
+    if (timeDifferenceInMinutes <= 30) {
+      navigate(`/psychologist/video-call/${selectedConsultation.id}`);
+    } else {
+      toast.error(
+        "You can only start the video call 30 minutes before the scheduled time."
+      );
+    }
   };
-
-
 
   const startChat = (patientId, psychologistId) => {
     api
@@ -125,9 +124,9 @@ const PsychologistDashboard = () => {
         </h1>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+       {/* Quick Stats */}
+       <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+        <Card className="col-start-2 col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Total Consultations</CardTitle>
             <Users className="h-5 w-5 text-muted-foreground" />
@@ -138,18 +137,8 @@ const PsychologistDashboard = () => {
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Total Earnings</CardTitle>
-            <DollarSign className="h-5 w-5 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              ₹{dashboardData.totalEarnings}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
+
+        <Card className="col-start-4 col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Patient Satisfaction</CardTitle>
             <Star className="h-5 w-5 text-muted-foreground" />
@@ -162,6 +151,48 @@ const PsychologistDashboard = () => {
         </Card>
       </div>
 
+
+      <div>
+        <Card className="max-w-md mx-auto p-4">
+          <CardHeader className="flex flex-row items-center justify-between border-b pb-2">
+            <CardTitle className="">Earnings Overview</CardTitle>
+            <DollarSign className="h-6 w-6 text-primary" />
+          </CardHeader>
+          <CardContent className="mt-4">
+            <div className="space-y-3">
+              {/* Total Revenue */}
+              <div className="flex justify-between items-center">
+                <span className="text-md font-medium">Total Revenue:</span>
+                <span className="text-xl font-bold text-green-600">
+                  ₹{dashboardData.totalEarnings.toFixed(2)}
+                </span>
+              </div>
+
+              {/* Admin Commission */}
+              <div className="flex justify-between items-center">
+                <span className="text-md font-medium">
+                  Admin Commission (20%):
+                </span>
+                <span className="text-xl font-bold text-red-500">
+                  ₹{(dashboardData.totalEarnings * 0.2).toFixed(2)}
+                </span>
+              </div>
+
+              {/* Psychologist Earnings */}
+              <div className="flex justify-between items-center border-t pt-2">
+                <span className="text-md font-medium">
+                  Your Earnings (80%):
+                </span>
+                <span className="text-xl font-bold text-blue-500">
+                  ₹{(dashboardData.totalEarnings * 0.8).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+     
       {/* Upcoming Consultations */}
       <Card>
         <CardHeader>
@@ -252,44 +283,47 @@ const PsychologistDashboard = () => {
       </Card>
 
       <Card>
-      <CardHeader>
-        <CardTitle>Patient Reviews</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {dashboardData.reviews.length === 0 ? (
-          <p className="text-muted-foreground">No reviews yet.</p>
-        ) : (
-          <ScrollArea className="w-full">
-            <div className="flex gap-4 pb-2">
-              {dashboardData.reviews.map((review) => (
-                <Card key={review.id} className="p-4 min-w-[280px] shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <User className="h-8 w-8 text-gray-500" />
-                    <div>
-                      <p className="font-semibold">{review.user_name}</p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(review.created_at).toLocaleDateString()}
-                      </p>
+        <CardHeader>
+          <CardTitle>Patient Reviews</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {dashboardData.reviews.length === 0 ? (
+            <p className="text-muted-foreground">No reviews yet.</p>
+          ) : (
+            <ScrollArea className="w-full">
+              <div className="flex gap-4 pb-2">
+                {dashboardData.reviews.map((review) => (
+                  <Card key={review.id} className="p-4 min-w-[280px] shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <User className="h-8 w-8 text-gray-500" />
+                      <div>
+                        <p className="font-semibold">{review.user_name}</p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(review.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-sm mt-2">{review.comment}</p>
-                  <div className="flex items-center mt-2">
-                    <Badge variant="outline" className="flex items-center gap-1">
-                      {review.rating} <Star className="h-4 w-4 text-yellow-500" />
-                    </Badge>
-                  </div>
-                </Card>
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        )}
-        <div className="mt-4 text-center">
-          <Button onClick={handleViewAllReviews}>View All Reviews</Button>
-        </div>
-      </CardContent>
-    </Card>
-
+                    <p className="text-sm mt-2">{review.comment}</p>
+                    <div className="flex items-center mt-2">
+                      <Badge
+                        variant="outline"
+                        className="flex items-center gap-1"
+                      >
+                        {review.rating}{" "}
+                        <Star className="h-4 w-4 text-yellow-500" />
+                      </Badge>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          )}
+          <div className="mt-4 text-center">
+            <Button onClick={handleViewAllReviews}>View All Reviews</Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

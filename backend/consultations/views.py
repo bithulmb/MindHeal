@@ -138,14 +138,14 @@ class ConsultationListView(generics.ListAPIView):
         search_query = self.request.query_params.get('search',None)
 
         if user.role == 'Patient':
-            queryset = Consultation.objects.filter(patient__user=user).order_by("time_slot__date")
+            queryset = Consultation.objects.filter(patient__user=user).order_by("-time_slot__date")
             if search_query:
                 queryset = queryset.filter(Q(time_slot__psychologist__user__first_name__icontains=search_query) | 
                 Q(time_slot__psychologist__user__last_name__icontains=search_query)     
             )
 
         elif user.role == 'Psychologist':
-            queryset = Consultation.objects.filter(time_slot__psychologist__user=user).order_by("time_slot__date")
+            queryset = Consultation.objects.filter(time_slot__psychologist__user=user).order_by("-time_slot__date")
             if search_query:
                 queryset = queryset.filter(Q(patient__user__first_name__icontains=search_query) | 
                 Q(patient__user__last_name__icontains=search_query) ) 
@@ -358,6 +358,7 @@ class PsychologistDashboardView(APIView):
      
         total_consultations = Consultation.objects.filter(time_slot__psychologist=psychologist).count()
         total_earnings = Payment.objects.filter(consultation__time_slot__psychologist=psychologist).aggregate(Sum('amount'))['amount__sum'] or 0
+        psychologist_earnings = float(total_earnings) * 0.8
        
         reviews = Review.objects.filter(consultation__time_slot__psychologist=psychologist).order_by('-created_at')
         average_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 0

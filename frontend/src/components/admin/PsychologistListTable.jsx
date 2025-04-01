@@ -128,7 +128,7 @@ const PsychologistListTable = () => {
             <TableHead>Email</TableHead>            
             <TableHead>Date Joined</TableHead>
             <TableHead>Is Active</TableHead>
-            <TableHead>Is Email Verified</TableHead>
+            <TableHead>Is Admin Approved</TableHead>
             <TableHead>Block/Unblock</TableHead>
             <TableHead className="text-right"></TableHead>
           </TableRow>
@@ -151,16 +151,17 @@ const PsychologistListTable = () => {
                 <TableCell>{`${user.first_name} ${user.last_name}`}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{ format(new Date(user.created_at),'dd-MM-yyyy HH:mm:ss')}</TableCell>
-                <TableCell>{user.is_active ? "Yes" :"No"}</TableCell>
-                <TableCell>{user.is_email_verified ? "Yes" : "No"}</TableCell>
+                <TableCell className="text-center">{user.is_active ? "Yes" :"No"}</TableCell>
+                <TableCell className="text-center">{user?.psychologist_profile?.approval_status==="Approved" ? "Yes" : "No"}</TableCell>
                 <TableCell>
                 <Button onClick={() => blockUser(user.id, user.is_blocked)} size="xsm" variant={!user.is_blocked ? "outline-danger" : "outline-default"}>
                     {!user.is_blocked ? "Block" : "Unblock"}
                   </Button>
                 </TableCell>
-                <TableCell  className="text-right">
+                <TableCell  className="text-right ">
                 <Button 
-                      variant="link"
+                      variant="outline"
+                      size="xsm"
                       onClick={() => handleViewClick(user)}
                     >
                       View

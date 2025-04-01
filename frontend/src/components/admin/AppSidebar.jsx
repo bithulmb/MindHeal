@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox,Contact, Users, LayoutDashboard, Search, Settings, User2, ChevronUp, UserRoundCheck } from "lucide-react"
+import { Calendar, Home, Inbox,Contact, Users, LayoutDashboard, Search, Settings, User2, ChevronUp, UserRoundCheck, CalendarCheck } from "lucide-react"
 
 import {
   Sidebar,
@@ -35,10 +35,15 @@ const items = [
     url: "/admin/psychologists",
     icon: Contact,
   },
+  // {
+  //   title: "Approval Requests",
+  //   url: "/admin/approvals",
+  //   icon: UserRoundCheck,
+  // },
   {
-    title: "Approval Requests",
-    url: "/admin/approvals",
-    icon: UserRoundCheck,
+    title: "Consultations",
+    url: "/admin/consultations",
+    icon: CalendarCheck,
   },
 
 ]

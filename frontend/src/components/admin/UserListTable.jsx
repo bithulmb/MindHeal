@@ -156,7 +156,8 @@ const UserListTable = () => {
                 </TableCell>
                 <TableCell className="text-right">
                     <Button 
-                      variant="link"
+                      variant="outline"
+                      size="xsm"
                       onClick={() => handleViewClick(user)}
                     >
                       View
