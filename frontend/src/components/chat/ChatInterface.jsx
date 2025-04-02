@@ -54,7 +54,7 @@ export default function ChatInterface({ threadIdFromURL }) {
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log("data", event.data);
+       
 
         const isOwnMessage = data.sender === loggedinUserId;
 
@@ -73,7 +73,7 @@ export default function ChatInterface({ threadIdFromURL }) {
         console.log(updatedMessage);
         setMessages((prev) => [...prev, updatedMessage]);
       };
-      console.log(messages);
+      
 
       ws.onclose = () => console.info("WebSocket disconnected");
 

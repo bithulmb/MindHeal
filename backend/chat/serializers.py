@@ -23,7 +23,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         Fetch the sender's profile image from either PatientProfile or PsychologistProfile.
         """
         if hasattr(obj.sender, 'patient_profile') and obj.sender.patient_profile.profile_image:
-            return obj.sender.patient_profile.profile_image.url  # Fetch from PatientProfile
+            return obj.sender.patient_profile.profile_image.url 
         elif hasattr(obj.sender, 'psychologist_profile') and obj.sender.psychologist_profile.profile_image:
-            return obj.sender.psychologist_profile.profile_image.url  # Fetch from PsychologistProfile
+            return obj.sender.psychologist_profile.profile_image.url  
         return None  

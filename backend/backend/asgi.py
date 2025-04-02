@@ -14,6 +14,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from chat.middlewares import JwtAuthMiddleware
 import chat.routing
+import notifications.routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 
@@ -21,7 +22,7 @@ application = ProtocolTypeRouter({
     "http" : get_asgi_application(),
     'websocket' : JwtAuthMiddleware(AuthMiddlewareStack(
         URLRouter(
-            chat.routing.websocket_urlpatterns
+            chat.routing.websocket_urlpatterns + notifications.routing.websocket_urlpatterns,
         )
     ))
 })

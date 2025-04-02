@@ -25,7 +25,7 @@ class JwtAuthMiddleware(BaseMiddleware):
 
         # Set default user as AnonymousUser
         scope["user"] = AnonymousUser()
-        print("anonymouse")
+               
 
         if token:
             try:
@@ -33,6 +33,7 @@ class JwtAuthMiddleware(BaseMiddleware):
                 user = await self._get_user_from_token(token)
                 if user is not None:
                     scope["user"] = user
+                    
             except (InvalidToken, TokenError) as e:
 
                 logger.error(f"Invalid JWT token: {str(e)}")

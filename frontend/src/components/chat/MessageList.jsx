@@ -28,8 +28,8 @@ export default function MessageList({ messages }) {
 
   return (
     <div className="space-y-4 ">
-      {messages.map((message) => (
-        <div key={message.id}>
+      {messages.map((message,index) => (
+        <div key={message.id || index}>
           {message.sender === loggedinUserId ? (
             <div className="flex gap-3 flex-row-reverse">
               <Avatar className="h-10 w-10 bg-gray-600">
