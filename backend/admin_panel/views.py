@@ -11,7 +11,8 @@ from rest_framework.views import APIView
 from consultations.models import Consultation
 from consultations.serializers import ConsultationSerializer
 from payments.models import Payment
-from django.db.models import Sum,Count
+from django.db.models import Sum,Count,F,Value
+from django.db.models.functions import Concat
 
 
 
@@ -27,7 +28,7 @@ class UserPagination(PageNumberPagination):
 class UserListView(generics.ListAPIView):
     queryset = User.objects.filter(role="Patient").order_by('-id')
     serializer_class = UserSerializer
-    permission_classes=[IsAuthenticated,IsAdminUser]
+    permission_classes=[IsAdminUser]
     pagination_class = UserPagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['first_name', 'last_name', 'email'] 
@@ -38,7 +39,7 @@ class UserListView(generics.ListAPIView):
 class PsychologistListView(generics.ListAPIView):
     queryset = User.objects.filter(role="Psychologist").order_by('-id')
     serializer_class = UserSerializer
-    permission_classes=[IsAuthenticated,IsAdminUser]
+    permission_classes=[IsAdminUser]
     pagination_class = UserPagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['first_name', 'last_name', 'email'] 
@@ -48,7 +49,7 @@ class UserUpdateBlockStatusView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'id'
-    permission_classes = [IsAuthenticated,IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def patch(self,request, *args, **kwargs):
         user = self.get_object()
@@ -66,13 +67,13 @@ class UserUpdateBlockStatusView(generics.RetrieveUpdateAPIView):
 class PsychologistProfilePendingListView(generics.ListAPIView):
     queryset = PsychologistProfile.objects.filter(approval_status = "Pending")
     serializer_class = PsychologistProfileSerializer
-    permission_classes=[IsAuthenticated,IsAdminUser]
+    permission_classes=[IsAdminUser]
 
 #api view for getting the psychologist profile and for approving or rejecting the profile
 class PsychologistRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     queryset = PsychologistProfile.objects.all()
     serializer_class = PsychologistProfileSerializer
-    permission_classes=[IsAuthenticated,IsAdminUser]
+    permission_classes=[IsAdminUser]
 
     def update(self, request, *args, **kwargs):
         profile = self.get_object()
@@ -93,7 +94,7 @@ class PsychologistRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     
 
 class AdminDashboardView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         
@@ -130,3 +131,79 @@ class AdminDashboardView(APIView):
             "recent_consultations": consultation_serializer.data,
         }
         return Response(data)
+
+class ConsultationPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = page_size
+    max_page_size = 100
+
+class AdminConsulatationsView(generics.ListAPIView):
+    queryset = Consultation.objects.all().order_by('-created_at')
+    serializer_class = ConsultationSerializer
+    permission_classes = [IsAdminUser]
+    pagination_class = ConsultationPagination
+
+     
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        status = self.request.query_params.get("status", None)
+        patient = self.request.query_params.get("patient", None)
+        psychologist = self.request.query_params.get("psychologist", None)
+
+        # Annotate full name fields dynamically
+        queryset = queryset.annotate(
+            patient_full_name=Concat(
+                F("patient__user__first_name"), Value(" "), F("patient__user__last_name")
+            ),
+            psychologist_full_name=Concat(
+                F("time_slot__psychologist__user__first_name"), Value(" "), F("time_slot__psychologist__user__last_name")
+            ),
+        )
+
+        if status:
+            queryset = queryset.filter(consultation_status=status)
+        if patient:
+            queryset = queryset.filter(patient_full_name=patient)
+        if psychologist:
+            queryset = queryset.filter(psychologist_full_name=psychologist)
+
+
+        return queryset
+
+
+class FilterNamesView(APIView):
+    permission_classes=[IsAdminUser]
+
+    def get(self, request):
+        # Get unique full names of patients
+        patient_names = (
+            Consultation.objects.annotate(
+                full_name=Concat(
+                    F("patient__user__first_name"),
+                    Value(" "),
+                    F("patient__user__last_name"),
+                )
+            )
+            .values_list("full_name", flat=True)
+            .distinct()
+        )
+
+        # Get unique full names of psychologists
+        psychologist_names = (
+            Consultation.objects.annotate(
+                full_name=Concat(
+                    F("time_slot__psychologist__user__first_name"),
+                    Value(" "),
+                    F("time_slot__psychologist__user__last_name"),
+                )
+            )
+            .values_list("full_name", flat=True)
+            .distinct()
+        )
+
+        return Response({
+            "patient_names": list(patient_names),
+            "psychologist_names": list(psychologist_names),
+        })
+
+

@@ -61,6 +61,7 @@ import PsychologistConsultationsPage from './pages/psychologist/PsychologistCons
 import Chat from './components/chat/Chat';
 import ChatInterface from './components/chat/ChatInterface';
 import VideoCallPage from './components/video-call/VIdeoCallPage';
+import AdminConsultations from './pages/admin/AdminConsultations';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -147,7 +148,8 @@ function App() {
                   <Route path='users' element={<AdminUsers/>} />
                   <Route path='psychologists' element={<AdminPsychologists/>} />
                   <Route path='approvals' element={<AdminApproveRequestPage/>} /> 
-                  <Route path='approvals/:id' element={<AdminApproveRejectCard/>} />     
+                  <Route path='approvals/:id' element={<AdminApproveRejectCard/>} />  
+                  <Route path='consultations' element={<AdminConsultations/>} />   
 
                   
                 </Route>

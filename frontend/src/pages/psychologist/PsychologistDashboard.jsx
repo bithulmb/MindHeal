@@ -160,7 +160,7 @@ const PsychologistDashboard = () => {
           </CardHeader>
           <CardContent className="mt-4">
             <div className="space-y-3">
-              {/* Total Revenue */}
+             
               <div className="flex justify-between items-center">
                 <span className="text-md font-medium">Total Revenue:</span>
                 <span className="text-xl font-bold text-green-600">
@@ -168,7 +168,7 @@ const PsychologistDashboard = () => {
                 </span>
               </div>
 
-              {/* Admin Commission */}
+             
               <div className="flex justify-between items-center">
                 <span className="text-md font-medium">
                   Admin Commission (20%):
@@ -178,7 +178,7 @@ const PsychologistDashboard = () => {
                 </span>
               </div>
 
-              {/* Psychologist Earnings */}
+             
               <div className="flex justify-between items-center border-t pt-2">
                 <span className="text-md font-medium">
                   Your Earnings (80%):
@@ -192,8 +192,7 @@ const PsychologistDashboard = () => {
         </Card>
       </div>
 
-     
-      {/* Upcoming Consultations */}
+    
       <Card>
         <CardHeader>
           <CardTitle>Upcoming Consultations</CardTitle>
@@ -278,7 +277,7 @@ const PsychologistDashboard = () => {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">No new notifications.</p>
-          {/* Add dynamic notifications here if available */}
+         
         </CardContent>
       </Card>
 
