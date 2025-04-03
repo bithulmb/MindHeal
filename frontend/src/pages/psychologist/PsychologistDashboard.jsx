@@ -148,7 +148,7 @@ const PsychologistDashboard = () => {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
-              {dashboardData.averageRating.toFixed(1)}/5
+              {dashboardData.averageRating !== 0 ? `${dashboardData.averageRating.toFixed(1)}/5` : "N/A"}
             </p>
           </CardContent>
         </Card>

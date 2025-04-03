@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 
 User=get_user_model()
 class ConsultationStatus(models.TextChoices):
-    PENDING = 'Pending', _('Pending')
+    # PENDING = 'Pending', _('Pending')
     SCHEDULED = 'Scheduled', _('Scheduled')
     COMPLETED = 'Completed', _('Completed')
     CANCELLED = 'Cancelled', _('Cancelled')
@@ -75,7 +75,7 @@ class Consultation(models.Model):
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='consultations')
     time_slot = models.OneToOneField(TimeSlot, on_delete=models.CASCADE, related_name='consultation')
     consultation_status = models.CharField(max_length=20, choices=ConsultationStatus, default=ConsultationStatus.SCHEDULED) 
-    payment = models.OneToOneField(Payment, on_delete=models.CASCADE, null=True, blank=True)
+    payment = models.OneToOneField(Payment, on_delete=models.CASCADE, null=True, blank=True,related_name='consultation')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

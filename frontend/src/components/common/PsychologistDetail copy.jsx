@@ -37,7 +37,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
@@ -49,6 +48,7 @@ export default function PsychologistDetail() {
   const [timeSlots, setTimeSlots] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
+
 
   const user = useSelector((state) => state.auth.user);
   const userProfile = useSelector((state) => state.patientProfile.profile);
@@ -141,35 +141,7 @@ const checkExistingConsultation = async (psychologistId)=> {
     setDialogOpen(true);
   };
 
-
- 
-
-  const initiateWalletPayment = async (slotId, fees) => {
-    
-    try{
-
-      const walletResponse = await api.get("/api/wallet/details/");
-      const walletBalance = walletResponse.data.balance;
-
-        
-    if (walletBalance < fees) {
-      toast.error("Insufficient wallet balance. Please Use Razorpay for making payment.");
-      return;
-    }
-
-      const response = await api.post('/api/consultations/book/wallet/',{
-        amount : fees,
-        time_slot :slotId,
-      })
-      toast.success("Payment Successful & Consultation Booked");
-      setTimeSlots(timeSlots.filter((slot) => slot.id !== slotId));
-      setDialogOpen(false);
-    } catch(error) {
-      console.error("booking failed",error)
-      toast.error("Booking failed")
-    }
-  }
-  const initiateRazorpayPayment = async (slotId, fees) => {
+  const initiatePayment = async (slotId, fees) => {
     try {
       const { data } = await api.post("/api/razorpay/create-order/", {
         amount: fees,
@@ -197,7 +169,7 @@ const checkExistingConsultation = async (psychologistId)=> {
               response.razorpay_payment_id
             );
 
-            await api.post(`/api/consultations/book/razorpay/`, {
+            await api.post(`/api/consultations/book/`, {
               time_slot: slotId,
               payment_id: data.payment_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -229,22 +201,15 @@ const checkExistingConsultation = async (psychologistId)=> {
     
     Swal.fire({
       title: "Confirm Booking",
-      text: "Select the Payment Method",
+      text: "Proceed to Payment?",
       icon: "question",
       showCancelButton: true,
-      showDenyButton: true,
-      confirmButtonText: "Pay with Razorpay",
-      denyButtonText: 'Pay with Wallet',
-      customClass: {
-        confirmButton: 'bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-4 py-2 rounded',
-        denyButton: 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded',
-        cancelButton: 'bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded'
-      }
+      confirmButtonColor: "#28A745",
+      cancelButtonColor: "#DC3545",
+      confirmButtonText: "Proceed",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        initiateRazorpayPayment(slotId, fees);
-      } else if (result.isDenied) {
-       initiateWalletPayment(slotId,fees);
+        initiatePayment(slotId, fees);
       }
     });
   };
@@ -284,6 +249,17 @@ const checkExistingConsultation = async (psychologistId)=> {
               <h2 className="text-2xl font-bold text-center">{`${psychologist.first_name} ${psychologist.last_name}`}</h2>
               <p className="text-muted-foreground text-center">Psychologist</p>
 
+              {/* <div className="flex justify-center gap-4 mt-6">
+              <Button variant="outline" size="icon" className="rounded-full">
+                <Video className="h-5 w-5 text-primary" />
+              </Button>
+              <Button variant="outline" size="icon" className="rounded-full">
+                <Mic className="h-5 w-5 text-primary" />
+              </Button>
+              <Button variant="outline" size="icon" className="rounded-full">
+                <MessageSquare className="h-5 w-5 text-primary" />
+              </Button>
+            </div> */}
             </CardContent>
           </Card>
 
@@ -451,7 +427,6 @@ const checkExistingConsultation = async (psychologistId)=> {
                           onClick={() => {
                             bookConsultation(slot.id, psychologist.fees);
                             setDialogOpen(false);
-                        
                           }}
                         >
                           <div className="flex items-center gap-3">
@@ -498,9 +473,6 @@ const checkExistingConsultation = async (psychologistId)=> {
             </div>
           </div>
         </div>
-
-
-
                   {/* Separate Reviews Card */}
             <Card className="shadow-xl bg-background border border-gray-100">
             <CardHeader>

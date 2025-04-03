@@ -197,7 +197,7 @@ const PsychologistConsultations = () => {
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="Scheduled">Scheduled</SelectItem>
               <SelectItem value="Completed">Completed</SelectItem>
-              {/* <SelectItem value="Cancelled">Cancelled</SelectItem> */}
+              <SelectItem value="Cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -6,14 +6,16 @@ from .views import (
     ConsultationDetailView,
     ConsultationListView,
     PsychologistTimeSlotListView,
-    BookConsultationView,
+    RazorpayBookConsultationView,
     TimeSlotBulkCreateView,
     CheckDuplicateConsultationView,
     UpdateConsultationStatus,
     SubmitReviewView,
     PsychologistReviewsView,
     PsychologistDashboardView,
-    PatientDashboardView
+    PatientDashboardView,
+    CancelConsultationView,
+    WalletBookConsultationView
     )
 
 # router = DefaultRouter( )
@@ -26,10 +28,12 @@ urlpatterns = [
     path('psychologists/<int:psychologist_id>/timeslots/', PsychologistTimeSlotListView.as_view(), name='psychologist-timeslots'),
     
     path('consultations/', ConsultationListView.as_view(), name='consultation-list'),
-    path('consultations/book/', BookConsultationView.as_view(), name='consultation-create'),
+    path('consultations/book/razorpay/', RazorpayBookConsultationView.as_view(), name='book-consultation-razorpay'),
+    path('consultations/book/wallet/', WalletBookConsultationView.as_view(), name='book-consultation-wallet'),
     path('consultations/<int:pk>/', ConsultationDetailView.as_view(), name='consultation-detail'),
     path('consultations/check/', CheckDuplicateConsultationView.as_view(), name='consultation-check'),
     path('consultations/<int:consultation_id>/complete/',UpdateConsultationStatus.as_view(), name='consultation-completion-update'),
+    path('consultations/<int:consultation_id>/cancel/',CancelConsultationView.as_view(), name='consultation-cancel'),
 
     path('consultation/submit-review/',SubmitReviewView.as_view(), name='submit-review'),
     path("psychologists/<int:psychologist_id>/reviews/", PsychologistReviewsView.as_view(), name="psychologist_reviews"),

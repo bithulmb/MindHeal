@@ -10,7 +10,7 @@ from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.serializers import ValidationError
 from rest_framework.views import APIView
-from payments.models import Payment, PaymentStatus
+from payments.models import Payment, PaymentStatus,Wallet,WalletTransaction,PaymentGateways
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
@@ -24,7 +24,11 @@ from .models import Review, Consultation
 from .serializers import ReviewSerializer
 from datetime import date
 from django.db.models import Count, Avg, Sum
+import logging
+from django.core.exceptions import ObjectDoesNotExist
+from decimal import Decimal
 
+logger = logging.getLogger(__name__)
 
 
 # Create your views here.
@@ -157,7 +161,7 @@ class ConsultationListView(generics.ListAPIView):
         
         return queryset
     
-class BookConsultationView(APIView):
+class RazorpayBookConsultationView(APIView):
     permission_classes = [IsPatient]
     
     def post(self,request):
@@ -357,7 +361,7 @@ class PsychologistDashboardView(APIView):
 
      
         total_consultations = Consultation.objects.filter(time_slot__psychologist=psychologist).count()
-        total_earnings = Payment.objects.filter(consultation__time_slot__psychologist=psychologist).aggregate(Sum('amount'))['amount__sum'] or 0
+        total_earnings = Payment.objects.filter(consultation__time_slot__psychologist=psychologist).exclude(consultation__consultation_status="Cancelled").aggregate(Sum('amount'))['amount__sum'] or 0
         psychologist_earnings = float(total_earnings) * 0.8
        
         reviews = Review.objects.filter(consultation__time_slot__psychologist=psychologist).order_by('-created_at')
@@ -390,7 +394,7 @@ class PatientDashboardView(APIView):
 
      
         total_consultations = Consultation.objects.filter(patient=patient,consultation_status = "Completed").count()
-        total_payments = Payment.objects.filter(consultation__patient=patient).aggregate(Sum('amount'))['amount__sum'] or 0
+        total_payments = Payment.objects.filter(consultation__patient=patient).exclude(consultation__consultation_status="Cancelled").aggregate(Sum('amount'))['amount__sum'] or 0
        
       
       
@@ -403,3 +407,119 @@ class PatientDashboardView(APIView):
             
         }
         return Response(data)
+    
+
+
+
+
+class CancelConsultationView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self,request,consultation_id):
+        try:
+            consultation = Consultation.objects.get(id=consultation_id,patient__user=request.user)
+
+            if consultation.consultation_status != ConsultationStatus.SCHEDULED:
+                return Response(
+                    {"error": "Only scheduled consultations can be canceled."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            consultation.consultation_status = ConsultationStatus.CANCELLED
+            consultation.save()
+
+            patient_profile = PatientProfile.objects.get(user=request.user)
+            wallet, created= Wallet.objects.get_or_create(patient=patient_profile)
+            amount = consultation.time_slot.psychologist.fees
+            wallet.credit(amount=amount,description=f"Refund for cancelling Consultation(ID: {consultation.id})")
+
+            return Response({"message": "Consultation canceled. Amount credited to wallet."}, status=status.HTTP_200_OK)
+        
+        except Consultation.DoesNotExist:
+            logger.error(f"Consultation {consultation_id} not found for user {request.user.id}.")
+            return Response(
+                {"error": "Consultation not found or you don’t have permission to cancel it."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        except Exception as e:
+            logger.error(f"Error canceling consultation {consultation_id}: {str(e)}")
+            return Response(
+                {"error": "An unexpected error occurred while canceling the consultation."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+            
+class WalletBookConsultationView(APIView):
+    permission_classes=[IsPatient]
+    def post(self,request):
+        time_slot_id = request.data.get("time_slot")
+        amount = request.data.get("amount")
+
+        if not time_slot_id:
+            return Response(
+                {"error": "Time slot is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if not amount:
+            return Response(
+                {"error": "Amount is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            with transaction.atomic():
+                
+                patient_profile = PatientProfile.objects.get(user=request.user)
+
+                 # Locking the timeslot to prevent double booking
+                time_slot = TimeSlot.objects.select_for_update().get(id=time_slot_id)
+
+                if time_slot.is_booked:
+                        return Response(
+                        {"error": "Time slot already booked"},
+                        status=status.HTTP_400_BAD_REQUEST
+                        )
+
+                wallet, created = Wallet.objects.get_or_create(patient=patient_profile)
+
+                # checking whether enough wallet balance is there or not
+                if wallet.balance < Decimal(amount):
+                    return Response(
+                        {"error": "Insufficient wallet balance"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+               
+                #creating payment object
+                payment = Payment.objects.create(
+                    user = request.user,
+                    amount = amount,
+                    transaction_id = f"WALLET-{wallet.id}-{time_slot.id}",
+                    payment_status = PaymentStatus.SUCCESS,
+                    payment_gateway = PaymentGateways.WALLET,
+
+                )
+
+                #creating consultation object                
+                consultation = Consultation.objects.create(
+                    patient=patient_profile,
+                    time_slot=time_slot,
+                    payment=payment,
+                )
+               
+                #marking time slot as booked
+                time_slot.is_booked = True
+                time_slot.save()
+                
+                #debiting wallet balance through method
+                wallet.debit(amount=amount, description=f" Paid for Consultation booking (ID: {consultation.id})")
+                
+                return Response({
+                    "success": True,
+                    "consultation_id": consultation.id,
+                }, status=status.HTTP_201_CREATED)
+
+        except ObjectDoesNotExist as e:
+            return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error booking consultation: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

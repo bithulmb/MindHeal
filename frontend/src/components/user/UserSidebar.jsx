@@ -27,7 +27,7 @@ const UserSidebar = () => {
     { name: "Change Password", icon: <Lock />, path: "change-password" },
     { name: "My Consultations", icon: <CalendarCheck />, path: "consultations" },
     { name: "My Chats", icon: <MessageCircle />, path: "chats" },
-    // { name: "My Wallet", icon: <Wallet />, path: "wallet" },
+    { name: "My Wallet", icon: <Wallet />, path: "wallet" },
   ];
 
   return (

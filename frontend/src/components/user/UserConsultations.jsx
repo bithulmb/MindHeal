@@ -42,6 +42,7 @@ import Rating from "react-rating";
 import { Input } from "../ui/input";
 import useDebounce from "@/hooks/useDebounce";
 import { LoadingSpinner } from "../common/LoadingPage";
+import Swal from "sweetalert2";
 
 const UserConsultations = () => {
   const [consultations, setConsultations] = useState([]);
@@ -68,11 +69,6 @@ const UserConsultations = () => {
   const fetchConsultations = async () => {
     try {
       setLoading(true);
-      // const response = await api.get(
-      //   `/api/consultations/?page=${page}&status=${
-      //     statusFilter === "all" ? "" : statusFilter
-      //   }`
-      // );
       const response = await api.get(`/api/consultations/`, {
         params: {
           page,
@@ -125,6 +121,32 @@ const UserConsultations = () => {
     setIsReviewDialogOpen(true);
     setIsDialogOpen(false);
   };
+
+  const cancelConsultation = async (consultation) => {
+
+    Swal.fire({
+          title: 'Do you want to cancel?',
+          
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText:'No'
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try{
+              const response = await api.post(`/api/consultations/${consultation.id}/cancel/`)
+              toast.success(response.data.message);
+              fetchConsultations()
+            } catch (error) {
+              toast.error(error.response?.data?.error || "Failed to cancel consultation.");
+            }
+          }
+        });
+      };
+    
+
 
   const startVideoCall = () => {
     if (!selectedConsultation) return;
@@ -239,7 +261,7 @@ const UserConsultations = () => {
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="Scheduled">Scheduled</SelectItem>
               <SelectItem value="Completed">Completed</SelectItem>
-              {/* <SelectItem value="Cancelled">Cancelled</SelectItem> */}
+              <SelectItem value="Cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -289,12 +311,21 @@ const UserConsultations = () => {
                   </TableCell>
                   <TableCell>
                     <Button
+                    
                       variant="secondary"
                       size="sm"
                       onClick={() => openDialog(consultation)}
                     >
                       View Details
                     </Button>
+                    {
+                      consultation.consultation_status==="Scheduled" && (
+                        <Button className="ms-4" size="xsm" variant='destructive' onClick={() => cancelConsultation(consultation)}>
+                    Cancel
+                    </Button>
+                      )
+                    }
+                    
                   </TableCell>
                 </TableRow>
               ))}
@@ -365,6 +396,7 @@ const UserConsultations = () => {
               )}
             </div>
             {selectedConsultation.consultation_status === "Scheduled" && (
+             <div>
               <div className="flex justify-center gap-4 mt-6">
                 <Button onClick={startChat}>
                   <MessageCircle className="h-5 w-5 mr-2" />
@@ -375,6 +407,11 @@ const UserConsultations = () => {
                   Start Video Call
                 </Button>
               </div>
+              <div>
+             
+              </div>
+             </div>
+
             )}
             {selectedConsultation.consultation_status === "Completed" && (
               <div className="flex justify-center mt-6">
