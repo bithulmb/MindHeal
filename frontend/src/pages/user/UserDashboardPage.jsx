@@ -27,7 +27,7 @@ import useDebounce from "@/hooks/useDebounce";
 import { useSelector } from "react-redux";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-const UserDashboard = () => {
+const UserDashboardPage = () => {
     const [dashboardData, setDashboardData] = useState({
       upcomingConsultations: [],
       stats: { totalConsultations: 0, upcomingToday: 0, totalPayments: 0 },
@@ -205,18 +205,18 @@ const UserDashboard = () => {
             </Card>
   
             {/* Notifications */}
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle>Notifications</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">No new notifications.</p>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>
     );
   };
   
-  export default UserDashboard;
+  export default UserDashboardPage;

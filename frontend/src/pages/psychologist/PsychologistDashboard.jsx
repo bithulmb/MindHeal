@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import useDebounce from "@/hooks/useDebounce";
 import { useSelector } from "react-redux";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useNotificationContext } from "@/layouts/PsychologistLayout";
 
 const PsychologistDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
@@ -42,6 +43,8 @@ const PsychologistDashboard = () => {
   const profile = useSelector((state) => state.psychologistProfile.profile);
 
   const navigate = useNavigate();
+
+  const notifications = useNotificationContext()
 
   useEffect(() => {
     fetchDashboardData();
@@ -271,15 +274,24 @@ const PsychologistDashboard = () => {
       </Card>
 
       {/* Notifications (Optional) */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Notifications</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">No new notifications.</p>
-         
+          {notifications.length === 0 ? (
+            <p className="text-muted-foreground">No new notifications.</p>
+          ) : (
+            <ul className="space-y-2">
+              {notifications.map((notification, index) => (
+                <li key={index} className="text-sm p-2 rounded">
+                  {notification.message}
+                </li>
+              ))}
+            </ul>
+          )}
         </CardContent>
-      </Card>
+      </Card> */}
 
       <Card>
         <CardHeader>

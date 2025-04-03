@@ -1,48 +1,76 @@
-import { ACCESS_TOKEN, DOMAIN_NAME } from "@/utils/constants/constants";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { ACCESS_TOKEN, DOMAIN_NAME } from '@/utils/constants/constants';
+import { useState, useEffect } from 'react';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { toast } from 'sonner';
 
 const useNotifications = () => {
+  const [notifications, setNotifications] = useState([]);
+  const token = localStorage.getItem(ACCESS_TOKEN);
+  const socketUrl = token ? `ws://${DOMAIN_NAME}/ws/notifications/?token=${token}` : null;
 
-    const [notifications, setNotifications] = useState([]);
-    const [ws, setWs] = useState(null);
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl, {
+    onOpen: () => console.log('WebSocket connected'),
+    onClose: (event) => console.log('WebSocket closed with code:', event.code, 'reason:', event.reason),
+    onError: (error) => console.error('WebSocket error:', error),
+    shouldReconnect: (closeEvent) => true,
+  });
 
-    useEffect(()=> {
-        const token = localStorage.getItem(ACCESS_TOKEN)
-        if(!token) return
-        const websocket = new WebSocket(`ws://${DOMAIN_NAME}/ws/notifications/?token=${token}`)
+  useEffect(() => {
+    if (lastJsonMessage !== null) {
+      setNotifications((prev) => [...prev, lastJsonMessage]);
+      toast.info(lastJsonMessage.message, { position: 'top-right' });
+    }
+  }, [lastJsonMessage]);
 
-        websocket.onopen = () => {
-            console.log("WebSocket connected");
-          };
+  return notifications;
+};
 
-        websocket.onmessage = (event) => {
-            const data = JSON.parse(event.data)
-            setNotifications((prev) => [...prev, data])
-            toast.info(data.message,
-              {position : "top-right"})
+export default useNotifications;
 
-        }
 
-        websocket.onclose = () => {
-            console.log("WebSocket disconnected");
-          };
+// const useNotifications = () => {
+//   const [notifications, setNotifications] = useState([]);
+//   const [ws, setWs] = useState(null);
 
-        websocket.onerror = (error) => {
-            console.error("Failed to connect WebSocket error:", error);
-            // toast.error("Failed to connect to notifications.");
-          };
+//   useEffect(() => {
+//     const token = localStorage.getItem(ACCESS_TOKEN);
+//     if (!token) return;
+//     const websocket = new WebSocket(
+//       `ws://${DOMAIN_NAME}/ws/notifications/?token=${token}`
+//     );
 
-          setWs(websocket);
+//     websocket.onopen = () => {
+//       console.log("WebSocket connected");
+//     };
 
-          return () => {
-            websocket.close()
-          }
-    },[])
+//     websocket.onmessage = (event) => {
+//       const data = JSON.parse(event.data);
+//       setNotifications((prev) => [...prev, data]);
+//       toast.info(data.message, { position: "top-right" });
+//     };
+//     websocket.onclose = (event) => {
+//       console.log(
+//         "WebSocket closed with code:",
+//         event.code,
+//         "reason:",
+//         event.reason
+//       );
+//     };
 
-    
-    return notifications
+//     websocket.onerror = (error) => {
+//       console.error("Failed to connect WebSocket error:", error);
 
-}
+//     };
+//     setWs(websocket);
+//     return () => {
+      
+//       if (websocket.readyState === WebSocket.OPEN) {
+//         websocket.close();
+//       }
+//     };
+//   }, []);
 
-export default useNotifications
+//   return notifications;
+// };
+
+// export default useNotifications;

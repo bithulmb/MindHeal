@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useTheme } from "next-themes";
 import { Home, User, Lock, CalendarCheck, DollarSign, Menu, X, LayoutDashboard, Timer, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";

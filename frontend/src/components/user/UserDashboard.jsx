@@ -209,14 +209,14 @@ const UserDashboard = () => {
             </Card>
   
             {/* Notifications */}
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle>Notifications</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">No new notifications.</p>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
       
     );
