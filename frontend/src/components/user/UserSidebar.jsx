@@ -8,7 +8,8 @@ import {
   Wallet,
   CalendarCheck,
   Menu,
-  Lock
+  Lock,
+  FileQuestion
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ const UserSidebar = () => {
     { name: "My Consultations", icon: <CalendarCheck />, path: "consultations" },
     { name: "My Chats", icon: <MessageCircle />, path: "chats" },
     { name: "My Wallet", icon: <Wallet />, path: "wallet" },
+    { name: "Complaints", icon: <FileQuestion />, path: "complaints" },
   ];
 
   return (

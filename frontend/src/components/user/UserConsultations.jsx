@@ -279,7 +279,7 @@ const UserConsultations = () => {
       ) : (
         <div className="mx-auto border-opacity-10">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted">
               <TableRow>
                 <TableHead>Sl No</TableHead>
                 <TableHead>Psychologist Name</TableHead>

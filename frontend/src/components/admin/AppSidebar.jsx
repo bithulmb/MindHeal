@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox,Contact, Users, LayoutDashboard, Search, Settings, User2, ChevronUp, UserRoundCheck, CalendarCheck } from "lucide-react"
+import { Calendar, Home, Inbox,Contact, Users, LayoutDashboard, Search, Settings, User2, ChevronUp, UserRoundCheck, CalendarCheck, FileQuestion } from "lucide-react"
 
 import {
   Sidebar,
@@ -44,6 +44,11 @@ const items = [
     title: "Consultations",
     url: "/admin/consultations",
     icon: CalendarCheck,
+  },
+  {
+    title: "Complaints",
+    url: "/admin/complaints",
+    icon: FileQuestion,
   },
 
 ]

@@ -117,7 +117,7 @@ const UserListTable = () => {
 
 
       <Table>  
-        <TableHeader>
+        <TableHeader className="bg-muted">
           <TableRow>
             <TableHead className="w-[100px]">Sl No</TableHead>
             <TableHead>Name</TableHead>

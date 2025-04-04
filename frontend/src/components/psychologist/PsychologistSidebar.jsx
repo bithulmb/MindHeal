@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Home, User, Lock, CalendarCheck, DollarSign, Menu, X, LayoutDashboard, Timer, MessageCircle } from "lucide-react";
+import { Home, User, Lock, CalendarCheck, DollarSign, Menu, X, LayoutDashboard, Timer, MessageCircle, FileQuestion } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -15,6 +15,7 @@ const PsychologistSidebar = () => {
       { name: "Slot Management", icon: <Timer />, path: "slots" },
       { name: "My Consultations", icon: <CalendarCheck />, path: "consultations" },
       { name: "My Chats", icon: <MessageCircle />, path: "chats" },
+      { name: "Complaints", icon: <FileQuestion />, path: "complaints" },
       // { name: "My Earnings", icon: <DollarSign />, path: "earnings" },
       
     ];
@@ -56,7 +57,7 @@ const SidebarContent = ({menuItems}) => {
           <Link
             key={item.name}
             to={item.path}
-            className="flex items-center space-x-3 p-3 rounded-lg transition hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="flex items-center space-x-3 p-2 rounded-lg transition hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             {item.icon}
             <span>{item.name}</span>

@@ -64,6 +64,8 @@ import VideoCallPage from './components/video-call/VIdeoCallPage';
 import AdminConsultations from './pages/admin/AdminConsultations';
 import UserProfileNotCreated from './components/user/UserProfileNotCreated';
 import UserProfileProtectedRoute from './utils/protected routes/UserProfileProtectedRoute';
+import UserComplaints from './components/common/UserComplaints';
+import AdminComplaints from './components/admin/AdminComplaints';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -111,6 +113,7 @@ function App() {
                           <Route path="consultations" element={<UserConsultationsPage/>} />  
                           <Route path="chats" element={<UserChats/>} />  
                           <Route path="wallet" element={<UserWallet/>} />
+                          <Route path='complaints' element={<UserComplaints/>} />
                         
                           <Route path="profile/update" element={<UserProfileUpdateForm/>} /> 
                           <Route path="video-call/:consultation_id" element={<VideoCallPage/>} />   
@@ -136,6 +139,7 @@ function App() {
                         <Route path="change-password" element={<ChangePassword/>} /> 
                         <Route path="consultations" element={<PsychologistConsultationsPage/>} />
                         <Route path='chats' element={<UserChats/>} />
+                        <Route path='complaints' element={<UserComplaints/>} />
                         <Route path="earnings" element={<PsychologistEarnings/>} /> 
                         <Route path="slots" element={<TimeSlots/>} /> 
                         <Route path="video-call/:consultation_id" element={<VideoCallPage/>} />           
@@ -156,7 +160,8 @@ function App() {
                   <Route path='psychologists' element={<AdminPsychologists/>} />
                   <Route path='approvals' element={<AdminApproveRequestPage/>} /> 
                   <Route path='approvals/:id' element={<AdminApproveRejectCard/>} />  
-                  <Route path='consultations' element={<AdminConsultations/>} />   
+                  <Route path='consultations' element={<AdminConsultations/>} /> 
+                  <Route path='complaints' element={<AdminComplaints/>} />  
 
                   
                 </Route>

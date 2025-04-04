@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'chat',
     'video_call',
     'notifications',
+    'complaints',
 
 ]
 
