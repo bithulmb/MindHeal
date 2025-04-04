@@ -110,7 +110,7 @@ class ResendOTPView(APIView):
            
             otp = generate_otp()           
             print(otp)
-            # send_otp_email(user.email, otp)
+            send_otp_email(user.email, otp)
             
             EmailVerificationOTP.objects.filter(user=user).delete()
             EmailVerificationOTP.objects.create(user=user, otp=otp)

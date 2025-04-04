@@ -74,7 +74,6 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
     'social_django',
     "oauth2_provider",
-    # "drf_social_oauth2",
     'cloudinary',
     'cloudinary_storage',
      'django_filters',
@@ -131,14 +130,6 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 
 
 DATABASES = {
@@ -201,11 +192,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
     
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-        # "drf_social_oauth2.authentication.SocialAuthentication",
+         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",        
     ),
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 10, 
+    
     
 }
 
@@ -252,7 +241,6 @@ SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.google.GoogleOAuth2',
-    # "drf_social_oauth2.backends.DjangoOAuth2",
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
@@ -264,11 +252,6 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 
-
-# REST_AUTH = {
-#     'USE_JWT': True,
-#     'JWT_AUTH_COOKIE': 'jwt-auth',
-# }
 
 FRONTEND_URL = os.getenv('FRONTEND_URL')
 

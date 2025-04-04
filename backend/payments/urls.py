@@ -7,5 +7,6 @@ urlpatterns = [
     
     path('payments/', PaymentListCreateView.as_view(), name='payment-list-create'),
     path('payments/<int:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
-    path('wallet/details/',WalletDetailsView.as_view(),name='wallet-details')
+    
+    path('wallet/details/',WalletDetailsView.as_view(),name='wallet-details'),
 ]

@@ -62,6 +62,8 @@ import Chat from './components/chat/Chat';
 import ChatInterface from './components/chat/ChatInterface';
 import VideoCallPage from './components/video-call/VIdeoCallPage';
 import AdminConsultations from './pages/admin/AdminConsultations';
+import UserProfileNotCreated from './components/user/UserProfileNotCreated';
+import UserProfileProtectedRoute from './utils/protected routes/UserProfileProtectedRoute';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -98,16 +100,21 @@ function App() {
                 <Route path="/user/verify-email" element={<EmailNotVerifiedPage/>} />
 
                 <Route element={<UserProtectedRoute />}>
-                  <Route path='/user' element={<UserLayout/>} >
-                        <Route path="dashboard" element={<UserDashboard/>} />
-                        <Route path="profile" element={<UserProfile/>} />             
-                        <Route path="change-password" element={<ChangePassword/>} /> 
-                        <Route path="consultations" element={<UserConsultationsPage/>} />  
-                        <Route path="chats" element={<UserChats/>} />  
-                        <Route path="wallet" element={<UserWallet/>} />
-                        <Route path="profile/create" element={<UserProfileCreationForm/>} />
-                        <Route path="profile/update" element={<UserProfileUpdateForm/>} /> 
-                        <Route path="video-call/:consultation_id" element={<VideoCallPage/>} />   
+                  {/* <Route path="/user/create-profile" element={<UserProfileNotCreated/>} /> */}   
+                  <Route path="/user/profile/create" element={<UserProfileCreationForm/>} />
+
+                  <Route element={<UserProfileProtectedRoute/>}>
+                    <Route path='/user' element={<UserLayout/>} >
+                          <Route path="dashboard" element={<UserDashboard/>} />
+                          <Route path="profile" element={<UserProfile/>} />             
+                          <Route path="change-password" element={<ChangePassword/>} /> 
+                          <Route path="consultations" element={<UserConsultationsPage/>} />  
+                          <Route path="chats" element={<UserChats/>} />  
+                          <Route path="wallet" element={<UserWallet/>} />
+                        
+                          <Route path="profile/update" element={<UserProfileUpdateForm/>} /> 
+                          <Route path="video-call/:consultation_id" element={<VideoCallPage/>} />   
+                    </Route>
                   </Route>
                 </Route>
                     

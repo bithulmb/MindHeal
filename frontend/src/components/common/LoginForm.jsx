@@ -74,10 +74,10 @@ const LoginForm = () => {
             iconColor: "#dc35", // Red color
             confirmButtonColor: "#dc3545",
           });
-          navigate(`/verify-email`);
+          // navigate(`/user/verify-email`);
           toast.error("Email not verified");
           console.log("email not verified");
-          return;
+          
         }
 
         if (role === "Patient") {

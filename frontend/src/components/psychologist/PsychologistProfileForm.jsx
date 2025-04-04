@@ -187,8 +187,11 @@ export default function PsychologistProfileForm() {
                         fromYear={1950}
                         toYear={new Date().getFullYear()}
                         classNames={{
-                          caption_label: "hidden", 
-                          
+                          caption_label: "hidden",
+                          dropdown: "bg-background text-foreground", // Ensures visibility in dark mode
+                          dropdown_icon: "text-foreground",
+                          dropdown_option: "text-foreground",
+                          dropdown_selected: "text-primary font-bold",
                         }}
                         
                       />               

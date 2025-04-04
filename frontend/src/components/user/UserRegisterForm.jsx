@@ -86,7 +86,7 @@ const UserRegisterForm = () => {
       
       console.error("Registration error",error.response?.data)
       toast.error("Regisration failed. Please try again")
-      setServerError(error.response?.data?.error || "Registration failed");
+      setServerError(error.response?.data?.email || "Registration failed");
 
     }
     finally {

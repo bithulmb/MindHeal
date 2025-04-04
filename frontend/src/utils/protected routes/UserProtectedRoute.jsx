@@ -12,14 +12,14 @@ const UserProtectedRoute = () => {
 
     const isEmailVerified = useSelector((state) => state.auth?.user?.is_email_verified)
 
-    const dispatch = useDispatch()
+    // const dispatch = useDispatch()
 
-    useEffect(() => {
-      console.log("user despatching")
-      if (isAuthenticated && role==="Patient"){
-      dispatch(fetchPatientProfile());
-      }
-    }, [dispatch]);
+    // useEffect(() => {
+    //   console.log("user despatching")
+    //   if (isAuthenticated && role==="Patient"){
+    //   dispatch(fetchPatientProfile());
+    //   }
+    // }, [dispatch]);
       
 
     if (!isAuthenticated){

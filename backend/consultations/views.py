@@ -382,32 +382,39 @@ class PsychologistDashboardView(APIView):
 class PatientDashboardView(APIView):
     permission_classes=[IsPatient]
     def get(self, request):
-        user = request.user  
-        patient = PatientProfile.objects.get(user=user)
-        today = date.today()
+        try:
+            user = request.user  
+            patient = PatientProfile.objects.get(user=user)
+            today = date.today()
 
-        upcoming_consultations = Consultation.objects.filter(
-            patient=patient,
-            consultation_status='Scheduled',
-            time_slot__date__gte=today
-        ).select_related('time_slot').order_by('time_slot__date', 'time_slot__start_time')
+            upcoming_consultations = Consultation.objects.filter(
+                patient=patient,
+                consultation_status='Scheduled',
+                time_slot__date__gte=today
+            ).select_related('time_slot').order_by('time_slot__date', 'time_slot__start_time')
 
-     
-        total_consultations = Consultation.objects.filter(patient=patient,consultation_status = "Completed").count()
-        total_payments = Payment.objects.filter(consultation__patient=patient).exclude(consultation__consultation_status="Cancelled").aggregate(Sum('amount'))['amount__sum'] or 0
-       
-      
-      
+        
+            total_consultations = Consultation.objects.filter(patient=patient,consultation_status = "Completed").count()
+            total_payments = Payment.objects.filter(consultation__patient=patient).exclude(consultation__consultation_status="Cancelled").aggregate(Sum('amount'))['amount__sum'] or 0
+        
+        
+        
 
-        data = {
-            'upcoming_consultations': ConsultationSerializer(upcoming_consultations, many=True).data,            
-            'total_consultations': total_consultations,
-            'total_payments': total_payments,                
-              
-            
-        }
-        return Response(data)
-    
+            data = {
+                'upcoming_consultations': ConsultationSerializer(upcoming_consultations, many=True).data,            
+                'total_consultations': total_consultations,
+                'total_payments': total_payments,                
+                
+                
+            }
+            return Response(data)
+        
+        except ObjectDoesNotExist as e:
+            return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error booking consultation: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
 
 
 

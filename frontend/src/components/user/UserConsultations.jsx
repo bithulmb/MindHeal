@@ -320,7 +320,7 @@ const UserConsultations = () => {
                     </Button>
                     {
                       consultation.consultation_status==="Scheduled" && (
-                        <Button className="ms-4" size="xsm" variant='destructive' onClick={() => cancelConsultation(consultation)}>
+                        <Button className="m-3" size="xsm" variant='destructive' onClick={() => cancelConsultation(consultation)}>
                     Cancel
                     </Button>
                       )
