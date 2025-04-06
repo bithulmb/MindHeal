@@ -11,7 +11,7 @@ const VideoCall = ({ userId, psychologistId, channelName, isPsychologist }) => {
   const requestedUserId = (isPsychologist ? psychologistId : userId).toString();
   const [token, setToken] = useState("");
   const { consultation_id } = useParams();
-  const videoCallRef = useRef(null); // Use useRef for the container
+  const videoCallRef = useRef(null); 
 
   // Fetch token from backend
   useEffect(() => {
@@ -66,7 +66,7 @@ const VideoCall = ({ userId, psychologistId, channelName, isPsychologist }) => {
         updateConsultationStatus();
       },
     });
-  }, [token]); // Run when token is set
+  }, [token]); 
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">

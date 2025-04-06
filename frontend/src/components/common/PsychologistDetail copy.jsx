@@ -66,7 +66,7 @@ export default function PsychologistDetail() {
         ]);
         setPsychologist(psychologistResponse.data);
         setTimeSlots(timeSlotsResponse.data);
-        setReviews(reviewsResponse.data); // Set
+        setReviews(reviewsResponse.data); 
         console.log("profile, reviews and time slots fetched succesfully");
       } catch (error) {
         if (error.response?.status === 404) {

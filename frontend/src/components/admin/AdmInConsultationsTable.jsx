@@ -28,19 +28,6 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import {
-  MessageCircle,
-  MessageSquare,
-  Mic,
-  Star,
-  StarIcon,
-  Video,
-  VideoIcon,
-} from "lucide-react";
-import { toast } from "sonner";
-import Rating from "react-rating";
-import { Input } from "../ui/input";
-import useDebounce from "@/hooks/useDebounce";
 import { LoadingSpinner } from "../common/LoadingPage";
 
 const AdmInConsultationsTable = () => {

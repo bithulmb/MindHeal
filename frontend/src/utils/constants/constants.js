@@ -12,3 +12,5 @@ export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "im
 
 export const DOMAIN_NAME = import.meta.env.VITE_DOMAIN_NAME
 
+export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+

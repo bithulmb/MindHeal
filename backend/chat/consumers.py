@@ -13,7 +13,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Check if the user is authenticated
         user = self.scope["user"]
-        print(user)
         if not user.is_authenticated:
             await self.close() 
             return
@@ -30,7 +29,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Authorization check
         if user != thread_user and user != thread_psychologist:
-            await self.close(code=4003)  # Forbidden
+            await self.close()  # Forbidden
             return
 
         # Add user to the channel group

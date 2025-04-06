@@ -381,7 +381,7 @@ class PsychologistProfileRetrieveCreateUpdateView(APIView):
 
 #view for getting the profiles of approved psychologists to be displayed in the page        
 class GetPsychologistsView(generics.ListAPIView):
-    queryset = PsychologistProfile.objects.filter(approval_status = ApprovalStatusChoices.APPROVED).order_by('id')
+    queryset = PsychologistProfile.objects.filter(approval_status = ApprovalStatusChoices.APPROVED,user__is_blocked=False).order_by('-id')
     serializer_class = PsychologistProfileSerializer
     permission_classes = [AllowAny]
 

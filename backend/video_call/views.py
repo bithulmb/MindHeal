@@ -1,6 +1,4 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
-from agora_token_builder import RtcTokenBuilder
 from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
@@ -36,7 +34,6 @@ class CreateChannelView(APIView):
             return Response({'error': "invalid consultation id"}, status=status.HTTP_400_BAD_REQUEST)   
         
         # Check if the requesting user is the patient or psychologist
-        print("ids are",request.user.id,user_id,psychologist_id)
         if request.user.id not in [user_id, psychologist_id]:
         
             return Response({'error': "You are not authorized for this consultation"}, status=status.HTTP_403_FORBIDDEN)
