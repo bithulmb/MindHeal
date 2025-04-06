@@ -235,7 +235,9 @@ SIMPLE_JWT = {
     'TOKEN_OBTAIN_SERIALIZER': 'accounts.serializers.MyTokenObtainPairSerializer',
 }
 
-
+CSRF_TRUSTED_ORIGINS = [
+    'https://mindhealapi.bithulmb.live'
+]
 
 SITE_ID = 1
 
