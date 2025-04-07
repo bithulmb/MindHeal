@@ -26,7 +26,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/api";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CLOUDINARY_BASE_URL } from "@/utils/constants/constants";
+import { CLOUDINARY_BASE_URL, RAZORPAY_KEY_ID } from "@/utils/constants/constants";
 import calculateAge from "@/utils/util functions/calculateAge";
 import NotFound from "./NotFound";
 import formatIndianDate from "@/utils/util functions/formatIndianDate";
@@ -183,7 +183,7 @@ const checkExistingConsultation = async (psychologistId)=> {
       }
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        key: RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: data.currency,
         order_id: data.order_id,

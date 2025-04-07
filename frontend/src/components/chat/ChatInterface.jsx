@@ -8,7 +8,7 @@ import MessageList from "@/components/chat/MessageList";
 import api from "../api/api";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { ACCESS_TOKEN, DOMAIN_NAME } from "@/utils/constants/constants";
+import { ACCESS_TOKEN, DOMAIN_NAME, WEB_SOCKET_URL } from "@/utils/constants/constants";
 
 export default function ChatInterface({ threadIdFromURL }) {
   const [threads, setThreads] = useState([]);
@@ -47,7 +47,7 @@ export default function ChatInterface({ threadIdFromURL }) {
   useEffect(() => {
     if (selectedChat) {
       const ws = new WebSocket(
-        `ws://${DOMAIN_NAME}/ws/chat/${selectedChat.id}/?token=${ACCESS}`
+        `${WEB_SOCKET_URL}/ws/chat/${selectedChat.id}/?token=${ACCESS}`
       );
 
       ws.onopen = () => console.info("websocket connected");

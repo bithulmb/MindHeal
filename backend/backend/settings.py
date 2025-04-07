@@ -95,14 +95,14 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', #added for enabling cors
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware', #added for enabling cors
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',    
     'allauth.account.middleware.AccountMiddleware', #added for all auth
     'accounts.middlewares.BlockUserMiddleware', #added for checking whether the user is blocked
     
