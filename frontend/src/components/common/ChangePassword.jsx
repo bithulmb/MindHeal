@@ -10,6 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
 import api from '../api/api';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '@/redux/slices/authSlice';
+import { resetPatientProfile } from '@/redux/slices/patientProfileSlice';
+import { resetPsychologistProfile } from '@/redux/slices/psychologistProfileSlice';
 
 
 
@@ -25,6 +30,10 @@ const ChangePasswordSchema = z.object({
 const ChangePassword = () => {
   
   const [error, setError] = useState(null)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: zodResolver(ChangePasswordSchema),
   });
@@ -36,11 +45,17 @@ const ChangePassword = () => {
         old_password : data.old_password,
         new_password : data.new_password,
       })
+      if (response.status === 200){
+        toast.success("Password updated succesfully. Please login again")
+        localStorage.clear()
+        dispatch(logout())
+        dispatch(resetPatientProfile())
+        dispatch(resetPsychologistProfile())
 
-
-     toast.success("Password updated succesfully")
-     console.log(response.data)
-      reset();
+        navigate('/user/login')
+      
+      }
+    
     } catch (error) {
       
       if (error.response?.data?.old_password[0] === "Old Password is not correct"){

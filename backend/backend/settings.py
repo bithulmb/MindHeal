@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
      'django_filters',
      'django_celery_beat',
+     'drf_spectacular',
     
 
     #local
@@ -197,6 +198,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
          "oauth2_provider.contrib.rest_framework.OAuth2Authentication",        
     ),
+     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     
     
 }

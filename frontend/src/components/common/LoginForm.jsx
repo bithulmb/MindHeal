@@ -218,11 +218,15 @@ const LoginForm = () => {
             Or Continue
           </span>
         </div>
-        <GoogleLogin
+      <div className="mx-auto">
+      <GoogleLogin
           logo_alignment="center"
           onSuccess={handleSuccess}
           onError={handleFailure}
+          width={200}
+         
         />
+      </div>
       </div>
       <div className="mt-4 text-center text-sm">
         Don&apos;t have an account?{" "}

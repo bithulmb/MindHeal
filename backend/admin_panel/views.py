@@ -21,7 +21,7 @@ User = get_user_model()
 
 class UserPagination(PageNumberPagination):
     page_size = 5
-    page_size_query_param = page_size
+    page_size_query_param = 'page_size'
     max_page_size = 100
 
 #api view for getting the details of the users
@@ -134,7 +134,7 @@ class AdminDashboardView(APIView):
 
 class ConsultationPagination(PageNumberPagination):
     page_size = 5
-    page_size_query_param = page_size
+    page_size_query_param = 'page_size'
     max_page_size = 100
 
 class AdminConsulatationsView(generics.ListAPIView):
