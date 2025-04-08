@@ -90,7 +90,7 @@ class PatientProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name} - Patient Profile"
+        return f"{self.user.first_name} {self.user.last_name} - Patient Profile id -{self.id}"
 
 
 # Psychologist Profile Model
@@ -114,7 +114,7 @@ class PsychologistProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name} - Psychologist"
+        return f"{self.user.first_name} {self.user.last_name} - Psychologist id -{self.id}"
     
 
 class EmailVerificationOTP(models.Model):

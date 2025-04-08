@@ -12,7 +12,9 @@ from consultations.models import Consultation
 from src import token04
 import json
 from accounts.models import PatientProfile, PsychologistProfile
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 # Create your views here.
 
@@ -26,8 +28,6 @@ class CreateChannelView(APIView):
         try:
             consultation = Consultation.objects.get(id=consultation_id) 
     
-            patient_profile_id = consultation.patient.id
-            psychologist_profile_id = consultation.time_slot.psychologist.id
             user_id = consultation.patient.user.id
             psychologist_id = consultation.time_slot.psychologist.user.id
         except Consultation.DoesNotExist:
@@ -51,8 +51,8 @@ class CreateChannelView(APIView):
 
             channel_data = {
                 'channel_name': channel_name,
-                'user': patient_profile_id,
-                'psychologist': psychologist_profile_id,
+                'user': user_id,
+                'psychologist': psychologist_id,
                 'consultation': consultation_id,  
             }
 
@@ -78,12 +78,9 @@ class GenerateZegoTokenView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        if is_psychologist:
-            profile = PsychologistProfile.objects.get(id=user_id) 
-        else:
-            profile = PatientProfile.objects.get(id=user_id)
+        user = User.objects.get(id=user_id) 
         
-        if request.user != profile.user:
+        if request.user != user:
             return Response({"error": "You are not authorized to generate this token"}, status=status.HTTP_403_FORBIDDEN)
         
         # Retrieve app_id and server_secret from environment variables

@@ -3,10 +3,11 @@ import { useSelector } from "react-redux";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import api from "../api/api";
 import { useParams } from "react-router-dom";
+import { ZEGO_APP_ID } from "@/utils/constants/constants";
 
 const VideoCall = ({ userId, psychologistId, channelName, isPsychologist }) => {
   const requestedUserName = useSelector((state) => state.auth.user.name);
-  const APP_ID = parseInt(import.meta.env.VITE_ZEGO_APP_ID);
+  const APP_ID = parseInt(ZEGO_APP_ID);
   const roomID = channelName;
   const requestedUserId = (isPsychologist ? psychologistId : userId).toString();
   const [token, setToken] = useState("");
