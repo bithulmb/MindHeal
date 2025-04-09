@@ -13,6 +13,7 @@ from consultations.serializers import ConsultationSerializer
 from payments.models import Payment
 from django.db.models import Sum,Count,F,Value
 from django.db.models.functions import Concat
+from accounts.utils import send_django_email
 
 
 
@@ -54,10 +55,24 @@ class UserUpdateBlockStatusView(generics.RetrieveUpdateAPIView):
     def patch(self,request, *args, **kwargs):
         user = self.get_object()
         is_blocked = request.data.get('is_blocked', None)
+        name_of_user = user.get_full_name()
+        email_of_user = user.email
 
         if is_blocked is not None:
             user.is_blocked = is_blocked
             user.save()
+
+            #sending email to the user informing about the block status
+            if is_blocked:
+                email_subject = "Your Account Has Been Blocked "
+                email_message = (
+                    f"Dear {name_of_user}, \n \nWe want to inform you that your account has been blocked by the admin.\nYou will not be able to access the platform until further notice.\n \n Best regards,\n MindHeal"
+                )
+            else:
+                email_subject = "Your Account Has Been Unblocked "               
+                email_message = f"Dear {name_of_user}, \n \nGood news! Your account has been unblocked by the admin.\nYou can now access the platform and continue using our services.\n \n Best regards,\n MindHeal"
+            send_django_email(email_of_user,email_subject,email_message)
+
             return Response({'message' : "User block status updated succesfully"}, status=status.HTTP_200_OK)
         else:
             return Response({'error' : "is_blocked field is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -76,21 +91,34 @@ class PsychologistRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     permission_classes=[IsAdminUser]
 
     def update(self, request, *args, **kwargs):
-        profile = self.get_object()
+        
         action = request.data.get('action')
+        profile = self.get_object()
+        psychologist_email = profile.user.email
+        psychologist_name = profile.user.get_full_name()   
+        
         if action=="approve":
             profile.approval_status = ApprovalStatusChoices.APPROVED
             profile.is_admin_verified = True
-            message = "Psychologist Approved Succesfully"
+            response_message = "Psychologist Approved Succesfully"
+ 
+            email_subject = "Approval Of Psychologist Profile"
+            email_message = f" Dear {psychologist_name}, \n \nCongratulations! Your profile has been approved by the admin. You can now start receiving consultations.\n \n Best regards,\n MindHeal"
         elif action == "reject":
             profile.approval_status = ApprovalStatusChoices.REJECTED
             profile.is_admin_verified = False
-            message = "Psychologist rejected successfully"
+            response_message = "Psychologist rejected successfully"
+
+            email_subject = "Rejection of Psychologist Profile"
+            email_message = f"Dear {psychologist_name},  \n \nWe regret to inform you that your profile has been rejected by the admin. Please contact support for more details.\n \n Best regards,\n MindHeal"
         else:
             return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
         
         profile.save()
-        return Response({'message' : message}, status=status.HTTP_200_OK)
+        send_django_email(psychologist_email,email_subject,email_message)
+       
+
+        return Response({'message' : response_message}, status=status.HTTP_200_OK)
     
 
 class AdminDashboardView(APIView):

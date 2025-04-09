@@ -21,6 +21,11 @@ def send_reset_password_mail(email,reset_link):
     recipient_list = [email]
     send_async_email.delay(subject, message, from_email, recipient_list)
 
+def send_django_email(email,subject,message):
+    from_email =  "bithulmb07@gmail.com"
+    recipient_list = [email]    
+    send_async_email.delay(subject,message,from_email,recipient_list)
+
 
 class CustomRefreshToken(RefreshToken):
     @classmethod
