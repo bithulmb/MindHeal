@@ -27,6 +27,8 @@ from django.db.models import Count, Avg, Sum
 import logging
 from django.core.exceptions import ObjectDoesNotExist
 from decimal import Decimal
+from django.utils import timezone
+from datetime import timedelta,datetime
 
 logger = logging.getLogger(__name__)
 
@@ -431,16 +433,29 @@ class CancelConsultationView(APIView):
                     {"error": "Only scheduled consultations can be canceled."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            consultation.consultation_status = ConsultationStatus.CANCELLED
-            consultation.save()
+            
+            slot = consultation.time_slot
+            consultation_datetime = datetime.combine(slot.date, slot.start_time)
+            consultation_datetime = timezone.make_aware(consultation_datetime, timezone.get_current_timezone())
 
-            patient_profile = PatientProfile.objects.get(user=request.user)
-            wallet, created= Wallet.objects.get_or_create(patient=patient_profile)
-            amount = consultation.time_slot.psychologist.fees
-            wallet.credit(amount=amount,description=f"Refund for cancelling Consultation(ID: {consultation.id})")
+            now = timezone.now()
+            if consultation_datetime <= now + timedelta(hours=1):
+                return Response(
+                    {"error": "Cancellation not allowed within 1 hour of consultation time."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            with transaction.atomic():
+                consultation.consultation_status = ConsultationStatus.CANCELLED
+                consultation.save()
 
-            return Response({"message": "Consultation canceled. Amount credited to wallet."}, status=status.HTTP_200_OK)
-        
+                patient_profile = PatientProfile.objects.get(user=request.user)
+                wallet, created= Wallet.objects.get_or_create(patient=patient_profile)
+                amount = consultation.time_slot.psychologist.fees
+                wallet.credit(amount=amount,description=f"Refund for cancelling Consultation(ID: {consultation.id})")
+
+                return Response({"message": "Consultation canceled. Amount credited to wallet."}, status=status.HTTP_200_OK)
+            
         except Consultation.DoesNotExist:
             logger.error(f"Consultation {consultation_id} not found for user {request.user.id}.")
             return Response(

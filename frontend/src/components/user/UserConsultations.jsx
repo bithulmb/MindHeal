@@ -124,6 +124,22 @@ const UserConsultations = () => {
 
   const cancelConsultation = async (consultation) => {
 
+    const consultationDate = consultation.time_slot.date;
+    const consultationTime = consultation.time_slot.start_time;
+
+    const scheduledDateTime = new Date(
+      `${consultationDate}T${consultationTime}`
+    );
+
+    const now = new Date();
+
+    const timeDifference = scheduledDateTime - now;
+    const timeDifferenceInMinutes = timeDifference / (1000 * 60);
+    if (timeDifferenceInMinutes < 60){
+      toast.error("Cancellation not allowed within 1 hour of consultation.")
+      return
+    }
+
     Swal.fire({
           title: 'Do you want to cancel?',
           
