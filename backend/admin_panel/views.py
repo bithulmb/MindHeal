@@ -8,14 +8,17 @@ from accounts.models import PsychologistProfile,ApprovalStatusChoices,UserRole
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend 
 from rest_framework.views import APIView
-from consultations.models import Consultation
+from consultations.models import Consultation,ConsultationStatus
 from consultations.serializers import ConsultationSerializer
-from payments.models import Payment
+from payments.models import Payment,Wallet
 from django.db.models import Sum,Count,F,Value
 from django.db.models.functions import Concat
 from accounts.utils import send_django_email
+from django.utils import timezone
+from django.db import transaction
+import logging
 
-
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 User = get_user_model()
@@ -68,10 +71,49 @@ class UserUpdateBlockStatusView(generics.RetrieveUpdateAPIView):
                 email_message = (
                     f"Dear {name_of_user}, \n \nWe want to inform you that your account has been blocked by the admin.\nYou will not be able to access the platform until further notice.\n \n Best regards,\n MindHeal"
                 )
+
+                #checking whether the blocked user is psychologist and all upcoming scheduled consultations of psychologist are cancelled and amount is credited back to user
+                if user.role==UserRole.PSYCHOLOGIST and hasattr(user,'psychologist_profile'):
+
+                    psychologist = user.psychologist_profile
+                    
+                    #getting all the upcoming scheduled transactions
+                    consultations = Consultation.objects.filter(time_slot__psychologist=psychologist,
+                                                                consultation_status=ConsultationStatus.SCHEDULED,
+                                                                time_slot__date__gte=timezone.now().date()
+                                                                )
+                    for consultation in consultations:
+                        try:
+                            with transaction.atomic():
+                                consultation.consultation_status=ConsultationStatus.CANCELLED
+                                consultation.save()
+
+                                patient = consultation.patient
+                                wallet, _ = Wallet.objects.get_or_create(patient=patient)
+                                amount = consultation.time_slot.psychologist.fees
+                                wallet.credit(
+                                amount=amount,
+                                description=f"Refund due to psychologist block - Consultation ID: {consultation.id}"
+                                )
+
+                                patient_email = patient.user.email
+                                patient_name = patient.user.get_full_name()
+                                send_django_email(email=patient_email,
+                                                  subject="Consultation Cancelled and Refunded",
+                                                  message=f"Dear {patient_name}, \n \nYour consultation (ID: {consultation.id}) has been cancelled because the psychologist has been blocked by admin. ₹{amount} has been credited to your wallet.\n \n Best regards,\n MindHeal")
+                        
+                        except Exception as e:
+                            logger.error(f"Failed to cancel and refund consultation {consultation.id}: {str(e)}")
+
+
+
+
             else:
                 email_subject = "Your Account Has Been Unblocked "               
                 email_message = f"Dear {name_of_user}, \n \nGood news! Your account has been unblocked by the admin.\nYou can now access the platform and continue using our services.\n \n Best regards,\n MindHeal"
             send_django_email(email_of_user,email_subject,email_message)
+
+           
 
             return Response({'message' : "User block status updated succesfully"}, status=status.HTTP_200_OK)
         else:

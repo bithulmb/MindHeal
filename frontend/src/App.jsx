@@ -13,6 +13,7 @@ import { Suspense } from "react";
 import FullScreenLoader from "./components/ui/FullScreenLoader";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "./components/common/ErrorFallback";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 function App() {
   return (
@@ -20,16 +21,20 @@ function App() {
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <BrowserRouter>
+          
           <ErrorBoundary FallbackComponent={ErrorFallback}>
           <Suspense fallback={<FullScreenLoader/>}>
+          <ScrollToTop/>
             <Routes>                               
               {CommonRoutes()}
               {UserRoutes()}
               {PsychologistRoutes()}
               {AdminRoutes()}
             </Routes>
+          
           </Suspense>
           </ErrorBoundary>
+          
           </BrowserRouter>
           <Toaster />
         </GoogleOAuthProvider>
