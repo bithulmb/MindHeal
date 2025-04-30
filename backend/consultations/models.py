@@ -24,13 +24,17 @@ class TimeSlot(models.Model):
     end_time = models.TimeField()
     is_booked = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    is_expired = models.BooleanField(default=False)  #for changing to true when not booked at the end of each day.
+    is_expired = models.BooleanField(default=False, db_index=True)  #for changing to true when not booked at the end of each day.
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['date','start_time']
         constraints = [models.UniqueConstraint(fields=['psychologist','date','start_time'], name="unique_psychologist_timeslot")]
+        indexes = [
+            models.Index(fields=['date','start_time'], name='date_start_time_idx'),
+            models.Index(fields=['psychologist', 'is_active', 'is_booked', 'is_expired'])
+        ]
     
     def clean(self):
         
@@ -74,11 +78,11 @@ class TimeSlot(models.Model):
 class Consultation(models.Model):
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='consultations')
     time_slot = models.OneToOneField(TimeSlot, on_delete=models.CASCADE, related_name='consultation')
-    consultation_status = models.CharField(max_length=20, choices=ConsultationStatus, default=ConsultationStatus.SCHEDULED) 
+    consultation_status = models.CharField(max_length=20, choices=ConsultationStatus, default=ConsultationStatus.SCHEDULED, db_index=True)   
     payment = models.OneToOneField(Payment, on_delete=models.CASCADE, null=True, blank=True,related_name='consultation')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True,)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     def save(self, *args, **kwargs):
         
         self.time_slot.is_booked = True

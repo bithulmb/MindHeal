@@ -46,11 +46,11 @@ class ApprovalStatusChoices(models.TextChoices):
 
 # Custom User Model
 class CustomUser(AbstractBaseUser):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=255, db_index=True)
+    last_name = models.CharField(max_length=255, db_index=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
-    role = models.CharField(max_length=20, choices=UserRole.choices, default=UserRole.PATIENT)
+    role = models.CharField(max_length=20, choices=UserRole.choices, default=UserRole.PATIENT, db_index=True)
     is_email_verified = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

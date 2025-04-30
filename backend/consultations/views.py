@@ -118,7 +118,22 @@ class PsychologistTimeSlotListView(generics.ListAPIView):
     def get_queryset(self):
         # getting the pyschologist id from the url as path parameter
         psychologist_id = self.kwargs['psychologist_id']
-        return TimeSlot.objects.filter(psychologist_id=psychologist_id, is_active=True, is_booked = False,is_expired=False)
+
+        #getting the current date and time
+        now = timezone.now()
+        today = now.date()
+        current_time = now.time()
+
+        available_slots = TimeSlot.objects.filter(
+            psychologist_id=psychologist_id, 
+            is_active=True, 
+            is_booked=False,
+            is_expired=False
+        ).filter(
+            Q(date__gt=today) | 
+            Q(date=today, start_time__gt=current_time)
+        )
+        return available_slots
 
 
 #pagination class for implementing pagination
