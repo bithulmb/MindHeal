@@ -301,6 +301,8 @@ CHANNEL_LAYERS = {
 ZEGO_APP_ID=os.getenv("ZEGO_APP_ID")
 ZEGO_SERVER_SECRET=os.getenv("ZEGO_SERVER_SECRET")
 
+#google client id for google authentication
+GOOGLE_CLIENT_ID= os.getenv('GOOGLE_CLIENT_ID')
 
 #logger settings
 LOGGING = {

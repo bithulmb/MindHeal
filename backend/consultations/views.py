@@ -96,6 +96,7 @@ class TimeSlotBulkCreateView(generics.CreateAPIView):
                 serializer.save(psychologist=psychologist)
                 created_timeslots.append(serializer.data)
             else:
+                logger.error(f"Error creating timeslot: {serializer.errors}")
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "Time slots created successfully", "timeslots": created_timeslots}, status=status.HTTP_201_CREATED)
@@ -173,6 +174,7 @@ class RazorpayBookConsultationView(APIView):
         razorpay_order_id = request.data.get('razorpay_order_id')
 
         if not all([time_slot_id, razorpay_payment_id, razorpay_order_id]):
+            logger.error("Missing required fields for Razorpay payment")
             return Response(
                 {"error": "Missing required fields"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -183,6 +185,7 @@ class RazorpayBookConsultationView(APIView):
             #verifying the razor pay payment
             payment = razorpay_client.payment.fetch(razorpay_payment_id)
             if payment['order_id'] != razorpay_order_id or payment['status'] != 'captured':
+                logger.error("Payment verification failed")
                 return Response(
                     {"error": "Payment verification failed"},
                     status=status.HTTP_400_BAD_REQUEST
@@ -195,7 +198,9 @@ class RazorpayBookConsultationView(APIView):
                     #locking the timeslot to prevent the double booking
                     time_slot = TimeSlot.objects.select_for_update().get(id=time_slot_id)
                     
+                    #checking whether the timeslot is already booked or not
                     if time_slot.is_booked:
+                        logger.error("Time slot already booked")
                         return Response(
                         {"error": "Time slot already booked"},
                         status=status.HTTP_400_BAD_REQUEST
@@ -225,18 +230,23 @@ class RazorpayBookConsultationView(APIView):
                     }, status=status.HTTP_201_CREATED)
 
             except Payment.DoesNotExist:
+                logger.error(f"Payment {payment_id} not found for user {request.user.id}.")
                 return Response({"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND)
             
             except TimeSlot.DoesNotExist:
+                logger.error(f"Time slot {time_slot_id} not found for user {request.user.id}.")
                 return Response({"error": "Time slot not found"}, status=status.HTTP_404_NOT_FOUND)
             
             except PatientProfile.DoesNotExist:
+                logger.error(f"Patient profile not found for user {request.user.id}.")
                 return Response({"error": "Patient profile not found"}, status=status.HTTP_404_NOT_FOUND)
             
             except Exception as e:
+                logger.error(f"Error booking consultation: {str(e)}")
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
         except razorpay.errors.RazorpayError as e:
+            logger.error(f"Razorpay error: {str(e)}")
             return Response({"error": f"Razorpay error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
         
@@ -280,6 +290,7 @@ class UpdateConsultationStatus(APIView):
             consultation.save()
             return Response({"message": "Consultation marked as completed"}, status=status.HTTP_200_OK)
         except Consultation.DoesNotExist:
+            logger.error(f"Consultation {consultation_id} not found.")
             return Response({"error": "Consultation not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -297,12 +308,14 @@ class SubmitReviewView(APIView):
             consultation = Consultation.objects.get(id=consultation_id)
             # Check if consultation is completed
             if consultation.consultation_status != "Completed":
+                logger.error(f"Consultation {consultation_id} is not completed.")
                 return Response(
                     {"error": "Reviews can only be submitted for completed consultations"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             # Check if the user is the patient
             if consultation.patient.user != request.user:
+                logger.error(f"User {request.user.id} is not authorized to review this consultation.")
                 return Response(
                     {"error": "You are not authorized to review this consultation"},
                     status=status.HTTP_403_FORBIDDEN
@@ -328,8 +341,10 @@ class SubmitReviewView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Consultation.DoesNotExist:
+            logger.error(f"Consultation {consultation_id} not found.")
             return Response({"error": "Invalid consultation ID"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+            logger.error(f"Error submitting review: {str(e)}")
             return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -344,6 +359,7 @@ class PsychologistReviewsView(APIView):
             serializer = ReviewSerializer(reviews, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
+            logger.error(f"Error fetching reviews: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
@@ -412,9 +428,10 @@ class PatientDashboardView(APIView):
             return Response(data)
         
         except ObjectDoesNotExist as e:
+            logger.error(f"Error in fetching patient dashboard: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            logger.error(f"Error booking consultation: {str(e)}")
+            logger.error(f"Error in fetching patient dashboard: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 
@@ -497,6 +514,7 @@ class WalletBookConsultationView(APIView):
                 time_slot = TimeSlot.objects.select_for_update().get(id=time_slot_id)
 
                 if time_slot.is_booked:
+                        logger.error("Time slot already booked")
                         return Response(
                         {"error": "Time slot already booked"},
                         status=status.HTTP_400_BAD_REQUEST
@@ -506,6 +524,7 @@ class WalletBookConsultationView(APIView):
 
                 # checking whether enough wallet balance is there or not
                 if wallet.balance < Decimal(amount):
+                    logger.error("Insufficient wallet balance")
                     return Response(
                         {"error": "Insufficient wallet balance"},
                         status=status.HTTP_400_BAD_REQUEST
@@ -541,6 +560,7 @@ class WalletBookConsultationView(APIView):
                 }, status=status.HTTP_201_CREATED)
 
         except ObjectDoesNotExist as e:
+            logger.error(f"Object not found: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.error(f"Error booking consultation: {str(e)}")

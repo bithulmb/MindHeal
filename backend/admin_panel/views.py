@@ -113,10 +113,10 @@ class UserUpdateBlockStatusView(generics.RetrieveUpdateAPIView):
                 email_message = f"Dear {name_of_user}, \n \nGood news! Your account has been unblocked by the admin.\nYou can now access the platform and continue using our services.\n \n Best regards,\n MindHeal"
             send_django_email(email_of_user,email_subject,email_message)
 
-           
-
+            #sending email to the user informing about the block status           
             return Response({'message' : "User block status updated succesfully"}, status=status.HTTP_200_OK)
         else:
+            logger.error("is_blocked field is missing in the request data")
             return Response({'error' : "is_blocked field is required"}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -154,12 +154,12 @@ class PsychologistRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             email_subject = "Rejection of Psychologist Profile"
             email_message = f"Dear {psychologist_name},  \n \nWe regret to inform you that your profile has been rejected by the admin. Please contact support for more details.\n \n Best regards,\n MindHeal"
         else:
+            logger.error("Invalid action provided for psychologist profile update")
             return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
         
         profile.save()
         send_django_email(psychologist_email,email_subject,email_message)
        
-
         return Response({'message' : response_message}, status=status.HTTP_200_OK)
     
 

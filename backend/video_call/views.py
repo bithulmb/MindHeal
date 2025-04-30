@@ -13,6 +13,9 @@ from src import token04
 import json
 from accounts.models import PatientProfile, PsychologistProfile
 from django.contrib.auth import get_user_model
+import logging
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -31,11 +34,13 @@ class CreateChannelView(APIView):
             user_id = consultation.patient.user.id
             psychologist_id = consultation.time_slot.psychologist.user.id
         except Consultation.DoesNotExist:
+            logger.error("invalid consltation id")
             return Response({'error': "invalid consultation id"}, status=status.HTTP_400_BAD_REQUEST)   
         
         # Check if the requesting user is the patient or psychologist
         if request.user.id not in [user_id, psychologist_id]:
-        
+
+            logger.error("Unauthorized access attempt")        
             return Response({'error': "You are not authorized for this consultation"}, status=status.HTTP_403_FORBIDDEN)
 
         # Check if a session already exists for this consultation
@@ -60,6 +65,7 @@ class CreateChannelView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+            logger.error("Invalid data for creating video call session")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class GenerateZegoTokenView(APIView):
@@ -73,6 +79,7 @@ class GenerateZegoTokenView(APIView):
 
         # Validate required input
         if not user_id:
+            logger.error("user_id is required")
             return Response(
                 {"error": "user_id is required"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -81,6 +88,7 @@ class GenerateZegoTokenView(APIView):
         user = User.objects.get(id=user_id) 
         
         if request.user != user:
+            logger.error("Unauthorized access attempt")
             return Response({"error": "You are not authorized to generate this token"}, status=status.HTTP_403_FORBIDDEN)
         
         # Retrieve app_id and server_secret from environment variables
@@ -133,6 +141,7 @@ class GenerateZegoTokenView(APIView):
 
         except Exception as e:
             
+            logger.error(f"Error generating Zego token: {str(e)}")
             return Response(
                 {"error": f"An error occurred: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

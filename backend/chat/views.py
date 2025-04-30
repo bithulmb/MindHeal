@@ -6,7 +6,9 @@ from .serializers import ChatThreadSerializer, ChatMessageSerializer
 from django.contrib.auth import get_user_model
 from accounts.models import PatientProfile,PsychologistProfile
 from rest_framework.exceptions import PermissionDenied
+import logging
 
+logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
@@ -19,16 +21,19 @@ class ChatThreadView(generics.GenericAPIView):
         psychologist_id = request.query_params.get("psychologist_id")
 
         if not user_id or not psychologist_id:
+            logger.error("Missing user_id or psychologist_id")
             return Response({"error": "Missing user_id or psychologist_id"}, status=400)
 
         try:
             user = PatientProfile.objects.get(id=user_id)
             psychologist = PsychologistProfile.objects.get(id=psychologist_id)
         except (PatientProfile.DoesNotExist, PsychologistProfile.DoesNotExist):
+            logger.error("Invalid user or psychologist ID")
             return Response({"error": "Invalid user or psychologist"}, status=404)
         
         # Check if the requesting user is either the patient or psychologist
         if request.user != user.user and request.user != psychologist.user:
+            logger.error("Unauthorized access attempt") 
             return Response({"error": "You are not authorized to access this thread"}, status=403)
         
         # Create new thread
@@ -49,6 +54,7 @@ class ChatMessageView(generics.ListCreateAPIView):
 
         # Authorization check
         if self.request.user != thread.user.user and self.request.user != thread.psychologist.user:
+            logger.error("Unauthorized access attempt to chat thread")
             raise PermissionDenied("You are not authorized to view this chat thread")
         
         return ChatMessage.objects.filter(thread_id=thread_id).order_by('timestamp')
@@ -60,6 +66,7 @@ class ChatMessageView(generics.ListCreateAPIView):
 
         # Authorization check
         if self.request.user != thread.user.user and self.request.user != thread.psychologist.user:
+            logger.error("Unauthorized access attempt to send message in chat thread")
             raise PermissionDenied("You are not authorized to send messages in this chat thread")
         
         serializer.save(sender=self.request.user, thread_id=thread_id)

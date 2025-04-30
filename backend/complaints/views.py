@@ -10,7 +10,9 @@ from django.utils.timezone import now
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import PageNumberPagination
+import logging
 
+logger = logging.getLogger(__name__)
 # Create your views here.
 
 class CreateComplaintView(APIView):
@@ -22,6 +24,7 @@ class CreateComplaintView(APIView):
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        logger.error("Invalid data for complaint creation")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ComplaintPagination(PageNumberPagination):
@@ -56,4 +59,5 @@ class ResolveComplaintView(APIView):
             complaint.save()
             return Response({"message": "Complaint resolved successfully"})
         except Complaint.DoesNotExist:
+            logger.error("Complaint not found")
             return Response({"error": "Complaint not found"}, status=status.HTTP_404_NOT_FOUND)

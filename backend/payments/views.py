@@ -61,6 +61,7 @@ class RazorpayCreateOrderAPIView(APIView):
             }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
+            logger.error(f"Error creating Razorpay order: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -96,6 +97,7 @@ class WalletDetailsView(APIView):
             return Response(data, status=status.HTTP_200_OK)
         
         except PatientProfile.DoesNotExist:
+            logger.error("Patient profile not found")
             return Response(
                 {"error": "Patient profile not found."},
                 status=status.HTTP_404_NOT_FOUND
