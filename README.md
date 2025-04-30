@@ -57,11 +57,15 @@ MindHeal is a web platform that connects users with psychologists and counselors
    ```sh
    pip install -r requirements.txt
    ```
-4. Apply migrations:
+4. Set environment variables (see .env.sample)
+   ```sh
+   cp .env.sample .env
+   ```
+5. Apply migrations:
    ```sh
    python manage.py migrate
    ```
-5. Start the server:
+6. Start the server:
    ```sh
    python manage.py runserver
    ```
@@ -75,7 +79,11 @@ MindHeal is a web platform that connects users with psychologists and counselors
    ```sh
    npm install
    ```
-3. Start the development server:
+3. Set environment variables (see .env.sample):
+   ```sh
+   cp .env.sample .env
+   ```
+4. Start the development server:
    ```sh
    npm run dev
    ```
