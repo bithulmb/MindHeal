@@ -120,7 +120,8 @@ class PsychologistTimeSlotListView(generics.ListAPIView):
         psychologist_id = self.kwargs['psychologist_id']
 
         #getting the current date and time
-        now = timezone.now()
+        now = timezone.localtime(timezone.now())
+        print(now)
         today = now.date()
         current_time = now.time()
 
