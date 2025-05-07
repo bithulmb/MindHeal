@@ -60,39 +60,6 @@ const UserProfile = () => {
 
   
 
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     try {
-        
-  //       const response = await api.get("/api/user/profile/")
-        
-  //       setUserData(response.data)
-  //       console.log("user profile fetched")
-  //     } catch (error) {
-  //       console.error('Error fetching user data:', error.response?.data);  
-  //     } finally {
-  //       setLoading(false)
-  //     }
-  //   };
-
-  //   fetchUserData();
-  // }, []);
-
-  // Handle profile picture upload
-  // const handleProfilePicChange = async (event) => {
-  //   const file = event.target.files[0];
-  //   if (!file) return;
-
-
-  //   if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-  //     toast.error("Only .jpg, .jpeg, .png, and .webp formats are supported");
-  //     return;
-  //   }
-  //   if (file.size > MAX_FILE_SIZE) {
-  //     toast.error("Max file size is 2MB");
-  //     return;
-  //   }
-
   const handleProfilePicUpload = async () => {
     if (!croppedImage) {
       toast.error("Please crop the image first");
@@ -120,13 +87,6 @@ const UserProfile = () => {
     }
   };
 
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-  //     </div>
-  //   );
-  // }
 
   if (!userData) {
     return <UserProfileNotCreated/>;
