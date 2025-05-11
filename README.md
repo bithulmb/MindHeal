@@ -88,12 +88,7 @@ MindHeal is a web platform that connects users with psychologists and counselors
    npm run dev
    ```
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request.
-
-## License
-This project is licensed under the MIT License.
 
 ## Contact
-For any inquiries, reach out to **Bithul Krishna** at **bithulmb@gmail.com**.
+For any inquiries, reach out to **Bithul Krishna** at **bithulmb07@gmail.com**.
 
